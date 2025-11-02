@@ -1,0 +1,30 @@
+﻿@page "/plants/create"
+@using Application.Plant.Commands
+@using Application.Plant.Commands.CreatePlant
+@inject MediatR.IMediator Mediator
+@rendermode InteractiveServer
+
+<h3>Créer un Plant</h3>
+
+@if (!string.IsNullOrEmpty(_message))
+{
+    <p>@_message</p>
+}
+
+<input id="code" @bind="_plantCode" />
+<button @onclick="HandleSubmit">Créer</button>
+
+@code {
+    private int _clicks;
+    private string _plantCode = "";
+    private string? _message;
+
+    private async Task HandleSubmit()
+    {
+        var command = new CreatePlantCommand { Code = _plantCode };
+
+        var result = await Mediator.Send(command);
+
+      
+    }
+}
