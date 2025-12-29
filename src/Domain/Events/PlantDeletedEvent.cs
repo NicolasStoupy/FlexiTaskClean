@@ -1,13 +1,17 @@
-﻿
+﻿using Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Domain.Events
 {
-    public class PlantDeletedEvent: BaseEvent
+    public record PlantDeletedEvent : BaseEvent
     {
-        public Plant Plant { get; }
         public PlantDeletedEvent(Plant plant)
         {
             Plant = plant;
         }
+
+        public Plant Plant { get; }
     }
 }

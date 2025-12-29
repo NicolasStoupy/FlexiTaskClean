@@ -32,4 +32,5 @@ namespace Application.Plant.Queries.GetPlants
             };
         }
     }
+
 }

@@ -7,15 +7,15 @@ namespace Application.Plant.Queries.GetPlants
 
         public PlantDTO()
         {
-
+            WorkAreas = Array.Empty<WorkAreaDTO>();
         }
 
-        public int Id { get; set; }
+        public int id { get; set; }
         public string Code { get; set; }
 
         public bool IsActive { get; set; }
 
-
+        public IReadOnlyCollection<WorkAreaDTO> WorkAreas { get; init; }
         private class Mapping : Profile
         {
             public Mapping()

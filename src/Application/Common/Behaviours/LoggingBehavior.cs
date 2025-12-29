@@ -29,7 +29,7 @@ namespace Application.Common.Behaviours
                 userName = _user.Id;
             }
 
-            _logger.LogInformation("CleanArchitecture Request: {Name} {@UserId} {@UserName} {@Request}",
+            _logger.LogInformation("FlexiTask Request: {Name} {@UserId} {@UserName} {@Request}",
                 requestName, userId, userName, request);
         }
     }

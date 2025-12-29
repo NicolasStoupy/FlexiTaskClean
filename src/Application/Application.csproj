@@ -1,10 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Plant\**" />
+    <EmbeddedResource Remove="Plant\**" />
+    <None Remove="Plant\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Common\Exceptions\" />
@@ -13,11 +19,11 @@
 
   <ItemGroup>
     <PackageReference Include="Ardalis.GuardClauses" Version="5.0.0" />
-    <PackageReference Include="AutoMapper" Version="15.1.0" />
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.0.0" />
-    <PackageReference Include="MediatR" Version="13.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.10" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.10" />
+    <PackageReference Include="AutoMapper" Version="16.0.0" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+    <PackageReference Include="MediatR" Version="14.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -10,8 +10,8 @@ namespace Application.Common.Interfaces
 {
     public interface IApplicationDbContext
     {
-        DbSet<Domain.Entities.Plant> Plant { get; }
 
+        DbSet<Plant> Plants { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

@@ -31,8 +31,10 @@ namespace Application
         {         
             builder.Services.AddAutoMapper(cfg => { }, Assembly.GetExecutingAssembly());
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
+            var licenseKey = builder.Configuration["MediatR:LicenseKey"];
+           
             builder.Services.AddMediatR(cfg => {
+                cfg.LicenseKey = licenseKey;
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 cfg.AddOpenRequestPreProcessor(typeof(LoggingBehaviour<>));
                 cfg.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));

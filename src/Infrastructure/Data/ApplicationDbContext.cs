@@ -9,15 +9,13 @@ namespace Infrastructure.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
 
-        public DbSet<Domain.Entities.Plant> Plant => Set<Plant>();
-
-
-
-
-
-
+        public DbSet<Plant> Plants => Set<Plant>();
+        
+        
         /// <summary>
         /// Configure le modèle de données pour le contexte de base de données lors de sa création.
         /// </summary>
@@ -30,13 +28,11 @@ namespace Infrastructure.Data
         /// dans l’assembly courant à l’aide de <see cref="ModelBuilder.ApplyConfigurationsFromAssembly(Assembly)"/>.
         /// Cela permet une configuration centralisée et modulaire des entités via les classes
         /// implémentant <see cref="IEntityTypeConfiguration{TEntity}"/>.
-        /// </remarks>       
+        /// </remarks>
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
     }
-
-
 }

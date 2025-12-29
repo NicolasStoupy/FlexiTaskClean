@@ -1,5 +1,4 @@
 ﻿using Application.Common.Interfaces;
-using Application.Plant.Queries.GetPlants;
 using MediatR;
 
 namespace Application.Plant.Commands.UpdatePlant
@@ -30,7 +29,10 @@ namespace Application.Plant.Commands.UpdatePlant
                     throw new Exception("Plant not found");
                 }
                 entity.Code = request.Code;
-                entity.IsActive = request.IsActive;
+                if (request.IsActive)
+                    entity.Activate();
+                else
+                    entity.Deactivate();
                 await _context.SaveChangesAsync(cancellationToken);
                 return entity.Id;
             }

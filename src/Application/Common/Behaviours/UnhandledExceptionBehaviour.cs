@@ -23,6 +23,7 @@ namespace Application.Common.Behaviours
             try
             {
                 return await next();
+
             }
             catch (Exception ex)
             {

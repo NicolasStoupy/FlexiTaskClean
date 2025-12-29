@@ -11,7 +11,8 @@ namespace Application.Common.Models
         internal Result(bool succeeded, IEnumerable<string> errors)
         {
             Succeeded = succeeded;
-            Errors = errors.ToArray();
+            if (errors!=null)
+                Errors = errors.ToArray();
         }
 
         public bool Succeeded { get; init; }
@@ -28,4 +29,26 @@ namespace Application.Common.Models
             return new Result(false, errors);
         }
     }
+    public class Result<T> : Result
+    {
+        private Result(bool succeeded, T? data, IEnumerable<string>? errors = null)
+            : base(succeeded, errors)
+        {
+            Data = data;
+        }
+
+        public T? Data { get; init; }
+
+        public static Result<T> Success(T data) => new(true, data);
+
+        public static Result<T> Failure(params string[] errors) => new(false, default, errors);
+
+        public static Result<T> Failure(IEnumerable<string> errors) => new(false, default, errors);
+
+        public override string ToString() =>
+            Succeeded
+                ? $"Succeeded ({typeof(T).Name}): {Data}"
+                : $"Failed: {string.Join(", ", Errors)}";
+    }
 }
+

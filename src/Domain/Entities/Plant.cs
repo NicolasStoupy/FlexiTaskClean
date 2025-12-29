@@ -1,27 +1,22 @@
-﻿using Domain.Common;
-using Domain.Events;
+﻿using Domain.Enums;
 
 namespace Domain.Entities
 {
     public class Plant : BaseAuditableEntity
     {
 
-        public string Code { get; set; }
-
-        private bool _isActive;
-        public bool IsActive
+        public int Id { get;  set; }
+        public string Code { get; set; } = null!;
+        public string? CommonName { get; set; }
+        public PlantLanguage Language { get; set; }
+        public List<WorkArea> WorkAreas { get; set; } = new();
+        public Plant() { }
+        public Plant(string code, PlantLanguage language, string? commonName)
         {
-            get => _isActive;
-            set
-            {
-                if (value )
-                {
-                    AddDomainEvent(new PlantCompletedEvent(this));
-                }
-
-                _isActive = value;
-            }
+            Code = code;
+            Language = language;
+            CommonName = commonName;
+           
         }
-
     }
 }
