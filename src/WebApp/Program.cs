@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddApplicationServices();
 builder.AddInfrastructureServices();
+
 builder.Services.AddScoped<IUser, CurrentUser>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

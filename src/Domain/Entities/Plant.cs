@@ -6,10 +6,12 @@ namespace Domain.Entities
     {
 
         public int Id { get;  set; }
+        public DateTimeOffset CreatedAt { get; set; }
         public string Code { get; set; } = null!;
         public string? CommonName { get; set; }
         public PlantLanguage Language { get; set; }
-        public List<WorkArea> WorkAreas { get; set; } = new();
+        public IList<WorkArea> WorkAreas { get; set; } = new List<WorkArea>();
+        
         public Plant() { }
         public Plant(string code, PlantLanguage language, string? commonName)
         {

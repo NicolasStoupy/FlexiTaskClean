@@ -25,5 +25,6 @@
         /// Identifiant de l’utilisateur ayant effectué la dernière modification.
         /// </summary>
         public string? LastModifiedBy { get; set; }
+
     }
 }

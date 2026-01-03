@@ -29,7 +29,7 @@ public class GetPlantsQueryHandler : IRequestHandler<GetPlantsQuery, PlantsVm>
     {
         if(request.plantID != 0 && request.plantID != null)
         {
-            var plant = await _context.Plants
+            var plant = await _context.Plant
             .AsNoTracking()
             .Where(p => p.Id == request.plantID)
             .ProjectTo<PlantDto>(_mapper.ConfigurationProvider)
@@ -41,7 +41,7 @@ public class GetPlantsQueryHandler : IRequestHandler<GetPlantsQuery, PlantsVm>
         }
         return new PlantsVm()
         {
-            PlantLists = await _context.Plants
+            PlantLists = await _context.Plant
             .AsNoTracking()
             .ProjectTo<PlantDto>(_mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken)

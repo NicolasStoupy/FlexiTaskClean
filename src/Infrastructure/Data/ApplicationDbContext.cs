@@ -13,7 +13,7 @@ namespace Infrastructure.Data
         {
         }
 
-        public DbSet<Plant> Plants => Set<Plant>();
+        public DbSet<Plant> Plant => Set<Plant>();
         
         
         /// <summary>

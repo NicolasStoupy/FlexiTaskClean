@@ -17,7 +17,7 @@
         }
         public async Task<int> Handle(UpdatePlantCommand request, CancellationToken cancellationToken)
         {
-            var plant = await _context.Plants
+            var plant = await _context.Plant
                 .FirstOrDefaultAsync(p => p.Id == request.PlantID, cancellationToken);
             if (plant != null)
             {

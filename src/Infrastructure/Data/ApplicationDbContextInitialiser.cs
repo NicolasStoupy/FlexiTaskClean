@@ -100,9 +100,9 @@ namespace Infrastructure.Data
 
             // Default data
             // Seed, if necessary
-            if (!_context.Plants.Any())
+            if (!_context.Plant.Any())
             {
-                _context.Plants.Add(new Domain.Entities.Plant()
+                _context.Plant.Add(new Domain.Entities.Plant()
                 {
                     Code = "MOU1",
                     CommonName = "Moustier",

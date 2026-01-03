@@ -24,12 +24,12 @@ public class DeletePlantCommandHandler : IRequestHandler<DeletePlantCommand>
 
     public async Task Handle(DeletePlantCommand request, CancellationToken cancellationToken)
     {
-        var entity = await _context.Plants
+        var entity = await _context.Plant
             .FindAsync(new object[] { request.plantID }, cancellationToken);
 
         Guard.Against.NotFound(request.plantID, entity);
 
-        _context.Plants.Remove(entity);
+        _context.Plant.Remove(entity);
 
         entity.AddDomainEvent(new PlantDeletedEvent(entity));
 

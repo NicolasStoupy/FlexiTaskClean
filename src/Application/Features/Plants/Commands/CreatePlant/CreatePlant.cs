@@ -29,7 +29,7 @@ public class CreatePlantCommandHandler : IRequestHandler<CreatePlantCommand, int
             CommonName = request.commonName,
             Language = Enum.Parse<PlantLanguage>(request.language)
         };
-        _context.Plants.Add(entity);
+        _context.Plant.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
         return entity.Id;
     }

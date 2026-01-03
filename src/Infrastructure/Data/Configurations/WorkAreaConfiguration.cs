@@ -4,17 +4,47 @@ using System.Text;
 
 namespace Infrastructure.Data.Configurations
 {
-    public class WorkAreaConfiguration:IEntityTypeConfiguration<Domain.Entities.WorkArea>
+    public sealed class WorkAreaConfiguration : IEntityTypeConfiguration<WorkArea>
     {
-        public void Configure(EntityTypeBuilder<Domain.Entities.WorkArea> builder)
+        public void Configure(EntityTypeBuilder<WorkArea> builder)
         {
-            builder.HasKey(wa => wa.WorkAreaId);
-            builder.Property(wa => wa.Code)
-                .IsRequired()
-                .HasMaxLength(50);
-            builder.Property(wa => wa.CommonName)
-                .IsRequired()
+            builder.ToTable("WorkArea");
+
+            builder.HasKey(x => x.WorkAreaId);
+
+            builder.Property(x => x.WorkAreaId)
+                .HasColumnName("WorkAreaID")
+                .ValueGeneratedOnAdd();
+
+            builder.Property(x => x.Code)
+            .HasMaxLength(5)
+            .IsRequired();
+
+            builder.HasIndex(x => x.Code).IsUnique();
+
+            builder.Property(x => x.CommonName)
+            .HasMaxLength(50)
+            .IsRequired();
+
+            builder.Property(x => x.PlantId)
+            .HasColumnName("PlantID")
+            .IsRequired();
+
+            builder.Property(x => x.WorkAreaTypeId)
+                .HasColumnName("WorkAreaTypeID")
+                .IsRequired();
+
+            builder.Property(x => x.Created)
+                .IsRequired();
+
+            builder.Property(x => x.CreatedBy)
                 .HasMaxLength(100);
+
+            builder.Property(x => x.LastModified)
+                   .IsRequired();
+
+            builder.Property(x => x.LastModifiedBy)
+                   .HasMaxLength(100);
         }
     }
 }

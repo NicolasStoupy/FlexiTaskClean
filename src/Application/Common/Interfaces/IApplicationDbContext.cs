@@ -11,7 +11,7 @@ namespace Application.Common.Interfaces
     public interface IApplicationDbContext
     {
 
-        DbSet<Plant> Plants { get; }
+        DbSet<Plant> Plant { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

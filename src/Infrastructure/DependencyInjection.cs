@@ -33,7 +33,7 @@ namespace Infrastructure
 
             builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
 
-            builder.Services.AddScoped<ApplicationDbContextInitialiser>();
+           builder.Services.AddScoped<ApplicationDbContextInitialiser>();
 
 
             // Identity (externalisé)

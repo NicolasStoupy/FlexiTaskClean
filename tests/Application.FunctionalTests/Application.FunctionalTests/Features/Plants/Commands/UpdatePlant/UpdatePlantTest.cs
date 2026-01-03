@@ -14,11 +14,11 @@ namespace Application.FunctionalTests.Features.Plants.Commands.UpdatePlant
         {
             // Arrange
             await Testing.RunAsDefaultUserAsync();
-            var plantCreated = await Testing.AddWithReturnAsync<Domain.Entities.Plant>(new Domain.Entities.Plant("TEST2", Domain.Enums.PlantLanguage.EN, "TestPlant2"));
+            var plantCreated = await Testing.AddWithReturnAsync<Domain.Entities.Plant>(new Domain.Entities.Plant("MO1", Domain.Enums.PlantLanguage.EN, "TestPlant2"));
             var updateCommand = new Application.Features.Plants.Commands.UpdatePlants.UpdatePlantCommand()
             {
                 PlantID = plantCreated.Id,
-                Code = "UPDATED_TEST2",
+                Code = "MO2",
                 CommonName = "UpdatedTestPlant2",
                 Language = "FR"
             };
@@ -30,7 +30,7 @@ namespace Application.FunctionalTests.Features.Plants.Commands.UpdatePlant
 
             plantUpdated.ShouldNotBeNull();
             plantUpdated.Id.ShouldBe(plantCreated.Id);
-            plantUpdated.Code.ShouldBe("UPDATED_TEST2");
+            plantUpdated.Code.ShouldBe("MO2");
             plantUpdated.CommonName.ShouldBe("UpdatedTestPlant2");
             plantUpdated.Language.ShouldBe(Domain.Enums.PlantLanguage.FR);
 

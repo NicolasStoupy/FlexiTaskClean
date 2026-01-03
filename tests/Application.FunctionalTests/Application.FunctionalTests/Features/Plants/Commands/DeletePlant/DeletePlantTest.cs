@@ -11,7 +11,9 @@ namespace Application.FunctionalTests.Features.Plants.Commands.DeletePlant
         {
             // Arrange
             await Testing.RunAsDefaultUserAsync();
-            var plantCreated = await Testing.AddWithReturnAsync<Plant>(new Plant("TEST1", Domain.Enums.PlantLanguage.EN, "TestPlant"));
+            var plant = new Plant("TEST", Domain.Enums.PlantLanguage.EN, "Test");
+          
+            var plantCreated = await Testing.AddWithReturnAsync<Plant>(plant);
 
             // Vérifier que le plant existe bien avant la suppression
             var plantBefore = await Testing.FindAsync<Plant>(plantCreated.Id);

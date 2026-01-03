@@ -6,5 +6,5 @@ namespace Domain.Entities.Tasks;
 public class TaskHeader : BaseAuditableEntity
 {
     public int TaskHeaderId { get; set; }
-    public IList<TaskItem> TaskItems { get; set; } = new List<TaskItem>();
+    public IList<TaskItems> TaskItems { get; set; } = new List<TaskItems>();
 }
