@@ -1,7 +1,8 @@
 ﻿@page "/"
-
+@rendermode InteractiveServer
 <PageTitle></PageTitle>
 
 <h1>@_localizer["Hello World"]</h1>
-
+@DateTime.Now.ToShortDateString()
+@DateTime.Now.ToLongDateString()
 Welcome to your new app.
