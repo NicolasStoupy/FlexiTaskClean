@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Localization
+@inject NavigationManager Nav
+@inject IConfiguration Configuration
+@rendermode InteractiveServer
+@if (cultures != null)
+{
+
+    <form class="d-inline">
+        <select class="form-control mr-2" @bind="selectedCulture">            
+            @foreach (var culture in cultures)
+            {
+                <option value="@culture.Key">@culture.Value</option>
+
+            }
+        </select>
+        <button class="btn btn-outline-primary" @onclick="RequestCultureChange">Change</button>
+    </form>
+}
+
+@code {
+
+    private string selectedCulture = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
+    private Dictionary<string, string?> cultures = new();
+
+    protected override void OnInitialized()
+    {
+        cultures = Configuration.GetSection("Cultures")
+        .GetChildren().ToDictionary(x => x.Key, x => x.Value);
+    }
+
+
+    private void RequestCultureChange()
+    {
+        var uri = new Uri(Nav.Uri)
+        .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+        var query = $"?culture={Uri.EscapeDataString(selectedCulture)}&" +
+        $"redirectUri={Uri.EscapeDataString(uri)}";
+        Nav.NavigateTo("/culture/SetCulture" + query, forceLoad: true);
+    }
+}

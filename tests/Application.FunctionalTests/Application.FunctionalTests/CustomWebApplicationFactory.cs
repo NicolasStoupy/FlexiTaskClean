@@ -7,12 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Moq;
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
-using System.Text;
 using static Application.FunctionalTests.Testing;
 
 namespace Application.FunctionalTests

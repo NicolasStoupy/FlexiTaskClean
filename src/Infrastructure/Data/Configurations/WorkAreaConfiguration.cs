@@ -26,13 +26,13 @@ namespace Infrastructure.Data.Configurations
             .HasMaxLength(50)
             .IsRequired();
 
-            builder.Property(x => x.PlantId)
-            .HasColumnName("PlantID")
-            .IsRequired();
+            //builder.Property(x => x.PlantId)
+            //.HasColumnName("PlantID")
+            //.IsRequired();
 
-            builder.Property(x => x.WorkAreaTypeId)
-                .HasColumnName("WorkAreaTypeID")
-                .IsRequired();
+            //builder.Property(x => x.WorkAreaTypeId)
+            //    .HasColumnName("WorkAreaTypeID")
+            //    .IsRequired();
 
             builder.Property(x => x.Created)
                 .IsRequired();

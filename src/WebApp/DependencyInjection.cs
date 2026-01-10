@@ -1,6 +1,18 @@
-﻿namespace WebApp
+﻿using Application.Common.Interfaces;
+using Microsoft.AspNetCore.Components.Authorization;
+using WebApp.Components.Account;
+using WebApp.Services;
+
+namespace WebApp
 {
-    public class DependencyInjection
+    public static class DependencyInjection
     {
+        // Méthodes d’extension pour enregistrer les services de la couche "WebApp"
+        // dans le conteneur d’injection de dépendances.
+        public static void AddWebAppServices(this IHostApplicationBuilder builder)
+        {
+            builder.Services.AddScoped<IUser, CurrentUser>();
+            builder.Services.AddSingleton<LocalizationOptionsProvider>();
+        }
     }
 }

@@ -14,8 +14,13 @@ namespace Infrastructure.Data
         }
 
         public DbSet<Plant> Plant => Set<Plant>();
-        
-        
+
+        public DbSet<WorkArea> WorkAreas => Set<WorkArea>();
+
+        public DbSet<WorkAreaType> WorkAreaTypes => Set<WorkAreaType>();
+
+
+
         /// <summary>
         /// Configure le modèle de données pour le contexte de base de données lors de sa création.
         /// </summary>

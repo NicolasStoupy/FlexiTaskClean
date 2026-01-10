@@ -12,6 +12,8 @@ namespace Application.Common.Interfaces
     {
 
         DbSet<Plant> Plant { get; }
+        DbSet<WorkArea> WorkAreas { get; }
+        DbSet<WorkAreaType> WorkAreaTypes { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

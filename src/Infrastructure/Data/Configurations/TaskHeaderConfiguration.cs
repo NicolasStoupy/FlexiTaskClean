@@ -1,7 +1,4 @@
 ﻿using Domain.Entities.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Infrastructure.Data.Configurations
 {
