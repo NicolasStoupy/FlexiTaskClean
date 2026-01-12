@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MudBlazor.Services;
 using WebApp;
 using WebApp.Components;
 using WebApp.Components.Account;
@@ -31,6 +32,11 @@ builder.Services.AddControllers();
 builder.Services.AddCascadingAuthenticationState(); // Ajout de l’état d’authentification en cascade
 builder.Services.AddScoped<IdentityRedirectManager>();// Ajout du gestionnaire de redirection d’identité
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();// Fournit l’état d’authentification
+
+builder.Services.AddMudServices();
+builder.Services.AddMudBlazorDialog();
+builder.Services.AddMudBlazorSnackbar();
+builder.Services.AddMudBlazorResizeListener();
 var app = builder.Build();
 
 app.UseHttpsRedirection();

@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using WebApp.Components.Dialogs
+@inject IDialogService DialogService
 @rendermode InteractiveServer
 <PageTitle></PageTitle>
 
@@ -6,3 +8,16 @@
 @DateTime.Now.ToShortDateString()
 @DateTime.Now.ToLongDateString()
 Welcome to your new app.
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="ShowDialog">
+    Ouvrir le dialogue
+</MudButton>
+
+@code {
+    private void ShowDialog()
+    {
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
+
+        DialogService.Show<SimpleDialog>("Titre du dialogue", options);
+    }
+}
