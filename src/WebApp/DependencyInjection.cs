@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Infrastructure.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using WebApp.Components.Account;
 using WebApp.Services;
@@ -13,6 +14,7 @@ namespace WebApp
         {
             builder.Services.AddScoped<IUser, CurrentUser>();
             builder.Services.AddSingleton<LocalizationOptionsProvider>();
+            builder.Services.AddScoped<IIdentityService, IdentityService>();
         }
     }
 }

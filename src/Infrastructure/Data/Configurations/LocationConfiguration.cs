@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.Inventory;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,9 +12,9 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("Location");
 
-            builder.HasKey(x => x.LocationId);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.LocationId)
+            builder.Property(x => x.Id)
                 .HasColumnName("LocationID")
                 .HasColumnType("varchar(10)")
                 .HasMaxLength(10)
@@ -27,16 +28,7 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
 
             builder.HasIndex(x => x.Label).IsUnique();
-
-            builder.Property(x => x.WorkAreaId)
-                .HasColumnName("WorkAreaID")
-                .HasColumnType("int")
-                .IsRequired();
-
-            builder.HasOne(x => x.WorkArea)
-                .WithMany()
-                .HasForeignKey(x => x.WorkAreaId)
-                .OnDelete(DeleteBehavior.NoAction);
+           
         }
     }
 }

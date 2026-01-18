@@ -8,29 +8,11 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("TaskHeader");
 
-            builder.HasKey(x => x.TaskHeaderId);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.TaskHeaderId)
+            builder.Property(x => x.Id)
                 .HasColumnName("TaskHeaderID")
-                .ValueGeneratedOnAdd();
-
-            builder.Property(x => x.Created)           
-                .IsRequired();
-
-            builder.Property(x => x.CreatedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
-
-            builder.Property(x => x.LastModified)  
-                .IsRequired();
-
-            builder.Property(x => x.LastModifiedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
+                .ValueGeneratedOnAdd(); // IDENTITY
         }
     }
 }

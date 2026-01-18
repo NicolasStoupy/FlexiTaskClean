@@ -4,16 +4,17 @@ using System.Text;
 
 namespace Domain.Entities.Tasks
 {
-    public class TaskItemDependency
+    public class TaskItemDependency : BaseAuditableEntity
     {
-        // PK : (TaskHeaderID_DependOn, TaskItemsID_DependOn, TaskHeaderID, TaskItemsID)
-        public int TaskHeaderIdDependOn { get; set; }
-        public int TaskItemsIdDependOn { get; set; }
-
+        // PK composite (4 colonnes)
         public int TaskHeaderId { get; set; }
-        public int TaskItemsId { get; set; }
+        public int TaskItemId { get; set; }
 
-        public TaskItems? DependOnTaskItem { get; set; }
-        public TaskItems? TaskItem { get; set; }
+        public int DependsOnTaskHeaderId { get; set; }
+        public int DependsOnTaskItemId { get; set; }
+
+        // Navigations
+        public TaskItem TaskItem { get; set; } = null!;
+        public TaskItem DependsOn { get; set; } = null!;
     }
 }

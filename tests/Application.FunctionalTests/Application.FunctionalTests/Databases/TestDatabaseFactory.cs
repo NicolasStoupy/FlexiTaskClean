@@ -10,7 +10,7 @@ namespace Application.FunctionalTests.Databases
         public static async Task<ITestDatabase> CreateAsync()
         {
 
-            var database = new SqlTestcontainersTestDatabase();
+            var database = new SqlTestDatabase();
 
             await database.InitialiseAsync();
 

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Behaviours;
+using Application.Common.Interfaces;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,7 +29,8 @@ namespace Application
         /// </code>
         /// </example>
         public static void AddApplicationServices(this IHostApplicationBuilder builder)
-        {         
+        {
+           
             builder.Services.AddAutoMapper(cfg => { }, Assembly.GetExecutingAssembly());
             builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             var licenseKey = builder.Configuration["MediatR:LicenseKey"];
@@ -38,7 +40,7 @@ namespace Application
                 cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 cfg.AddOpenRequestPreProcessor(typeof(LoggingBehaviour<>));
                 cfg.AddOpenBehavior(typeof(UnhandledExceptionBehaviour<,>));
-                //cfg.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
                 //cfg.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             });

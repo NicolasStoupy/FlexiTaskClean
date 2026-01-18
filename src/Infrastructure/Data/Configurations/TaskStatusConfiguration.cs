@@ -10,43 +10,46 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("TaskStatus");
 
-            builder.HasKey(x => x.TaskStatusId);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.TaskStatusId)
+            builder.Property(x => x.Id)
                 .HasColumnName("TaskStatusID")
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.Code)
+                .HasColumnName("Code")
                 .HasColumnType("varchar(5)")
                 .HasMaxLength(5)
                 .IsUnicode(false)
                 .IsRequired();
 
-            builder.HasIndex(x => x.Code).IsUnique();
-
             builder.Property(x => x.Description)
+                .HasColumnName("Description")
                 .HasColumnType("varchar(50)")
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsRequired();
 
-            builder.Property(x => x.Created)          
-                .IsRequired();
+            // Contrainte UNIQUE(Code)
+            builder.HasIndex(x => x.Code)
+                   .IsUnique();
+
+            // Audit
+            builder.Property(x => x.Created)
+                .HasColumnType("datetimeoffset(7)");
 
             builder.Property(x => x.CreatedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
-            
-            builder.Property(x => x.LastModified)           
-                .IsRequired();
+                .HasColumnType("varchar(50)")
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            builder.Property(x => x.LastModified)
+                .HasColumnType("datetimeoffset(7)");
 
             builder.Property(x => x.LastModifiedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
+                .HasColumnType("varchar(50)")
+                .HasMaxLength(50)
+                .IsUnicode(false);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using Application.Plants.Queries.GetPlants;
 using Domain.Entities;
+using Domain.Entities.MasterData;
 using Shouldly;
 
 namespace Application.FunctionalTests.Features.Plants.Queries.GetPlants
@@ -28,7 +29,7 @@ namespace Application.FunctionalTests.Features.Plants.Queries.GetPlants
         [Test]
         public async Task ShouldReturnAllPlants()
         {
-            await Testing.RunAsDefaultUserAsync();
+            await Testing.RunAsAdministratorAsync();
 
             // Arrange: création d'un plant avec une zone de travail
             var plant = new Plant("OST1", Domain.Enums.PlantLanguage.DE, "OSTWERDINGEN");

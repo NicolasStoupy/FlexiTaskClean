@@ -3,8 +3,9 @@ using System.Collections.Generic;
 
 namespace Domain.Entities.Tasks;
 
-public class TaskHeader : BaseAuditableEntity
+public class TaskHeader : BaseAuditableEntity<int>
 {
-    public int TaskHeaderId { get; set; }
-    public IList<TaskItems> TaskItems { get; set; } = new List<TaskItems>();
+ 
+    
+    public List<TaskItem> Items { get; set; } = new();
 }

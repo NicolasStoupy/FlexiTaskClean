@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Tasks;
+﻿using Domain.Entities.Tasks.TaskSpecializations;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,34 +11,58 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("LoadingTask");
 
-            // PK = FK composite vers TaskItems
-            builder.HasKey(x => new { x.TaskHeaderId, x.TaskItemsId });
+            // ✅ PK composite (shared PK)
+            builder.HasKey(x => new { x.TaskHeaderId, x.TaskItemId });
 
             builder.Property(x => x.TaskHeaderId)
                 .HasColumnName("TaskHeaderID")
                 .HasColumnType("int")
                 .IsRequired();
 
-            builder.Property(x => x.TaskItemsId)
+            builder.Property(x => x.TaskItemId)
                 .HasColumnName("TaskItemsID")
                 .HasColumnType("int")
                 .IsRequired();
 
-            // ✅ Ici on dit explicitement: LoadingTask est dépendant et porte la FK
+            builder.Property(x => x.Product)
+                .HasColumnName("Product")
+                .HasColumnType("varchar(50)")
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .IsRequired();
+
+            builder.Property(x => x.Qty)
+                .HasColumnName("Qty")
+                .HasColumnType("float")
+                .IsRequired();
+
+            builder.Property(x => x.Support)
+                .HasColumnName("Support")
+                .HasColumnType("varchar(50)")
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            builder.Property(x => x.AreaForLoadingId)
+                .HasColumnName("AreaForLoading")
+                .HasColumnType("int");
+
+            // ✅ 1–1 avec TaskItem via PK partagé (composite)
             builder.HasOne(x => x.TaskItem)
-                .WithOne(ti => ti.LoadingTask)
-                .HasForeignKey<LoadingTask>(x => new { x.TaskHeaderId, x.TaskItemsId })
+                .WithOne(t => t.LoadingTask) // si tu ajoutes la navigation
+                .HasForeignKey<LoadingTask>(x => new { x.TaskHeaderId, x.TaskItemId })
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // FK optionnelle vers WorkArea (si ta table a AreaForLoading)
-            builder.Property(x => x.AreaForLoading)
-                .HasColumnType("int")
-                .IsRequired(false);
-
-            builder.HasOne(x => x.LoadingArea)
+            // FK WorkArea
+            builder.HasOne(x => x.AreaForLoading)
                 .WithMany()
-                .HasForeignKey(x => x.AreaForLoading)
+                .HasForeignKey(x => x.AreaForLoadingId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // Audit (optionnel si tu configures globalement)
+            builder.Property(x => x.Created).HasColumnType("datetimeoffset(7)");
+            builder.Property(x => x.CreatedBy).HasColumnType("varchar(50)").HasMaxLength(50).IsUnicode(false);
+            builder.Property(x => x.LastModified).HasColumnType("datetimeoffset(7)");
+            builder.Property(x => x.LastModifiedBy).HasColumnType("varchar(50)").HasMaxLength(50).IsUnicode(false);
         }
     }
 }

@@ -1,7 +1,4 @@
-﻿using Domain.Entities.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Domain.Entities.DynamicForms;
 
 namespace Infrastructure.Data.Configurations
 {
@@ -9,49 +6,30 @@ namespace Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<TaskData> builder)
         {
-            builder.ToTable("TaskData");
+            builder.ToTable("TaskData", t =>
+            {
+                t.HasCheckConstraint("CK_JsonTaskData_ValidJson", "ISJSON([JsonData]) = 1");
+            });
 
-            builder.HasKey(x => x.TaskDataId);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.TaskDataId)
+            builder.Property(x => x.Id)
                 .HasColumnName("TaskDataID")
                 .ValueGeneratedOnAdd();
 
             builder.Property(x => x.JsonData)
-                .HasColumnType("varchar(max)")
+                .HasColumnName("JsonData")
+                .HasColumnType("varchar(max)")   // ou nvarchar(max) recommandé
                 .IsUnicode(false)
                 .IsRequired();
 
-            builder.Property(x => x.JsonSchemaTemplateId)
-                .HasColumnName("JsonSchemaTemplateID")
-                .HasColumnType("int")
-                .IsRequired();
+            builder.Property(x => x.ExternalLink)
+                .HasColumnName("ExternalLink")
+                .HasColumnType("varchar(50)")
+                .HasMaxLength(50)
+                .IsUnicode(false);
 
-            builder.Property(x => x.Created)             
-                .IsRequired();
-
-            builder.Property(x => x.CreatedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
-
-            builder.Property(x => x.LastModified)               
-                .IsRequired();
-
-            builder.Property(x => x.LastModifiedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
-
-            builder.HasOne(x => x.JsonSchemaTemplate)
-                .WithMany()
-                .HasForeignKey(x => x.JsonSchemaTemplateId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            // CHECK (isjson([JsonData]) = 1)
-            builder.ToTable(t => t.HasCheckConstraint("CK_JsonTaskData_ValidJson", "isjson([JsonData])=(1)"));
         }
+
     }
 }

@@ -13,28 +13,49 @@ namespace Infrastructure.Data.Configurations
 
             builder.HasKey(x => new
             {
-                x.TaskHeaderIdDependOn,
-                x.TaskItemsIdDependOn,
+                x.DependsOnTaskHeaderId,
+                x.DependsOnTaskItemId,
                 x.TaskHeaderId,
-                x.TaskItemsId
+                x.TaskItemId
             });
 
-            builder.Property(x => x.TaskHeaderIdDependOn).HasColumnName("TaskHeaderID_DependOn").HasColumnType("int");
-            builder.Property(x => x.TaskItemsIdDependOn).HasColumnName("TaskItemsID_DependOn").HasColumnType("int");
-            builder.Property(x => x.TaskHeaderId).HasColumnName("TaskHeaderID").HasColumnType("int");
-            builder.Property(x => x.TaskItemsId).HasColumnName("TaskItemsID").HasColumnType("int");
+            builder.Property(x => x.TaskHeaderId)
+                .HasColumnName("TaskHeaderID")
+                .HasColumnType("int")
+                .IsRequired();
 
-            // FK -> TaskItems (DependOn)
-            builder.HasOne(x => x.DependOnTaskItem)
-                .WithMany()
-                .HasForeignKey(x => new { x.TaskHeaderIdDependOn, x.TaskItemsIdDependOn })
-                .OnDelete(DeleteBehavior.NoAction);
+            builder.Property(x => x.TaskItemId)
+                .HasColumnName("TaskItemsID")
+                .HasColumnType("int")
+                .IsRequired();
 
-            // FK -> TaskItems (Target)
+            builder.Property(x => x.DependsOnTaskHeaderId)
+                .HasColumnName("TaskHeaderID_DependOn")
+                .HasColumnType("int")
+                .IsRequired();
+
+            builder.Property(x => x.DependsOnTaskItemId)
+                .HasColumnName("TaskItemsID_DependOn")
+                .HasColumnType("int")
+                .IsRequired();
+
+            // FK -> TaskItems (la tâche)
             builder.HasOne(x => x.TaskItem)
-                .WithMany()
-                .HasForeignKey(x => new { x.TaskHeaderId, x.TaskItemsId })
+                .WithMany(t => t.Dependencies) // à ajouter dans TaskItem
+                .HasForeignKey(x => new { x.TaskHeaderId, x.TaskItemId })
                 .OnDelete(DeleteBehavior.NoAction);
+
+            // FK -> TaskItems (le prérequis)
+            builder.HasOne(x => x.DependsOn)
+                .WithMany(t => t.DependentBy) // à ajouter dans TaskItem
+                .HasForeignKey(x => new { x.DependsOnTaskHeaderId, x.DependsOnTaskItemId })
+                .OnDelete(DeleteBehavior.NoAction);
+
+            // Audit (si tu veux mapper explicitement datetimeoffset(7)/varchar(50))
+            builder.Property(x => x.Created).HasColumnType("datetimeoffset(7)");
+            builder.Property(x => x.CreatedBy).HasColumnType("varchar(50)").HasMaxLength(50).IsUnicode(false);
+            builder.Property(x => x.LastModified).HasColumnType("datetimeoffset(7)");
+            builder.Property(x => x.LastModifiedBy).HasColumnType("varchar(50)").HasMaxLength(50).IsUnicode(false);
         }
     }
 }

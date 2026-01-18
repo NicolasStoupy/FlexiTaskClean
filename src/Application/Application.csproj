@@ -13,12 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Exceptions\" />
-    <Folder Include="Common\Security\" />
     <Folder Include="Features\WorkAreas\Commands\CreateWorkArea\" />
     <Folder Include="Features\WorkAreas\Commands\DeleteWorkArea\" />
     <Folder Include="Features\WorkAreas\Commands\UpdateWorkArea\" />
-    <Folder Include="Features\WorkAreas\Queries\GetAreas\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿using Domain.Entities.Tasks;
+﻿using Domain.Entities.DynamicForms;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,11 +9,17 @@ namespace Infrastructure.Data.Configurations
     {
         public void Configure(EntityTypeBuilder<JsonSchemaTemplate> builder)
         {
-            builder.ToTable("JsonSchemaTemplate");
+            builder.ToTable("JsonSchemaTemplate", t =>
+            {
+                t.HasCheckConstraint(
+                    "CK_JsonSchemaTemplate_ValidJson",
+                    "ISJSON([JsonSchema]) = 1"
+                );
+            });
 
-            builder.HasKey(x => x.JsonSchemaTemplateId);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.JsonSchemaTemplateId)
+            builder.Property(x => x.Id)
                 .HasColumnName("JsonSchemaTemplateID")
                 .ValueGeneratedOnAdd();
 
@@ -24,34 +30,15 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
 
             builder.Property(x => x.JsonSchema)
-                .HasColumnType("varchar(max)")
-                .IsUnicode(false)
+                .HasColumnType("nvarchar(max)")   // 👈 idéal
                 .IsRequired();
 
             builder.Property(x => x.Version)
-                .HasColumnType("int")
                 .IsRequired();
 
-            builder.Property(x => x.Created)         
-                .IsRequired();
-
-            builder.Property(x => x.CreatedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
-
-            builder.Property(x => x.LastModified)           
-                .IsRequired();
-
-            builder.Property(x => x.LastModifiedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
-
-            // CHECK (isjson([JsonSchema]) = 1)
-            builder.ToTable(t => t.HasCheckConstraint("CK_JsonSchemaTemplate_ValidJson", "isjson([JsonSchema])=(1)"));
+            // Optionnel mais conseillé
+            builder.HasIndex(x => new { x.Label, x.Version })
+                   .IsUnique();
         }
     }
 }

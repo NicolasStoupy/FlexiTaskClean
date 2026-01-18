@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.MasterData;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,41 +7,24 @@ namespace Infrastructure.Data.Configurations
 {
     public sealed class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
+
         public void Configure(EntityTypeBuilder<Product> builder)
         {
             builder.ToTable("Product");
 
-            builder.HasKey(x => x.ProductId);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.ProductId)
+            builder.Property(x => x.Id)
                 .HasColumnName("ProductID")
-                .HasColumnType("int")
-                .IsRequired()
-                .ValueGeneratedNever();
+                .ValueGeneratedNever(); // si la DB ne génère pas (à adapter)
 
             builder.Property(x => x.Description)
+                .HasColumnName("Description")
                 .HasColumnType("varchar(50)")
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .IsRequired();
-
-            builder.Property(x => x.Created)              
-                .IsRequired();
-
-            builder.Property(x => x.CreatedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
-
-            builder.Property(x => x.LastModified)             
-                .IsRequired();
-
-            builder.Property(x => x.LastModifiedBy)
-                .HasColumnType("nvarchar(100)")
-                .HasMaxLength(100)
-                .IsUnicode(true)
-                .IsRequired(false);
         }
+
     }
 }

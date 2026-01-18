@@ -1,8 +1,8 @@
-﻿using Domain.Entities;
+﻿using Domain.Entities.MasterData;
 
 namespace Application.Plants.Queries.GetPlants
 {
-    public class WorkAreaDto
+    public class PlantWorkAreaDto
     {
         public string Code { get; set; } = null!;
 
@@ -12,7 +12,7 @@ namespace Application.Plants.Queries.GetPlants
         {
             public Mapping()
             {
-                CreateMap<WorkArea, WorkAreaDto>();
+                CreateMap<WorkArea, PlantWorkAreaDto>();
             }
         }
     }

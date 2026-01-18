@@ -1,4 +1,4 @@
-﻿using Domain.Entities;
+﻿using Domain.Entities.MasterData;
 using Shouldly;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ namespace Application.FunctionalTests.Features.Plants.Commands.UpdatePlant
         {
             // Arrange
             await Testing.RunAsDefaultUserAsync();
-            var plantCreated = await Testing.AddWithReturnAsync<Domain.Entities.Plant>(new Domain.Entities.Plant("MO1", Domain.Enums.PlantLanguage.EN, "TestPlant2"));
+            var plantCreated = await Testing.AddWithReturnAsync<Plant>(new Plant("MO1", Domain.Enums.PlantLanguage.EN, "TestPlant2"));
             var updateCommand = new Application.Features.Plants.Commands.UpdatePlants.UpdatePlantCommand()
             {
                 PlantID = plantCreated.Id,

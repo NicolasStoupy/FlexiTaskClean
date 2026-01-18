@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Domain.Entities;
+using Domain.Entities.MasterData;
 
 
 namespace Application.Plants.Queries.GetPlants
@@ -8,14 +8,14 @@ namespace Application.Plants.Queries.GetPlants
     {
         public PlantDto()
         {
-            WorkAreas = Array.Empty<WorkAreaDto>();
+            WorkAreas = Array.Empty<PlantWorkAreaDto>();
         }
         public int Id { get; set; }
         public string Code { get; init; } = null!;
         public string CommonName { get; init; } =null!;
         public string Language { get; init; }= null!;   
 
-        public  IReadOnlyCollection<WorkAreaDto> WorkAreas { get; init; }
+        public  IReadOnlyCollection<PlantWorkAreaDto> WorkAreas { get; init; }
         private class Mapping : Profile
         {
             public Mapping()

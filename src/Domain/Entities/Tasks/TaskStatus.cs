@@ -3,11 +3,10 @@ using System.Collections.Generic;
 
 namespace Domain.Entities.Tasks;
 
-public class TaskStatus : BaseAuditableEntity
+public class TaskStatus : BaseAuditableEntity<int>
 {
-    public int TaskStatusId { get; set; }                   // IDENTITY
-    public string Code { get; set; } = null!;               // varchar(5) unique
-    public string Description { get; set; } = null!;        // varchar(50)
+    public string Code { get; set; } = null!;
+    public string Description { get; set; } = null!;
 
-    public IList<TaskItems> TaskItems { get; set; } = new List<TaskItems>();
+    public List<TaskItem> TaskItems { get; set; } = new(); // optionnel
 }

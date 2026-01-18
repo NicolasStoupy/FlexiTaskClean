@@ -1,4 +1,6 @@
-﻿namespace Application.Plants.Commands.CreatePlant;
+﻿using Domain.Entities.MasterData;
+
+namespace Application.Plants.Commands.CreatePlant;
 
 public record CreatePlantCommand(string code, string commonName, string language) : IRequest<int>;
 
@@ -23,7 +25,7 @@ public class CreatePlantCommandHandler : IRequestHandler<CreatePlantCommand, int
 
     public async Task<int> Handle(CreatePlantCommand request, CancellationToken cancellationToken)
     {
-        var entity = new Domain.Entities.Plant
+        var entity = new Plant
         {
             Code = request.code,
             CommonName = request.commonName,

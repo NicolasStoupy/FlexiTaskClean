@@ -1,8 +1,11 @@
 ﻿
+using Application.Common.Security;
 using Application.Features.Plants.Queries.GetPlants;
+
 
 namespace Application.Plants.Queries.GetPlants;
 
+[Authorize(Roles = Roles.Administrator)]
 public record GetPlantsQuery (int? plantID = 0) : IRequest<PlantsVm>
 {
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Entities.MasterData;
 
 namespace Application.WorkAreas.Commands.CreateWorkArea;
 
@@ -37,7 +38,7 @@ public class CreateWorkAreaCommandHandler : IRequestHandler<CreateWorkAreaComman
     {
         var plant = await _context.Plant.FindAsync(request.PlantID);
        var type = await _context.WorkAreaTypes.FindAsync(request.TypeID);
-        var entity = new Domain.Entities.WorkArea
+        var entity = new WorkArea
         {
             Code = request.Code,
             CommonName = request.CommonName,
@@ -47,7 +48,7 @@ public class CreateWorkAreaCommandHandler : IRequestHandler<CreateWorkAreaComman
         };
         _context.WorkAreas.Add(entity);
         await _context.SaveChangesAsync(cancellationToken);
-        return entity.WorkAreaId;
+        return entity.Id;
 
     }
 }

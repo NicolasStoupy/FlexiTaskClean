@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Entities
+namespace Domain.Entities.MasterData
 {
-    public class PlantIdentity:BaseAuditableEntity
+    public class PlantIdentity:BaseAuditableEntity<int>
     {
-        public int PlantId { get; set; }
+       
         public string Id_AspnetIdentity { get; set; } = null!;  // nvarchar(450)
 
         public Plant? Plant { get; set; }

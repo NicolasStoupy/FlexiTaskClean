@@ -1,5 +1,5 @@
 ﻿using Application.Plants.Commands.DeletePlant;
-using Domain.Entities;
+using Domain.Entities.MasterData;
 using Shouldly;
 
 namespace Application.FunctionalTests.Features.Plants.Commands.DeletePlant

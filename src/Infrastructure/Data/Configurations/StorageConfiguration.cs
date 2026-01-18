@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Infrastructure.Data.Configurations
 {
-    public sealed class StorageConfiguration : IEntityTypeConfiguration<Domain.Entities.Storage>
+    public sealed class StorageConfiguration : IEntityTypeConfiguration<Domain.Entities.Inventory.Storage>
     {
-        public void Configure(EntityTypeBuilder<Domain.Entities.Storage> builder)
+        public void Configure(EntityTypeBuilder<Domain.Entities.Inventory.Storage> builder)
         {
             builder.ToTable("Storage");
 
@@ -41,10 +41,7 @@ namespace Infrastructure.Data.Configurations
                 .HasColumnType("bit")
                 .IsRequired();
 
-            builder.HasOne(x => x.Location)
-                .WithMany()
-                .HasForeignKey(x => x.LocationId)
-                .OnDelete(DeleteBehavior.NoAction);
+      
         }
     }
 }

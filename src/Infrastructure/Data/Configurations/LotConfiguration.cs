@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Domain.Entities.Inventory;
 
 namespace Infrastructure.Data.Configurations
 {
@@ -38,21 +36,22 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
 
             builder.Property(x => x.PositionStorage)
-                .HasColumnType("int")
-                .IsRequired(false);
+                .HasColumnType("int");
 
             builder.Property(x => x.ProductId)
                 .HasColumnName("ProductID")
                 .HasColumnType("int")
                 .IsRequired();
 
+            // FK vers Storage (composite)
             builder.HasOne(x => x.Storage)
-                .WithMany()
+                .WithMany(s => s.Lots)
                 .HasForeignKey(x => new { x.LocationId, x.StorageId })
                 .OnDelete(DeleteBehavior.NoAction);
 
+            // FK vers Product (simple)
             builder.HasOne(x => x.Product)
-                .WithMany()
+                .WithMany(p => p.Lots)
                 .HasForeignKey(x => x.ProductId)
                 .OnDelete(DeleteBehavior.NoAction);
         }

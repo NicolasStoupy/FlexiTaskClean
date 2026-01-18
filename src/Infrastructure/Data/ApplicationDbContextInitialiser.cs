@@ -1,4 +1,6 @@
-﻿using Application.Common.Constants;
+﻿
+using Domain.Constants;
+using Domain.Entities.MasterData;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -102,7 +104,7 @@ namespace Infrastructure.Data
             // Seed, if necessary
             if (!_context.Plant.Any())
             {
-                _context.Plant.Add(new Domain.Entities.Plant()
+                _context.Plant.Add(new Plant()
                 {
                     Code = "MOU1",
                     CommonName = "Moustier",

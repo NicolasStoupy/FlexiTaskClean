@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.MasterData;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,9 +11,10 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("WorkArea");
 
-            builder.HasKey(x => x.WorkAreaId);
+            builder.Property(x => x.Id)
+              .HasColumnName("WorkAreaID");
 
-            builder.Property(x => x.WorkAreaId)
+            builder.Property(x => x.Id)
                 .HasColumnName("WorkAreaID")
                 .ValueGeneratedOnAdd();
 
@@ -25,26 +27,6 @@ namespace Infrastructure.Data.Configurations
             builder.Property(x => x.CommonName)
             .HasMaxLength(50)
             .IsRequired();
-
-            //builder.Property(x => x.PlantId)
-            //.HasColumnName("PlantID")
-            //.IsRequired();
-
-            //builder.Property(x => x.WorkAreaTypeId)
-            //    .HasColumnName("WorkAreaTypeID")
-            //    .IsRequired();
-
-            builder.Property(x => x.Created)
-                .IsRequired();
-
-            builder.Property(x => x.CreatedBy)
-                .HasMaxLength(100);
-
-            builder.Property(x => x.LastModified)
-                   .IsRequired();
-
-            builder.Property(x => x.LastModifiedBy)
-                   .HasMaxLength(100);
         }
     }
 }

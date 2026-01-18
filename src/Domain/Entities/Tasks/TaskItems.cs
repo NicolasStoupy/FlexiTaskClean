@@ -1,32 +1,29 @@
-﻿namespace Domain.Entities.Tasks;
+﻿using Domain.Entities.DynamicForms;
+using Domain.Entities.MasterData;
+using Domain.Entities.Tasks.TaskSpecializations;
 
-public  class TaskItems
+namespace Domain.Entities.Tasks;
+
+public class TaskItem : BaseAuditableEntity
 {
-    // PK composite : (TaskHeaderID, TaskItemsID)
+    // PK composite
     public int TaskHeaderId { get; set; }
-    public int TaskItemsId { get; set; }                    // identity(1,1) mais PK composite
-    public TaskItems? TaskItem { get; set; }
+    public int TaskItemId { get; set; }   // mappe TaskItemsID (IDENTITY)
+
     public bool StartingTask { get; set; }
     public bool EndingTask { get; set; }
 
-    public int TaskDataId { get; set; }
-    public string TaskItemTypeId { get; set; } = null!;
-    public int TaskStatusId { get; set; }
-
-    public int? LinkedWorkArea { get; set; }                // FK nullable -> WorkArea.WorkAreaID
+    public int? LinkedWorkAreaId { get; set; }
 
     // Navigations
-    public TaskHeader? TaskHeader { get; set; }
-    public TaskData? TaskData { get; set; }
-    public TaskItemType? TaskItemType { get; set; }
-    public TaskStatus? TaskStatus { get; set; }
-    public WorkArea? WorkArea { get; set; }
+    public TaskHeader TaskHeader { get; set; } = null!;
+    public TaskData TaskData { get; set; } = null!;
+    public TaskItemType TaskItemType { get; set; } = null!;
+    public TaskStatus TaskStatus { get; set; } = null!;
+    public WorkArea? LinkedWorkArea { get; set; }
+    public List<TaskItemDependency> Dependencies { get; set; } = new(); // "je dépends de"
+    public List<TaskItemDependency> DependentBy { get; set; } = new();  // "dépend de moi"
 
-    // One-to-one
+    public TransportTask? TransportTask { get; set; } = null!;
     public LoadingTask? LoadingTask { get; set; }
-    public TransportTask? TransportTask { get; set; }
-
-    // Dependencies
-    public List<TaskItemDependency> Dependencies { get; set; } = new();      // this -> depends on others
-    public List<TaskItemDependency> DependedBy { get; set; } = new();        // others -> depend on this
 }

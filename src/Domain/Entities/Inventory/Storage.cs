@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Domain.Entities
+namespace Domain.Entities.Inventory
 {
-    public class Storage
+    public class Storage : BaseAuditableEntity<string>
     {
-        public string LocationId { get; set; } = null!;         // varchar(10)
-        public string StorageId { get; set; } = null!;          // varchar(10)
+        public string LocationId { get; set; } = null!;
+        public string StorageId { get; set; } = null!;
 
         public string Description { get; set; } = null!;
         public double LengthInMillimeters { get; set; }
         public bool Empty { get; set; }
 
-        public Location? Location { get; set; }
+        public Location Location { get; set; } = null!;
         public List<Lot> Lots { get; set; } = new();
     }
 }

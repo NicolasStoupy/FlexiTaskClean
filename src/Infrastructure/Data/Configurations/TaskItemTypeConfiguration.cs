@@ -11,9 +11,9 @@ namespace Infrastructure.Data.Configurations
         {
             builder.ToTable("TaskItemType");
 
-            builder.HasKey(x => x.TaskItemTypeId);
+            builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.TaskItemTypeId)
+            builder.Property(x => x.Id)
                 .HasColumnName("TaskItemType_ID")
                 .HasColumnType("varchar(4)")
                 .HasMaxLength(4)
@@ -21,6 +21,7 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
 
             builder.Property(x => x.InstructionDescription)
+                .HasColumnName("InstructionDescription")
                 .HasColumnType("varchar(20)")
                 .HasMaxLength(20)
                 .IsUnicode(false)
@@ -29,7 +30,7 @@ namespace Infrastructure.Data.Configurations
             builder.Property(x => x.JsonSchemaTemplateId)
                 .HasColumnName("JsonSchemaTemplateID")
                 .HasColumnType("int")
-                .IsRequired();
+                .IsRequired();          
 
             builder.HasOne(x => x.JsonSchemaTemplate)
                 .WithMany()

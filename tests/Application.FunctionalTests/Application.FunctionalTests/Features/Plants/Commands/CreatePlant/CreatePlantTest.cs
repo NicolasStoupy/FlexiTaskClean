@@ -1,4 +1,5 @@
 ﻿using Application.Plants.Commands.CreatePlant;
+using Domain.Entities.MasterData;
 using FluentValidation;
 using Shouldly;
 
@@ -13,7 +14,7 @@ namespace Application.FunctionalTests.Features.Plants.Commands.CreatePlant
             await Testing.RunAsDefaultUserAsync();
             var command = new CreatePlantCommand("PLT1", "Plant One", "EN");
             var plantId = await Testing.SendAsync(command);
-            var plant = await Testing.FindAsync<Domain.Entities.Plant>(plantId);
+            var plant = await Testing.FindAsync<Plant>(plantId);
             plant.ShouldNotBeNull();
         }
         [Test]

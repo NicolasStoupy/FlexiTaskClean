@@ -1,6 +1,6 @@
 ﻿//Application
 global using Application.Common.Interfaces;
-
+global using Domain.Constants;
 // Domain
 global using Domain.Enums;
 

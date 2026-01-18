@@ -1,6 +1,7 @@
-﻿using Application.Common.Constants;
+﻿
 using Application.FunctionalTests.Databases;
 using Application.FunctionalTests.Interfaces;
+using Domain.Constants;
 using Infrastructure.Data;
 using Infrastructure.Identity;
 using MediatR;

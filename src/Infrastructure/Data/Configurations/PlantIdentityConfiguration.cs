@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.MasterData;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,9 +11,9 @@ namespace Infrastructure.Data.Configurations
     {
         builder.ToTable("PlantIDentity"); // oui, le nom est exactement celui du SQL
 
-        builder.HasKey(x => new { x.PlantId, x.Id_AspnetIdentity });
+        builder.HasKey(x => new { x.Id, x.Id_AspnetIdentity });
 
-        builder.Property(x => x.PlantId)
+        builder.Property(x => x.Id)
             .HasColumnName("PlantID")
             .HasColumnType("int")
             .IsRequired();
@@ -25,7 +26,7 @@ namespace Infrastructure.Data.Configurations
 
         builder.HasOne(x => x.Plant)
             .WithMany()
-            .HasForeignKey(x => x.PlantId)
+            .HasForeignKey(x => x.Id)
             .OnDelete(DeleteBehavior.NoAction);
 
       
