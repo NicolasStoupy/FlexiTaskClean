@@ -7,10 +7,10 @@ namespace WebApp.Controllers
     public class CultureController : Controller
     {
         [HttpGet("SetCulture")]
-        public IActionResult Set(string culture, string redirect = "/")
+        public IActionResult Set(string culture, string redirectUri = "/")
         {
             if (string.IsNullOrWhiteSpace(culture))
-                return Redirect(redirect);
+                return Redirect(redirectUri);
 
             Response.Cookies.Append(
                 CookieRequestCultureProvider.DefaultCookieName,
@@ -22,7 +22,7 @@ namespace WebApp.Controllers
                     IsEssential = true
                 });
 
-            return LocalRedirect(redirect);
+            return LocalRedirect(redirectUri);
         }
     }
 }

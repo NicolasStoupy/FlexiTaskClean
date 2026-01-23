@@ -1,24 +1,41 @@
-﻿@inherits LayoutComponentBase
+﻿@using WebApp.Services
+@using WebApp.Themes
+@inherits LayoutComponentBase
+@inject ThemeService ThemeService
+<MudBlazorProvider />
 
-<div class="page">
-    <div class="sidebar">
+<MudLayout>
+    <AntiforgeryToken />
+    <MudAppBar Elevation="1" Fixed="true">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                       Color="Color.Inherit"
+                       Edge="Edge.Start"
+                       OnClick="@ToggleDrawer" />
+
+        <MudText Typo="Typo.h6" Class="ml-3">FlexiTask</MudText>
+
+        <MudSpacer />
+
+        <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                       Color="Color.Inherit"
+                       Edge="Edge.End" />
+    </MudAppBar>
+
+    <MudDrawer Open="@IsDrawerOpen"
+               Variant="DrawerVariant.Responsive"
+               ClipMode="DrawerClipMode.Always"
+               Elevation="2">
         <NavMenu />
-    </div>
-   
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-        <LocalizationSelector></LocalizationSelector>
-        <MudBlazorProvider></MudBlazorProvider>
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    </MudDrawer>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+    <MudMainContent Class="pt-16 pa-4">
+        @Body
+    </MudMainContent>
+
+</MudLayout>
+
+@code {
+    private bool IsDrawerOpen { get; set; } = true;
+
+    private void ToggleDrawer() => IsDrawerOpen = !IsDrawerOpen;
+}

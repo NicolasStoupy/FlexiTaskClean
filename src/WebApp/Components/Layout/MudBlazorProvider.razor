@@ -1,7 +1,11 @@
-﻿@rendermode InteractiveServer
+﻿@using WebApp.Services
+@using WebApp.Themes
+@inject ThemeService ThemeService
+
+@rendermode InteractiveServer
 
 @* Required *@
-<MudThemeProvider />
+<MudThemeProvider Theme="_themeDefinition" IsDarkMode="ThemeService.IsDarkMode" />
 <MudPopoverProvider />
 
 @* Needed for dialogs *@
@@ -9,3 +13,11 @@
 
 @* Needed for snackbars *@
 <MudSnackbarProvider />
+
+@code{
+   
+    private MudTheme _themeDefinition = CustomMudTheme.AgcTheme;
+    protected override void OnInitialized() => ThemeService.OnChange += StateHasChanged;
+    public void Dispose() => ThemeService.OnChange -= StateHasChanged;
+
+}

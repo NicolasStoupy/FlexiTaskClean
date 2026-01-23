@@ -1,8 +1,10 @@
 using Application;
 using Infrastructure;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using WebApp;
@@ -32,7 +34,11 @@ builder.Services.AddControllers();
 builder.Services.AddCascadingAuthenticationState(); // Ajout de l’état d’authentification en cascade
 builder.Services.AddScoped<IdentityRedirectManager>();// Ajout du gestionnaire de redirection d’identité
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();// Fournit l’état d’authentification
-
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.AccessDeniedPath = "/forbidden";
+});
 builder.Services.AddMudServices();
 builder.Services.AddMudBlazorDialog();
 builder.Services.AddMudBlazorSnackbar();
@@ -48,12 +54,12 @@ app.MapControllers();
 // Configuration des localizations
 var locProvider = app.Services.GetRequiredService<LocalizationOptionsProvider>();
 app.UseRequestLocalization(locProvider.GetLocalizationOptions());
-app.UseAntiforgery();
+
 
 // IMPORTANT pour Identity
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

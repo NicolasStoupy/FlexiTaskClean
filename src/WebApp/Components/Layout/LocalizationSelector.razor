@@ -1,41 +1,33 @@
 ﻿@using Microsoft.AspNetCore.Localization
+@using System.Globalization
 @inject NavigationManager Nav
 @inject IConfiguration Configuration
 @rendermode InteractiveServer
 
 @if (cultures != null)
 {
-    <form class="d-inline">
-        <select class="form-control mr-2"
-                @bind="selectedCulture"
-                @bind:after="RequestCultureChange">
-            @foreach (var culture in cultures)
-            {
-                <option value="@culture.Key">@culture.Value</option>
-            }
-        </select>
-    </form>
+    <MudSelect T="string"
+               Value="selectedCulture"
+               ValueChanged="OnCultureChanged"
+               Label="Language"
+               Variant="Variant.Outlined"
+               Dense="true"
+               Margin="Margin.Dense"
+               Class="mud-width-full max-w-200"
+               AnchorOrigin="Origin.BottomCenter">
+
+        @foreach (var culture in cultures)
+        {
+            <MudSelectItem Value="@culture.Key">
+                <div class="d-flex align-center">
+                    <MudImage Src="@GetFlagUrl(culture.Key)"
+                              Alt="@culture.Value"
+                              Class="mr-2"
+                              Style="width:20px; height:15px; object-fit:cover; border-radius:2px;" />
+                    <MudText>@culture.Value</MudText>
+                </div>
+            </MudSelectItem>
+        }
+    </MudSelect>
 }
 
-@code {
-    private string selectedCulture = System.Threading.Thread.CurrentThread.CurrentCulture.Name;
-    private Dictionary<string, string?> cultures = new();
-
-    protected override void OnInitialized()
-    {
-        cultures = Configuration.GetSection("Cultures")
-            .GetChildren()
-            .ToDictionary(x => x.Key, x => x.Value);
-    }
-
-    private void RequestCultureChange()
-    {
-        var uri = new Uri(Nav.Uri)
-            .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
-
-        var query = $"?culture={Uri.EscapeDataString(selectedCulture)}&" +
-                    $"redirectUri={Uri.EscapeDataString(uri)}";
-
-        Nav.NavigateTo("/culture/SetCulture" + query, forceLoad: true);
-    }
-}

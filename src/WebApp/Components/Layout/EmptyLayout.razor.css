@@ -1,0 +1,28 @@
+﻿/* Shared/EmptyLayout.razor.css */
+
+/* Optionnel: assure une hauteur complète */
+:global(html), :global(body) {
+    height: 100%;
+}
+
+:global(body) {
+    margin: 0;
+}
+
+.auth-page {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    line-height: 1.6;
+    /* AGC background (light) */
+    background-color: "#F5F7FB";
+    
+}
+
+/* Conteneur centré */
+.auth-wrap {
+    width: 100%;
+    max-width: 420px;
+}

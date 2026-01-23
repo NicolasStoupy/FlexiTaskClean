@@ -65,7 +65,7 @@ namespace Application.FunctionalTests.Features.Plants.Queries.GetPlants
         [Test]
         public async Task ShouldReturnSpecificPlant()
         {
-            await Testing.RunAsDefaultUserAsync();
+            await Testing.RunAsAdministratorAsync();
 
             // Arrange: ajouter deux plants en base
             await Testing.AddAsync(new Plant("MOU2", Domain.Enums.PlantLanguage.IT, "MOUSTIER"));

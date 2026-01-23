@@ -9,3 +9,6 @@
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
 </Router>
+@code {
+    [CascadingParameter] private HttpContext? HttpContext { get; set; }
+}

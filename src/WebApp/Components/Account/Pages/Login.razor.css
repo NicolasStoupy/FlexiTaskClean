@@ -1,0 +1,253 @@
+﻿/* Pages/Account/Login.razor.css */
+/* Mini Bootstrap - Login only */
+
+/* --- Reset / base --- */
+:global(*) {
+    box-sizing: border-box;
+}
+
+:global(body) {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color: #212529;
+}
+
+:global(h1), :global(h2), :global(h3) {
+    margin: 0 0 .5rem 0;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+:global(p) {
+    margin: 0 0 1rem 0;
+}
+
+:global(a) {
+    color: #0d6efd;
+    text-decoration: underline;
+}
+
+:global(a:hover) {
+    color: #0a58ca;
+}
+
+:global(hr) {
+    margin: 1rem 0;
+    border: 0;
+    border-top: 1px solid #dee2e6;
+}
+
+/* --- Spacing / utilities --- */
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mt-2 {
+    margin-top: .5rem !important;
+}
+
+.mx-auto {
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+.w-100 {
+    width: 100% !important;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.flex-column {
+    flex-direction: column !important;
+}
+
+.text-danger {
+    color: #dc3545 !important;
+}
+
+.text-secondary {
+    color: #6c757d !important;
+}
+
+/* --- Grid (row/cols) --- */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -12px;
+    margin-right: -12px;
+}
+
+    .row > * {
+        padding-left: 12px;
+        padding-right: 12px;
+        width: 100%;
+    }
+
+/* default = stack */
+.col-lg-6, .col-lg-4, .col-lg-offset-2 {
+    width: 100%;
+}
+
+@media (min-width: 992px) {
+    .col-lg-6 {
+        flex: 0 0 auto;
+        width: 50%;
+    }
+
+    .col-lg-4 {
+        flex: 0 0 auto;
+        width: 33.333333%;
+    }
+
+    .col-lg-offset-2 {
+        margin-left: 16.666667%;
+    }
+}
+
+/* --- Form controls --- */
+.form-label {
+    display: inline-block;
+    margin-bottom: .5rem;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: .75rem .75rem;
+    font-size: 1rem;
+    line-height: 1.25;
+    color: #212529;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .375rem;
+    appearance: none;
+    outline: none;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+    .form-control:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 .25rem rgba(13,110,253,.25);
+    }
+
+/* checkbox */
+.form-check-input {
+    width: 1em;
+    height: 1em;
+    margin-top: .2em;
+    vertical-align: top;
+    accent-color: #0d6efd;
+}
+
+.darker-border-checkbox {
+    border: 1px solid #adb5bd;
+}
+
+/* --- Floating labels (Bootstrap-like) --- */
+.form-floating {
+    position: relative;
+}
+
+    .form-floating > .form-control {
+        height: calc(3.5rem + 2px);
+        line-height: 1.25;
+        padding: 1.25rem .75rem .5rem .75rem;
+    }
+
+    .form-floating > label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        padding: 1rem .75rem;
+        pointer-events: none;
+        transform-origin: 0 0;
+        transition: opacity .1s ease-in-out, transform .1s ease-in-out;
+        color: #6c757d;
+    }
+
+    /* When input has content OR focused -> float label */
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        opacity: .65;
+        transform: scale(.85) translateY(-.55rem) translateX(.15rem);
+    }
+
+    /* IMPORTANT: placeholder-shown only works if placeholder is not empty */
+    .form-floating > .form-control::placeholder {
+        color: transparent;
+    }
+
+/* --- Buttons --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: #212529;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .6rem 1rem;
+    font-size: 1rem;
+    border-radius: .5rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out, transform .05s ease-in-out;
+}
+
+    .btn:active {
+        transform: translateY(1px);
+    }
+
+.btn-lg {
+    padding: .9rem 1.25rem;
+    font-size: 1.05rem;
+    border-radius: .6rem;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+    .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+    }
+
+    .btn-primary:focus {
+        box-shadow: 0 0 0 .25rem rgba(13,110,253,.35);
+    }
+
+.btn-link {
+    font-weight: 600;
+    color: #0d6efd;
+    text-decoration: underline;
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
+    .btn-link:hover {
+        color: #0a58ca;
+    }
+
+/* --- Page polish (optional but nice) --- */
+:global(main), :global(section) {
+    display: block;
+}
+
+:global(.login-container) {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px;
+}
