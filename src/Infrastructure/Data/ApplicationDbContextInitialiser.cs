@@ -87,6 +87,11 @@ namespace Infrastructure.Data
             {
                 await _roleManager.CreateAsync(administratorRole);
             }
+            var userRole = new IdentityRole(Roles.Users);
+            if(_roleManager.Roles.All(r=>r.Name != userRole.Name))
+            {
+                await _roleManager.CreateAsync(userRole);
+            }
 
             // Default users
             var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
@@ -99,7 +104,17 @@ namespace Infrastructure.Data
                     await _userManager.AddToRolesAsync(administrator, new[] { administratorRole.Name });
                 }
             }
+            //user 
+            var user = new ApplicationUser { UserName = "nicolas@localhost", Email = "user@localhost" };
 
+            if (_userManager.Users.All(u => u.UserName != user.UserName))
+            {
+                var result =await _userManager.CreateAsync(user, "Admin1!");
+                if (!string.IsNullOrWhiteSpace(userRole.Name))
+                {
+                    await _userManager.AddToRolesAsync(user, new[] { userRole.Name });
+                }
+            }
             // Default data
             // Seed, if necessary
             if (!_context.Plant.Any())

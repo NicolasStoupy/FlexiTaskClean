@@ -12,11 +12,11 @@
 <MudDialogProvider />
 
 @* Needed for snackbars *@
-<MudSnackbarProvider />
+<MudSnackbarProvider  />
 
 @code{
    
-    private MudTheme _themeDefinition = CustomMudTheme.AgcTheme;
+    private MudTheme _themeDefinition = CustomMudTheme.AgcThemeOfficial;
     protected override void OnInitialized() => ThemeService.OnChange += StateHasChanged;
     public void Dispose() => ThemeService.OnChange -= StateHasChanged;
 

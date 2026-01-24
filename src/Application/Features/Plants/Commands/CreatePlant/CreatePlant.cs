@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.MasterData;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Plants.Commands.CreatePlant;
 
@@ -6,11 +7,20 @@ public record CreatePlantCommand(string code, string commonName, string language
 
 public class CreatePlantCommandValidator : AbstractValidator<CreatePlantCommand>
 {
-    public CreatePlantCommandValidator()
+    private readonly IApplicationDbContext _context;
+    public CreatePlantCommandValidator(IApplicationDbContext context)
     {
-        RuleFor(x => x.code).NotEmpty().MaximumLength(50);
+        _context = context;
+        RuleFor(x => x.code).NotEmpty().MustAsync(BeUniqueCode).WithMessage("Code already exist").MaximumLength(50);
         RuleFor(x => x.commonName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.language).NotEmpty().MaximumLength(10);
+       
+    }
+    private async Task<bool> BeUniqueCode(string code, CancellationToken ct)
+    {
+        return !await _context.Plant
+            .AsNoTracking()
+            .AnyAsync(w => w.Code == code, ct);
     }
 }
 

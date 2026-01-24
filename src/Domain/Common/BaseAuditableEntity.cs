@@ -28,7 +28,7 @@
 
     //}
 
-    public abstract class BaseAuditableEntity<TId> : BaseEntity<TId>
+    public abstract class BaseAuditableEntity<TId> : BaseEntity<TId>, IAuditableEntity
     {
         public DateTimeOffset Created { get; set; }
         public string? CreatedBy { get; set; }
@@ -38,7 +38,7 @@
     }
 
 
-    public abstract class BaseAuditableEntity : BaseEntity
+    public abstract class BaseAuditableEntity : BaseEntity, IAuditableEntity
     {
         public DateTimeOffset Created { get; set; }
         public string? CreatedBy { get; set; }

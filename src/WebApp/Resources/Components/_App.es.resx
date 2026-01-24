@@ -123,4 +123,142 @@
   <data name="Nav_Counter" xml:space="preserve">
     <value>Encimera</value>
   </data>
+  <data name="WRK_AREA_NEW_TITLE" xml:space="preserve">
+    <value>Crear área de trabajo</value>
+  </data>
+  <data name="WRK_AREA_NEW_SUBTITLE" xml:space="preserve">
+    <value>Crear una nueva área de trabajo</value>
+  </data>
+  <data name="APP_LOADING_TEXT" xml:space="preserve">
+    <value>Cargando...</value>
+  </data>
+  <data name="APP_BTN_CANCEL" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="APP_BTN_CREATE" xml:space="preserve">
+    <value>Crear</value>
+  </data>
+  <data name="APP_SELECT_TITLE" xml:space="preserve">
+    <value>Seleccionar</value>
+  </data>
+  <data name="FORBIDDEN_TITLE" xml:space="preserve">
+    <value>Acceso denegado</value>
+  </data>
+  <data name="FORBIDDEN_SUBTITLE" xml:space="preserve">
+    <value>No tienes permiso para acceder a esta página.</value>
+  </data>
+  <data name="FORBIDDEN_BTN_HOME" xml:space="preserve">
+    <value>Hogar</value>
+  </data>
+  <data name="FORBIDDEN_BTN_BACK" xml:space="preserve">
+    <value>Atrás</value>
+  </data>
+  <data name="WRK_AREA_TITLE" xml:space="preserve">
+    <value>Áreas de trabajo</value>
+  </data>
+  <data name="WRK_AREA_SUBTITLE" xml:space="preserve">
+    <value>Lista de áreas de trabajo configuradas</value>
+  </data>
+  <data name="WRK_AREA_BTN_REFRESH" xml:space="preserve">
+    <value>Refrescar</value>
+  </data>
+  <data name="WRK_AREA_LOADING" xml:space="preserve">
+    <value>Cargando</value>
+  </data>
+  <data name="WRK_AREA_EMPTY" xml:space="preserve">
+    <value>No se encontraron áreas de trabajo.</value>
+  </data>
+  <data name="WRK_AREA_BTN_DETAILS" xml:space="preserve">
+    <value>Detalles</value>
+  </data>
+  <data name="WRK_AREA_BTN_EDIT" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="WRK_AREA_EDIT_TITLE" xml:space="preserve">
+    <value>Editar área de trabajo</value>
+  </data>
+  <data name="WRK_AREA_EDIT_CODE_LABEL" xml:space="preserve">
+    <value>Código</value>
+  </data>
+  <data name="WRK_AREA_EDIT_COMMONNAME_LABEL" xml:space="preserve">
+    <value>nombre común</value>
+  </data>
+  <data name="WRK_AREA_EDIT_PLANT_LABEL" xml:space="preserve">
+    <value>Planta</value>
+  </data>
+  <data name="WRK_AREA_EDIT_TYPE_LABEL" xml:space="preserve">
+    <value>Tipo de área de trabajo</value>
+  </data>
+  <data name="WRK_AREA_EDIT_TYPE_PLACEHOLDER" xml:space="preserve">
+    <value>-- Seleccione un tipo --</value>
+  </data>
+  <data name="WRK_AREA_EDIT_ACTIVE_LABEL" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="WRK_AREA_EDIT_BTN_CANCEL" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="WRK_AREA_EDIT_BTN_SAVE" xml:space="preserve">
+    <value>Ahorrar</value>
+  </data>
+  <data name="WRK_AREA_BTN_NEW" xml:space="preserve">
+    <value>Nueva área de trabajo</value>
+  </data>
+  <data name="PLANT_SUBTITLE" xml:space="preserve">
+    <value>Lista de plantas configuradas</value>
+  </data>
+  <data name="PLANT_BTN_REFRESH" xml:space="preserve">
+    <value>Refrescar</value>
+  </data>
+  <data name="PLANT_LOADING" xml:space="preserve">
+    <value>Cargando...</value>
+  </data>
+  <data name="PLANT_EMPTY" xml:space="preserve">
+    <value>No se encontraron plantas.</value>
+  </data>
+  <data name="PLANT_LANGUAGE" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="PLANT_WORKAREAS_COUNT" xml:space="preserve">
+    <value>Áreas de trabajo</value>
+  </data>
+  <data name="PLANT_BTN_DETAILS" xml:space="preserve">
+    <value>Detalles</value>
+  </data>
+  <data name="PLANT_BTN_EDIT" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="WRK_AREA_EDIT_PLANT_PLACEHOLDER" xml:space="preserve">
+    <value>-- Seleccione una fábrica --</value>
+  </data>
+  <data name="PLANT_TITLE" xml:space="preserve">
+    <value>Fábricas</value>
+  </data>
+  <data name="PLANT_BTN_NEW" xml:space="preserve">
+    <value>Nueva Fábrica</value>
+  </data>
+  <data name="PLANT_CREATE_TITLE" xml:space="preserve">
+    <value>Crear fábrica</value>
+  </data>
+  <data name="PLANT_CREATE_SUBTITLE" xml:space="preserve">
+    <value>Crear una nueva configuración de fábrica</value>
+  </data>
+  <data name="PLANT_CREATE_CODE_LABEL" xml:space="preserve">
+    <value>Código</value>
+  </data>
+  <data name="PLANT_CREATE_COMMONNAME_LABEL" xml:space="preserve">
+    <value>nombre común</value>
+  </data>
+  <data name="PLANT_CREATE_LANGUAGE_LABEL" xml:space="preserve">
+    <value>Idioma</value>
+  </data>
+  <data name="PLANT_CREATE_LANGUAGE_PLACEHOLDER" xml:space="preserve">
+    <value>-- Seleccione un idioma --</value>
+  </data>
+  <data name="PLANT_CREATE_BTN_CANCEL" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="PLANT_CREATE_BTN_CREATE" xml:space="preserve">
+    <value>Crear</value>
+  </data>
 </root>

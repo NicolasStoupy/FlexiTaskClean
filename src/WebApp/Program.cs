@@ -39,10 +39,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/forbidden";
 });
-builder.Services.AddMudServices();
-builder.Services.AddMudBlazorDialog();
-builder.Services.AddMudBlazorSnackbar();
-builder.Services.AddMudBlazorResizeListener();
+
 var app = builder.Build();
 
 app.UseHttpsRedirection();

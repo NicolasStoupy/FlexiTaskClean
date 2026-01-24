@@ -1,0 +1,127 @@
+﻿@page "/plants/new"
+
+@using MudBlazor
+@using Blazored.FluentValidation
+@using Microsoft.Extensions.Localization
+@using Domain.Constants
+@using Domain.Enums
+@using Application.Plants.Commands.CreatePlant
+
+@attribute [Authorize(Roles = $"{Roles.Administrator}")]
+
+
+<MudPaper Class="pa-4" Elevation="1" Rounded="true">
+
+    <MudStack Spacing="2" Class="mb-4">
+        <MudText Typo="Typo.h5">@_localizer["PLANT_CREATE_TITLE"]</MudText>
+        <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+            @_localizer["PLANT_CREATE_SUBTITLE"]
+        </MudText>
+    </MudStack>
+
+    <EditForm Model="_model" OnValidSubmit="SaveAsync">
+        <FluentValidationValidator />
+
+        <MudGrid Spacing="3">
+
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_model.Code"
+                              Label="@_localizer["PLANT_CREATE_CODE_LABEL"]"
+                              For="@(() => _model.Code)"
+                              Immediate="true"
+                              MaxLength="4" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_model.CommonName"
+                              Label="@_localizer["PLANT_CREATE_COMMONNAME_LABEL"]"
+                              For="@(() => _model.CommonName)"
+                              Immediate="true"
+                              MaxLength="50" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudSelect T="string"
+                           @bind-Value="_model.Language"
+                           Label="@_localizer["PLANT_CREATE_LANGUAGE_LABEL"]"
+                           For="@(() => _model.Language)"
+                           Immediate="true"
+                           Dense="true">
+
+                    <MudSelectItem T="string" Value="_model.Language" Disabled="true">
+                        @_localizer["PLANT_CREATE_LANGUAGE_PLACEHOLDER"]
+                    </MudSelectItem>
+
+                    @foreach (var lang in _languages)
+                    {
+                        <MudSelectItem Value="@lang">@lang</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudDivider Class="my-2" />
+                <MudStack Row Justify="Justify.FlexEnd" Spacing="2">
+
+                    <MudButton Variant="Variant.Text"
+                               Disabled="_saving"
+                               OnClick="@(() => Nav.NavigateTo("/plants"))">
+                        @_localizer["PLANT_CREATE_BTN_CANCEL"]
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               ButtonType="ButtonType.Submit"
+                               Disabled="_saving"
+                               StartIcon="@Icons.Material.Filled.Save">
+                        @_localizer["PLANT_CREATE_BTN_CREATE"]
+                    </MudButton>
+
+                </MudStack>
+            </MudItem>
+
+        </MudGrid>
+    </EditForm>
+
+</MudPaper>
+
+@code {
+    private bool _saving;
+
+    // modèle mutable pour binding UI
+    private PlantCreateModel _model = new()
+    {
+        Language = PlantLanguage.FR.ToString()
+    };
+
+    private readonly List<string> _languages = Enum.GetNames(typeof(PlantLanguage)).ToList();
+
+    private async Task SaveAsync()
+    {
+        _saving = true;
+
+        // on construit la command immutable ici
+        var cmd = new CreatePlantCommand(
+            code: _model.Code.Trim(),
+            commonName: _model.CommonName.Trim(),
+            language: _model.Language
+        );
+
+        var result = await _Uimediator.Send(cmd);
+        if (result.Handled)
+        {
+            Nav.NavigateTo("/plants");
+            
+
+
+        }
+        _saving = false;
+    }
+
+    private sealed class PlantCreateModel
+    {
+        public string Code { get; set; } = "";
+        public string CommonName { get; set; } = "";
+        public string Language { get; set; } = "";
+    }
+}

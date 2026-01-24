@@ -1,0 +1,20 @@
+﻿/* On cible la classe MudBlazor ET votre classe personnalisée */
+.mud-card.wa-card {
+    background-color: #000000 !important;
+    position: relative;
+    overflow: hidden;
+}
+
+    /* On utilise un pseudo-élément ::after pour dessiner les hachures par-dessus le fond */
+    /* Cela évite les conflits avec le background-color de base */
+    .mud-card.wa-card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none; /* Pour pouvoir cliquer sur les boutons à travers */
+        background-image: linear-gradient( 45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent ) !important;
+        background-size: 20px 20px !important;
+    }

@@ -1,0 +1,155 @@
+﻿@page "/workareas/new"
+
+@using Application.Features.WorkAreas.Queries
+@using Application.WorkAreas.Commands.CreateWorkArea
+@using Application.WorkAreas.Queries.GetWorkAreaCreate
+@using Blazored.FluentValidation
+
+@using MudBlazor
+@attribute [Authorize(Roles = $"{Roles.Administrator}")]
+<MudPaper Class="pa-4" Elevation="1" Rounded="true">
+
+    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5"> @_localizer["WRK_AREA_NEW_TITLE"]  </MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@_localizer["WRK_AREA_NEW_SUBTITLE"]</MudText>
+        </div>
+
+        <MudButton Variant="Variant.Text"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   OnClick="@(() => Nav.NavigateTo("/workareas"))">
+            Back
+        </MudButton>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudStack AlignItems="AlignItems.Center" Class="py-10">
+            <MudProgressCircular Indeterminate Size="Size.Large" />
+            <MudText Class="mt-3" Typo="Typo.body2" Color="Color.Secondary">@_localizer["APP_LOADING_TEXT"]</MudText>
+        </MudStack>
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <MudAlert Severity="Severity.Error" Variant="Variant.Outlined" Class="mb-4">
+                @_error
+            </MudAlert>
+        }
+
+        <EditForm Model="_cmd" OnValidSubmit="SaveAsync">
+            <FluentValidationValidator />
+
+            <MudGrid Spacing="3">
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_cmd.Code"
+                                  Label="Code"
+                                  For="@(() => _cmd.Code)"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_cmd.CommonName"
+                                  Label="Common name"
+                                  For="@(() => _cmd.CommonName)"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudSelect T="int"
+                               @bind-Value="_cmd.PlantID"
+                               Label="Plant"
+                               For="@(() => _cmd.PlantID)"
+                               Immediate="true"
+                               Dense="true">
+                        <MudSelectItem Value="0" Disabled="true">  @_localizer["APP_SELECT_TITLE"]</MudSelectItem>
+
+                        @foreach (var p in _vm.Plants)
+                        {
+                            <MudSelectItem Value="@p.Id">@($"{p.Code} - {p.CommonName}")</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudSelect T="int"
+                               @bind-Value="_cmd.TypeID"
+                               Label="Work area type"
+                               For="@(() => _cmd.TypeID)"
+                               Immediate="true"
+                               Dense="true">
+                        <MudSelectItem Value="0" Disabled="true"> @_localizer["APP_SELECT_TITLE"]</MudSelectItem>
+
+                        @foreach (var t in _vm.WorkAreaTypes)
+                        {
+                            <MudSelectItem Value="@t.Id">@($"{t.Code} - {t.Label}")</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudDivider Class="my-2" />
+                    <MudStack Row Justify="Justify.FlexEnd" Spacing="2">
+                        <MudButton Variant="Variant.Text"
+                                   OnClick="@(() => Nav.NavigateTo("/workareas"))">
+                            @_localizer["APP_BTN_CANCEL"]
+                        </MudButton>
+
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   ButtonType="ButtonType.Submit"
+                                   StartIcon="@Icons.Material.Filled.Add">
+                            @_localizer["APP_BTN_CREATE"]
+                        </MudButton>
+                    </MudStack>
+                </MudItem>
+
+            </MudGrid>
+        </EditForm>
+    }
+</MudPaper>
+
+@code {
+    private bool _loading = true;
+    private string? _error;
+
+    private CreateWorkAreaCommand _cmd = new()
+    {
+        Code = "",
+        CommonName = "",
+        PlantID = 0,
+        TypeID = 0
+    };
+
+    private WorkAreaCreateVm _vm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        _error = null;
+
+        try
+        {
+            var res = await _Uimediator.Send(new GetWorkAreaCreateQuery());
+            if (res.Handled) return;
+
+            _vm = res.Data!;          
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        await _Uimediator.Send(_cmd);
+        Nav.NavigateTo("/workareas");
+    }
+}

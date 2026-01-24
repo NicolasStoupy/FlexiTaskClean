@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Hello World" xml:space="preserve">
+    <value>g</value>
+  </data>
+  <data name="Nav_Counter" xml:space="preserve">
+    <value>Schalter</value>
+  </data>
+  <data name="WRK_AREA_NEW_TITLE" xml:space="preserve">
+    <value>Arbeitsbereich erstellen</value>
+  </data>
+  <data name="WRK_AREA_NEW_SUBTITLE" xml:space="preserve">
+    <value>Erstellen Sie einen neuen Arbeitsbereich</value>
+  </data>
+  <data name="APP_LOADING_TEXT" xml:space="preserve">
+    <value>Laden...</value>
+  </data>
+  <data name="APP_BTN_CANCEL" xml:space="preserve">
+    <value>Stornieren</value>
+  </data>
+  <data name="APP_BTN_CREATE" xml:space="preserve">
+    <value>Erstellen</value>
+  </data>
+  <data name="APP_SELECT_TITLE" xml:space="preserve">
+    <value>Wählen</value>
+  </data>
+  <data name="FORBIDDEN_TITLE" xml:space="preserve">
+    <value>Zugriff verweigert</value>
+  </data>
+  <data name="FORBIDDEN_SUBTITLE" xml:space="preserve">
+    <value>Sie haben keine Berechtigung, auf diese Seite zuzugreifen.</value>
+  </data>
+  <data name="FORBIDDEN_BTN_HOME" xml:space="preserve">
+    <value>Heim</value>
+  </data>
+  <data name="FORBIDDEN_BTN_BACK" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="WRK_AREA_TITLE" xml:space="preserve">
+    <value>Arbeitsbereiche</value>
+  </data>
+  <data name="WRK_AREA_SUBTITLE" xml:space="preserve">
+    <value>Liste der konfigurierten Arbeitsbereiche</value>
+  </data>
+  <data name="WRK_AREA_BTN_REFRESH" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="WRK_AREA_LOADING" xml:space="preserve">
+    <value>Laden</value>
+  </data>
+  <data name="WRK_AREA_EMPTY" xml:space="preserve">
+    <value>Keine Arbeitsbereiche gefunden.</value>
+  </data>
+  <data name="WRK_AREA_BTN_DETAILS" xml:space="preserve">
+    <value>Einzelheiten</value>
+  </data>
+  <data name="WRK_AREA_BTN_EDIT" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="WRK_AREA_EDIT_TITLE" xml:space="preserve">
+    <value>Arbeitsbereich bearbeiten</value>
+  </data>
+  <data name="WRK_AREA_EDIT_CODE_LABEL" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="WRK_AREA_EDIT_COMMONNAME_LABEL" xml:space="preserve">
+    <value>Gebräuchlicher Name</value>
+  </data>
+  <data name="WRK_AREA_EDIT_PLANT_LABEL" xml:space="preserve">
+    <value>Anlage</value>
+  </data>
+  <data name="WRK_AREA_EDIT_TYPE_LABEL" xml:space="preserve">
+    <value>Arbeitsbereichstyp</value>
+  </data>
+  <data name="WRK_AREA_EDIT_TYPE_PLACEHOLDER" xml:space="preserve">
+    <value>-- Wählen Sie einen Typ aus --</value>
+  </data>
+  <data name="WRK_AREA_EDIT_ACTIVE_LABEL" xml:space="preserve">
+    <value>Aktiv</value>
+  </data>
+  <data name="WRK_AREA_EDIT_BTN_CANCEL" xml:space="preserve">
+    <value>Stornieren</value>
+  </data>
+  <data name="WRK_AREA_EDIT_BTN_SAVE" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="WRK_AREA_BTN_NEW" xml:space="preserve">
+    <value>Neuer Arbeitsbereich</value>
+  </data>
+  <data name="PLANT_SUBTITLE" xml:space="preserve">
+    <value>Liste der konfigurierten Anlagen</value>
+  </data>
+  <data name="PLANT_BTN_REFRESH" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="PLANT_LOADING" xml:space="preserve">
+    <value>Laden...</value>
+  </data>
+  <data name="PLANT_EMPTY" xml:space="preserve">
+    <value>Keine Pflanzen gefunden.</value>
+  </data>
+  <data name="PLANT_LANGUAGE" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="PLANT_WORKAREAS_COUNT" xml:space="preserve">
+    <value>Arbeitsbereiche</value>
+  </data>
+  <data name="PLANT_BTN_DETAILS" xml:space="preserve">
+    <value>Einzelheiten</value>
+  </data>
+  <data name="PLANT_BTN_EDIT" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="WRK_AREA_EDIT_PLANT_PLACEHOLDER" xml:space="preserve">
+    <value>-- Wählen Sie eine Fabrik aus --</value>
+  </data>
+  <data name="PLANT_TITLE" xml:space="preserve">
+    <value>Fabriken</value>
+  </data>
+  <data name="PLANT_BTN_NEW" xml:space="preserve">
+    <value>Neue Fabrik</value>
+  </data>
+  <data name="PLANT_CREATE_TITLE" xml:space="preserve">
+    <value>Fabrik erstellen</value>
+  </data>
+  <data name="PLANT_CREATE_SUBTITLE" xml:space="preserve">
+    <value>Erstellen Sie eine neue Werkskonfiguration</value>
+  </data>
+  <data name="PLANT_CREATE_CODE_LABEL" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="PLANT_CREATE_COMMONNAME_LABEL" xml:space="preserve">
+    <value>Gebräuchlicher Name</value>
+  </data>
+  <data name="PLANT_CREATE_LANGUAGE_LABEL" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="PLANT_CREATE_LANGUAGE_PLACEHOLDER" xml:space="preserve">
+    <value>-- Wählen Sie eine Sprache aus --</value>
+  </data>
+  <data name="PLANT_CREATE_BTN_CANCEL" xml:space="preserve">
+    <value>Stornieren</value>
+  </data>
+  <data name="PLANT_CREATE_BTN_CREATE" xml:space="preserve">
+    <value>Erstellen</value>
+  </data>
+</root>

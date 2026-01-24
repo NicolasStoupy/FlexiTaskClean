@@ -8,6 +8,19 @@ namespace Application.Common.Models
 {
     public class Result
     {
+        /// <summary>
+        /// Initialise une nouvelle instance de <see cref="Result"/>.
+        /// </summary>
+        /// <param name="succeeded">Indique si l'opération a réussi.</param>
+        /// <param name="errors">
+        /// Une séquence d'erreurs associées au résultat. Si <c>null</c>, la propriété <see cref="Errors"/>
+        /// ne sera pas initialisée (restera <c>null</c>).
+        /// </param>
+        /// <remarks>
+        /// Le constructeur est internal afin de restreindre la création d'instances en dehors
+        /// de l'assemblée. Pour créer des résultats, utilisez les méthodes statiques <see cref="Success"/>
+        /// et <see cref="Failure(IEnumerable{string})"/>.
+        /// </remarks>
         internal Result(bool succeeded, IEnumerable<string> errors)
         {
             Succeeded = succeeded;

@@ -10,6 +10,8 @@ namespace Domain.Entities.MasterData
 
         public string Code { get; set; } = null!;               // varchar(5) unique
         public string CommonName { get; set; } = null!;         // varchar(50) 
+
+        public bool Active { get; set; } = true;
         public Plant Plant { get; set; } = null!;
         public WorkAreaType WorkAreaType { get; set; } = null!;
         public IList<Location> Locations { get; set; } = new List<Location>();

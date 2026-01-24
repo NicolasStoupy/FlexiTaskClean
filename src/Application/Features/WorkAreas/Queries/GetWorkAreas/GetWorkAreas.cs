@@ -1,7 +1,9 @@
 ﻿using Application.Common.Interfaces;
+using Application.Common.Security;
 using Application.Features.WorkAreas.Queries.GetWorkAreas;
 
 namespace Application.WorkAreas.Queries.GetWorkAreas;
+
 
 public record GetWorkAreasQuery : IRequest<WorkAreaVm>
 {
@@ -19,7 +21,7 @@ public class GetWorkAreasQueryHandler : IRequestHandler<GetWorkAreasQuery, WorkA
     private readonly IApplicationDbContext _context;
     private readonly IMapper _mapper;
 
-    public GetWorkAreasQueryHandler(IApplicationDbContext context,IMapper mapper)
+    public GetWorkAreasQueryHandler(IApplicationDbContext context, IMapper mapper)
     {
         _context = context;
         _mapper = mapper;

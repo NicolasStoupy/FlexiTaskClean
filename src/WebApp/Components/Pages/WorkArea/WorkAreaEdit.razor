@@ -1,0 +1,152 @@
+﻿@page "/workareas/edit/{Id:int}"
+@using Application.Features.WorkAreas.Queries.GetWorkAreaEdit
+@using Application.WorkAreas.Commands.UpdateWorkArea
+@using Blazored.FluentValidation
+@using MudBlazor
+@using Microsoft.Extensions.Localization
+@using Domain.Constants
+
+
+@attribute [Authorize(Roles = $"{Roles.Administrator}")]
+
+<MudPaper Class="pa-4" Elevation="1" Rounded="true">
+
+    <MudText Typo="Typo.h5" Class="mb-4">
+        @_localizer["WRK_AREA_EDIT_TITLE"]
+    </MudText>
+
+    <EditForm Model="_cmd" OnValidSubmit="SaveAsync">
+        <FluentValidationValidator />
+
+        <MudGrid Spacing="3">
+
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_cmd.Code"
+                              Label="@_localizer["WRK_AREA_EDIT_CODE_LABEL"]"
+                              For="@(() => _cmd.Code)"
+                              Immediate="true"
+                              Disabled="@(!_isNew)" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_cmd.CommonName"
+                              Label="@_localizer["WRK_AREA_EDIT_COMMONNAME_LABEL"]"
+                              For="@(() => _cmd.CommonName)"
+                              Immediate="true" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudSelect T="int"
+                           @bind-Value="_cmd.PlantId"
+                           Label="@_localizer["WRK_AREA_EDIT_PLANT_LABEL"]"
+                           For="@(() => _cmd.PlantId)"
+                           Immediate="true"
+                           Dense="true">
+
+                    <MudSelectItem Value="0" Disabled="true">
+                        @_localizer["WRK_AREA_EDIT_PLANT_PLACEHOLDER"]
+                    </MudSelectItem>
+
+                    @foreach (var p in _vm.plants)
+                    {
+                        <MudSelectItem Value="@p.Id">
+                            @($"{p.Code} - {p.CommonName}")
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudSelect T="int"
+                           @bind-Value="_cmd.TypeId"
+                           Label="@_localizer["WRK_AREA_EDIT_TYPE_LABEL"]"
+                           For="@(() => _cmd.TypeId)"
+                           Immediate="true"
+                           Dense="true">
+
+                    <MudSelectItem Value="0" Disabled="true">
+                        @_localizer["WRK_AREA_EDIT_TYPE_PLACEHOLDER"]
+                    </MudSelectItem>
+
+                    @foreach (var t in _vm.WorkAreaTypes)
+                    {
+                        <MudSelectItem Value="@t.Id">
+                            @($"{t.Code} - {t.Label}")
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudCheckBox T="bool"
+                             @bind-Value="_cmd.Active"
+                             Label="@_localizer["WRK_AREA_EDIT_ACTIVE_LABEL"]"
+                             For="@(() => _cmd.Active)"
+                             Dense="true" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudDivider Class="my-2" />
+                <MudStack Row Justify="Justify.FlexEnd" Spacing="2">
+                    <MudButton Variant="Variant.Text"
+                               OnClick="@(() => Nav.NavigateTo("/workareas"))">
+                        @_localizer["WRK_AREA_EDIT_BTN_CANCEL"]
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               ButtonType="ButtonType.Submit"
+                               StartIcon="@Icons.Material.Filled.Save">
+                        @_localizer["WRK_AREA_EDIT_BTN_SAVE"]
+                    </MudButton>
+                </MudStack>
+            </MudItem>
+
+        </MudGrid>
+    </EditForm>
+
+</MudPaper>
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    // Tu peux le supprimer si tu n'as vraiment que /edit/{id}
+    private bool _isNew => !Id.HasValue;
+
+    private UpdateWorkAreaCommand _cmd = new();
+    private WorkAreaEditVm _vm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (_isNew)
+        {
+            _cmd = new UpdateWorkAreaCommand
+            {
+                WorkAreaId = 0,
+                PlantId = 0,
+                TypeId = 0
+            };
+        }
+        else
+        {
+            _cmd.WorkAreaId = Id!.Value;
+
+            var res = await _Uimediator.Send(new GetWorkAreaEditQuery(Id.Value));
+            if (res.Handled) return;
+
+            _vm = res.Data!;
+
+            _cmd.Code = _vm.WorkArea.Code;
+            _cmd.CommonName = _vm.WorkArea.CommonName;
+            _cmd.PlantId = _vm.WorkArea.plantID;
+            _cmd.TypeId = _vm.WorkArea.workAreaTypeID;
+            _cmd.Active = _vm.WorkArea.Active;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        await _Uimediator.Send(_cmd);
+        Nav.NavigateTo("/workareas");
+    }
+}

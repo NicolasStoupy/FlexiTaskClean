@@ -10,10 +10,6 @@ namespace Infrastructure.Data.Configurations
         public void Configure(EntityTypeBuilder<WorkArea> builder)
         {
             builder.ToTable("WorkArea");
-
-            builder.Property(x => x.Id)
-              .HasColumnName("WorkAreaID");
-
             builder.Property(x => x.Id)
                 .HasColumnName("WorkAreaID")
                 .ValueGeneratedOnAdd();
@@ -27,6 +23,8 @@ namespace Infrastructure.Data.Configurations
             builder.Property(x => x.CommonName)
             .HasMaxLength(50)
             .IsRequired();
+
+
         }
     }
 }

@@ -5,7 +5,7 @@ using Application.Features.Plants.Queries.GetPlants;
 
 namespace Application.Plants.Queries.GetPlants;
 
-[Authorize(Roles = Roles.Administrator)]
+[Authorize(Roles = $"{Roles.Administrator},{Roles.Users}")]
 public record GetPlantsQuery (int? plantID = 0) : IRequest<PlantsVm>
 {
 }

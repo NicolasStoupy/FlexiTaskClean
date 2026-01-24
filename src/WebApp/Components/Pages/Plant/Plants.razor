@@ -1,0 +1,159 @@
+﻿@page "/plants"
+
+@using Application.Features.Plants.Queries.GetPlants
+@using Application.Plants.Queries.GetPlants
+@using Domain.Constants
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject FlagService FlagService
+@attribute [Authorize(Roles = $"{Roles.Administrator},{Roles.Users}")]
+
+<MudStack Spacing="3">
+
+    <!-- Header -->
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <div>
+            <MudText Typo="Typo.h4">@_localizer["PLANT_TITLE"]</MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                @_localizer["PLANT_SUBTITLE"]
+            </MudText>
+        </div>
+        <MudStack Row="true" Spacing="2">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       Disabled="_loading"
+                       OnClick="RefreshAsync">
+                @_localizer["PLANT_BTN_REFRESH"]
+            </MudButton>
+            <AuthorizeView Roles="@Roles.Administrator">
+                <Authorized>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Material.Filled.Add"
+                               Disabled="_loading"
+                               OnClick="CreateNewPlant">
+                        @_localizer["PLANT_BTN_NEW"]
+                    </MudButton>
+                </Authorized>
+            </AuthorizeView>
+        </MudStack>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudPaper Class="pa-6 d-flex align-center justify-center" Elevation="1" Rounded="true">
+            <MudProgressCircular Indeterminate="true" Size="Size.Large" />
+            <MudText Class="ml-3" Typo="Typo.body2" Color="Color.Secondary">
+                @_localizer["PLANT_LOADING"]
+            </MudText>
+        </MudPaper>
+    }
+    else if (_vm is null || _vm.PlantLists.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            @_localizer["PLANT_EMPTY"]
+        </MudAlert>
+    }
+    else
+    {
+        <MudGrid Spacing="3">
+            @foreach (var p in _vm.PlantLists.OrderBy(x => x.Code))
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Elevation="2" Class="plant-card" Style="border-radius:16px;">
+                        <MudCardContent>
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle1" Style="font-weight:600;">
+                                    @p.CommonName
+                                </MudText>
+
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">
+                                    @p.Code
+                                </MudChip>
+                            </MudStack>
+
+                            <MudDivider Class="my-3" />
+
+                            <MudStack Spacing="1">
+
+                                <MudText Typo="Typo.body2" Color="Color.Primary">
+                                    <MudIcon Icon="@Icons.Material.Filled.Language" Color="@Color.Secondary" Size="Size.Small" Class="mr-1" />
+                                    @_localizer["PLANT_LANGUAGE"] :
+                                    <MudImage Src="@FlagService.GetFlagUrl(p.Language)"
+                                              Alt="p.Language"
+                                              Class="mr-2"
+                                              Style="width:20px; height:15px; object-fit:cover; border-radius:2px;" />
+                                </MudText>
+
+                                <MudText Typo="Typo.body2" Color="Color.Primary">
+                                    <MudIcon Icon="@Icons.Material.Filled.AccountTree"  Size="Size.Small" Class="mr-1" />
+                                    @_localizer["PLANT_WORKAREAS_COUNT"] : @(p.WorkAreas?.Count ?? 0)
+                                </MudText>
+
+                            </MudStack>
+                        </MudCardContent>
+
+                        <MudCardActions Class="px-4 pb-4">
+                            <MudButton Variant="Variant.Text"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Visibility"
+                                       OnClick="@(() => OpenDetails(p))">
+                                @_localizer["PLANT_BTN_DETAILS"]
+                            </MudButton>
+
+                            <MudSpacer />
+
+                            <AuthorizeView Roles="@Roles.Administrator">
+                                <Authorized>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                                   Color="Color.Primary"
+                                                   Title="@_localizer["PLANT_BTN_EDIT"]"
+                                                   OnClick="@(() => Edit(p))" />
+                                </Authorized>
+                            </AuthorizeView>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+
+</MudStack>
+
+
+@code {
+    private PlantsVm? _vm;
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync()
+        => await LoadPlantsAsync();
+
+    private async Task LoadPlantsAsync()
+    {
+        _loading = true;
+
+        var res = await _Uimediator.Send(new GetPlantsQuery());
+        if (!res.Handled)
+            _vm = res.Data;
+
+        _loading = false;
+    }
+
+    private Task RefreshAsync() => LoadPlantsAsync();
+
+    private void OpenDetails(PlantDto p)
+    {
+        // TODO: page détails / dialog
+        // Nav.NavigateTo($"/plants/{p.Id}");
+    }
+
+    private void Edit(PlantDto p)
+    {
+        // TODO: si tu as une page edit
+        // Nav.NavigateTo($"/plants/edit/{p.Id}");
+    }
+    private void CreateNewPlant() => Nav.NavigateTo("/plants/new");
+
+}

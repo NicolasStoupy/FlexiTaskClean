@@ -1,0 +1,239 @@
+﻿@using MudBlazor
+@using WebApp.Models.Flows
+@inject IJSRuntime JS
+
+<div class="flowgraph-root" @ref="_root">
+    <!-- SVG overlay -->
+    <svg class="flowgraph-svg" width="100%" height="100%">
+        <defs>
+            <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L9,3 z" class="flowgraph-arrow" />
+            </marker>
+        </defs>
+
+        @foreach (var l in _lines)
+        {
+            <path d="@l.Path" class="flowgraph-edge" marker-end="url(#arrow)" />
+        }
+    </svg>
+
+
+    <!-- Nodes layer -->
+    <div class="flowgraph-nodes">
+        @foreach (var n in Nodes)
+        {
+            <div class="flowgraph-node"
+                 data-node-id="@n.Id"
+                 @ref="@_nodeRefs[n.Id]" style="@GetNodeStyle(n.Id)">
+                <MudCard Class="@GetNodeClass(n)" Elevation="2" Style="border-radius:16px;">
+                    <MudCardContent>
+                        <MudText Typo="Typo.subtitle1" Style="font-weight:600;">@n.Title</MudText>
+                        @if (!string.IsNullOrWhiteSpace(n.Subtitle))
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@n.Subtitle</MudText>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public IReadOnlyList<FlowNode> Nodes { get; set; } = Array.Empty<FlowNode>();
+    [Parameter] public IReadOnlyList<FlowEdge> Edges { get; set; } = Array.Empty<FlowEdge>();
+
+    private ElementReference _root;
+
+    // Element refs for each node
+    private readonly Dictionary<string, ElementReference> _nodeRefs = new();
+
+    // Rendered lines
+    private readonly List<LineVm> _lines = new();
+
+    private IJSObjectReference? _module;
+    private DotNetObjectReference<FlowGraph>? _dotnetRef;
+
+    protected override void OnParametersSet()
+    {
+        // ensure refs exist for each node id
+        foreach (var n in Nodes)
+            if (!_nodeRefs.ContainsKey(n.Id))
+                _nodeRefs[n.Id] = default;
+        BuildLayout();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _module = await JS.InvokeAsync<IJSObjectReference>("import", "/js/flowgraph.js");
+
+            _dotnetRef = DotNetObjectReference.Create(this);
+
+            // observe container resize (recalc edges)
+            await _module.InvokeVoidAsync("flowgraph.observe", _root, _dotnetRef);
+        }
+
+        await RecalcAsync();
+    }
+
+    [JSInvokable]
+    public async Task OnResizeAsync() => await RecalcAsync();
+
+    private async Task RecalcAsync()
+    {
+        if (_module is null) return;
+        if (Nodes.Count == 0 || Edges.Count == 0) { _lines.Clear(); StateHasChanged(); return; }
+
+        // collect rects for each node
+        var ids = Nodes.Select(n => n.Id).ToArray();
+        var rects = await _module.InvokeAsync<Dictionary<string, Rect>>(
+            "flowgraph.getRects",
+            _root,
+            ids
+        );
+
+        // build paths
+        _lines.Clear();
+        foreach (var e in Edges)
+        {
+            if (!rects.TryGetValue(e.FromId, out var a)) continue;
+            if (!rects.TryGetValue(e.ToId, out var b)) continue;
+
+            // start = right middle of From
+            var x1 = a.X + a.W;
+            var y1 = a.Y + a.H / 2;
+
+            // end = left middle of To
+            var x2 = b.X;
+            var y2 = b.Y + b.H / 2;
+
+            // nice cubic bezier with horizontal control points
+            var dx = Math.Max(60, (x2 - x1) * 0.5);
+            var c1x = x1 + dx;
+            var c1y = y1;
+            var c2x = x2 - dx;
+            var c2y = y2;
+
+            var d = $"M {x1:F0},{y1:F0} C {c1x:F0},{c1y:F0} {c2x:F0},{c2y:F0} {x2:F0},{y2:F0}";
+            _lines.Add(new LineVm(e.FromId, e.ToId, d));
+        }
+
+        StateHasChanged();
+    }
+
+    private string GetNodeClass(FlowNode n)
+        => n.Disabled ? "flowgraph-card flowgraph-card--disabled" : "flowgraph-card";
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            if (_module is not null)
+                await _module.InvokeVoidAsync("flowgraph.unobserve", _root);
+        }
+        catch { /* ignore */ }
+
+        _dotnetRef?.Dispose();
+        if (_module is not null) await _module.DisposeAsync();
+    }
+    private readonly Dictionary<string, (double X, double Y)> _pos = new();
+
+    private const double NodeW = 260;
+    private const double NodeH = 88;      // hauteur approx d’une card (adapter)
+    private const double HGap = 140;     // espace horizontal
+    private const double VGap = 40;      // espace vertical
+
+    private void BuildLayout()
+    {
+        _pos.Clear();
+        if (Nodes.Count == 0) return;
+
+        // Adjacency + preds
+        var preds = Nodes.ToDictionary(n => n.Id, _ => new List<string>());
+        var succs = Nodes.ToDictionary(n => n.Id, _ => new List<string>());
+
+        foreach (var e in Edges)
+        {
+            if (preds.ContainsKey(e.ToId) && succs.ContainsKey(e.FromId))
+            {
+                preds[e.ToId].Add(e.FromId);
+                succs[e.FromId].Add(e.ToId);
+            }
+        }
+
+        // Compute level = longest path from any source (DAG)
+        var level = Nodes.ToDictionary(n => n.Id, _ => 0);
+
+        // Topological order (Kahn)
+        var indeg = Nodes.ToDictionary(n => n.Id, n => preds[n.Id].Count);
+        var q = new Queue<string>(indeg.Where(kv => kv.Value == 0).Select(kv => kv.Key));
+        var topo = new List<string>();
+
+        while (q.Count > 0)
+        {
+            var u = q.Dequeue();
+            topo.Add(u);
+
+            foreach (var v in succs[u])
+            {
+                // level[v] = max(level[v], level[u] + 1)
+                level[v] = Math.Max(level[v], level[u] + 1);
+
+                indeg[v]--;
+                if (indeg[v] == 0) q.Enqueue(v);
+            }
+        }
+
+        // Group nodes by level
+        var byLevel = topo
+            .GroupBy(id => level[id])
+            .OrderBy(g => g.Key)
+            .ToList();
+
+        // Placement Y : simple mais efficace (empile dans chaque colonne)
+        // Si tu veux “fork” bien propre : on sépare les branches dès qu’un node a plusieurs succs.
+        var levelRows = new Dictionary<int, int>(); // next row per level
+
+        foreach (var g in byLevel)
+        {
+            var lvl = g.Key;
+            levelRows[lvl] = 0;
+
+            foreach (var id in g)
+            {
+                var row = levelRows[lvl]++;
+                var x = lvl * (NodeW + HGap);
+                var y = row * (NodeH + VGap);
+
+                _pos[id] = (x, y);
+            }
+        }
+        var ordered = byLevel
+    .Select(g => new
+    {
+        Level = g.Key,
+        Nodes = g.OrderBy(id => id).ToList()
+    })
+    .ToList();
+
+    }
+    private string GetNodeStyle(string id)
+    {
+        if (!_pos.TryGetValue(id, out var p))
+            return "left:0;top:0;";
+
+        return $"left:{p.X}px; top:{p.Y}px;";
+    }
+
+    private record LineVm(string From, string To, string Path);
+
+    public class Rect
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double W { get; set; }
+        public double H { get; set; }
+    }
+}
