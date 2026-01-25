@@ -120,7 +120,7 @@
   <data name="Hello World" xml:space="preserve">
     <value>Bonjour Tout le monde</value>
   </data>
-  <data name="Nav_Counter" xml:space="preserve">
+  <data name="NAV_COUNTER" xml:space="preserve">
     <value>Comptoir</value>
   </data>
   <data name="WRK_AREA_NEW_TITLE" xml:space="preserve">
@@ -260,5 +260,80 @@
   </data>
   <data name="PLANT_CREATE_BTN_CREATE" xml:space="preserve">
     <value>Créer</value>
+  </data>
+  <data name="PLANT_EDIT_TITLE" xml:space="preserve">
+    <value>Modifier une usine</value>
+  </data>
+  <data name="PLANT_EDIT_CODE_LABEL" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="PLANT_EDIT_COMMONNAME_LABEL" xml:space="preserve">
+    <value>Nom commun</value>
+  </data>
+  <data name="PLANT_EDIT_LANGUAGE_LABEL" xml:space="preserve">
+    <value>Langue</value>
+  </data>
+  <data name="PLANT_EDIT_LANGUAGE_PLACEHOLDER" xml:space="preserve">
+    <value>-- Sélectionnez une langue --</value>
+  </data>
+  <data name="PLANT_EDIT_ACTIVE_LABEL" xml:space="preserve">
+    <value>Actif</value>
+  </data>
+  <data name="PLANT_EDIT_BTN_CANCEL" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="PLANT_EDIT_BTN_SAVE" xml:space="preserve">
+    <value>Sauvegarder</value>
+  </data>
+  <data name="NAV_MENU_TITLE" xml:space="preserve">
+    <value>Menu</value>
+  </data>
+  <data name="NAV_HOME" xml:space="preserve">
+    <value>Maison</value>
+  </data>
+  <data name="NAV_GROUP_OU" xml:space="preserve">
+    <value>Unité organisationnelle</value>
+  </data>
+  <data name="NAV_PLANTS" xml:space="preserve">
+    <value>Usine</value>
+  </data>
+  <data name="NAV_WORKAREAS" xml:space="preserve">
+    <value>Zones de travail</value>
+  </data>
+  <data name="NAV_GROUP_SETTINGS" xml:space="preserve">
+    <value>Paramètres</value>
+  </data>
+  <data name="NAV_USERS" xml:space="preserve">
+    <value>Utilisateurs</value>
+  </data>
+  <data name="NAV_SECURITY" xml:space="preserve">
+    <value>Sécurité</value>
+  </data>
+  <data name="NAV_LOGOUT" xml:space="preserve">
+    <value>Déconnexion</value>
+  </data>
+  <data name="NAV_REGISTER" xml:space="preserve">
+    <value>Registre</value>
+  </data>
+  <data name="NAV_LOGIN" xml:space="preserve">
+    <value>Se connecter</value>
+  </data>
+  <data name="THEME_DARK" xml:space="preserve">
+    <value>Mode sombre</value>
+  </data>
+  <data name="THEME_LIGHT" xml:space="preserve">
+    <value>Mode lumière</value>
+  </data>
+  <data name="ERR_404_TITLE" xml:space="preserve">
+    <value>404</value>
+  </data>
+  <data name="ERR_404_SUBTITLE" xml:space="preserve">
+    <value>Page introuvable.</value>
+  </data>
+  <data name="ERR_404_BODY" xml:space="preserve">
+    <value>L'URL demandée n'existe pas ou a été déplacée.</value>
+  </data>
+  <data name="ERR_NAV_BACK" xml:space="preserve">
+    <value>Précédent</value>
   </data>
 </root>

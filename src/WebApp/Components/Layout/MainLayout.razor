@@ -6,19 +6,47 @@
 
 <MudLayout>
     <AntiforgeryToken />
-    <MudAppBar Elevation="1" Fixed="true">
+    <MudAppBar Elevation="1" Fixed="true" Dense="true">
         <MudIconButton Icon="@Icons.Material.Filled.Menu"
                        Color="Color.Inherit"
                        Edge="Edge.Start"
                        OnClick="@ToggleDrawer" />
 
-        <MudText Typo="Typo.h6" Class="ml-3">FlexiTask</MudText>
+        @* Le titre se cache sur mobile (iPhone SE) pour laisser de la place au reste *@
+        <MudText Typo="Typo.h6" Class="ml-3 d-none d-sm-flex">FlexiTask</MudText>
+
+        <div class="d-flex align-center ml-2">
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos"
+                           Size="Size.Small"
+                           Color="Color.Inherit"
+                           Disabled="@(!History.CanGoBack)"
+                           OnClick="@History.GoBack" />
+
+            <MudIconButton Icon="@Icons.Material.Filled.ArrowForwardIos"
+                           Size="Size.Small"
+                           Color="Color.Inherit"
+                           Class="d-none d-md-flex"
+                           Disabled="@(!History.CanGoForward)"
+                           OnClick="@History.GoForward" />
+        </div>
 
         <MudSpacer />
 
-        <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
-                       Color="Color.Inherit"
-                       Edge="Edge.End" />
+        @* Groupe à droite : Langue + Avatar *@
+        <div class="d-flex align-center">
+            @* On réduit la largeur du sélecteur pour qu'il ne pousse pas l'avatar dehors *@
+            <div style="width: 80px;" class="mr-2">
+                <LocalizationSelector />
+            </div>
+
+            <MudAvatar Color="Color.Tertiary" Size="Size.Small">D</MudAvatar>
+
+            @* On déplace le "MoreVert" après l'avatar ou on le cache sur mobile *@
+            <MudIconButton Icon="@Icons.Material.Filled.MoreVert"
+                           Color="Color.Inherit"
+                           Edge="Edge.End"
+                           Class="d-none d-sm-flex ml-1" />
+        </div>
     </MudAppBar>
 
     <MudDrawer Open="@IsDrawerOpen"

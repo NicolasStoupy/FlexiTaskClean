@@ -17,7 +17,7 @@ namespace WebApp.Services
     /// Si <c>true</c>, le composant appelant n'a normalement pas besoin d'afficher de message additionnel.
     /// </param>
     /// <param name="Message">Message lisible destiné à l'utilisateur (peut être <c>null</c>).</param>
-    public record UiCallResult<T>(T? Data, bool Handled, string? Message);
+    public record UiCallResult<T>(T? Data, bool Handled, string? Message, bool success=true);
 
     /// <summary>
     /// Adaptateur entre MediatR et l'interface utilisateur (navigation + notifications).
@@ -82,28 +82,28 @@ namespace WebApp.Services
             catch (UnauthorizedAccessException)
             {
                 _nav.NavigateTo("/Account/Login", forceLoad: true);
-                return new UiCallResult<T>(default, Handled: true, "Veuillez vous connecter.");
+                return new UiCallResult<T>(default, Handled: true, "Veuillez vous connecter.",false);
             }
             catch (ForbiddenAccessException ex)
             {
                 _nav.NavigateTo("/forbidden");
-                return new UiCallResult<T>(default, Handled: true, ex.Message);
+                return new UiCallResult<T>(default, Handled: true, ex.Message,false);
             }
             catch (FluentValidation.ValidationException ex)
             {
                 var msg = "Validation: " + string.Join(" | ", ex.Errors.Select(e => e.ErrorMessage));
                 _snackbar.Add(msg, Severity.Warning);
-                return new UiCallResult<T>(default, Handled: false, msg);
+                return new UiCallResult<T>(default, Handled: false, msg,false);
             }
             catch (NotFoundException ex)
             {
                 _snackbar.Add(ex.Message, Severity.Error);
-                return new UiCallResult<T>(default, Handled: false, ex.Message);
+                return new UiCallResult<T>(default, Handled: false, ex.Message, false);
             }
             catch (Exception ex)
             {
                 _snackbar.Add("Une erreur inattendue est survenue.", Severity.Error);
-                return new UiCallResult<T>(default, Handled: false, ex.Message);
+                return new UiCallResult<T>(default, Handled: false, ex.Message, false);
             }
         }
     }

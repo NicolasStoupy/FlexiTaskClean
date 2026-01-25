@@ -7,6 +7,7 @@ namespace Application.WorkAreas.Queries.GetWorkAreas;
 
 public record GetWorkAreasQuery : IRequest<WorkAreaVm>
 {
+    public int? PlantID { get; set; }
 }
 
 public class GetWorkAreasQueryValidator : AbstractValidator<GetWorkAreasQuery>
@@ -29,10 +30,19 @@ public class GetWorkAreasQueryHandler : IRequestHandler<GetWorkAreasQuery, WorkA
 
     public async Task<WorkAreaVm> Handle(GetWorkAreasQuery request, CancellationToken cancellationToken)
     {
+        if(request.PlantID != null) {
+            return new WorkAreaVm()
+            {
+                workAreas = await _context.WorkAreas.Where(w=>w.Plant.Id == request.PlantID).AsNoTracking()
+                    .ProjectTo<WorkAreaDto>(_mapper.ConfigurationProvider).OrderByDescending(w => w.Active)
+                    .ToListAsync(cancellationToken)
+            };
+
+        }
         return new WorkAreaVm()
         {
-            workAreas = await _context.WorkAreas
-                .ProjectTo<WorkAreaDto>(_mapper.ConfigurationProvider)
+            workAreas = await _context.WorkAreas.AsNoTracking()
+                .ProjectTo<WorkAreaDto>(_mapper.ConfigurationProvider).OrderByDescending(w => w.Active)
                 .ToListAsync(cancellationToken)
         };
     }

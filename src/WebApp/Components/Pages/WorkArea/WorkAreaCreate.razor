@@ -150,6 +150,6 @@
     private async Task SaveAsync()
     {
         await _Uimediator.Send(_cmd);
-        Nav.NavigateTo("/workareas");
+        History.GoBack();
     }
 }

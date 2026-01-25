@@ -1,11 +1,12 @@
 ﻿namespace Application.Features.Plants.Commands.UpdatePlants
 {
-    public record UpdatePlantCommand() : IRequest<int>
+    public record UpdatePlantCommand() : IRequest<int>,ICommand
     {
         public int PlantID { get; set; }
-        public string Code { get; init; } = null!;
-        public string CommonName { get; init; } = null!;
-        public string Language { get; init; } = null!;
+        public string Code { get; set; } = null!;
+        public string CommonName { get; set; } = null!;
+        public string Language { get; set; } = null!;
+        public bool Active { get; set; }
     }
 
     public class UpdatePlantCommandHandler : IRequestHandler<UpdatePlantCommand, int>
@@ -24,6 +25,7 @@
                 plant.Language = Enum.Parse<Domain.Enums.PlantLanguage>(request.Language);
                 plant.Code = request.Code;
                 plant.CommonName = request.CommonName;
+                plant.Active = request.Active;
 
                 await _context.SaveChangesAsync(cancellationToken);
                 return plant.Id;

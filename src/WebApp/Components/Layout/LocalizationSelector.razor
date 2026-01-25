@@ -6,28 +6,37 @@
 
 @if (cultures != null)
 {
-    <MudSelect T="string"
-               Value="selectedCulture"
-               ValueChanged="OnCultureChanged"
-               Label="Language"
-               Variant="Variant.Outlined"
-               Dense="true"
-               Margin="Margin.Dense"
-               Class="mud-width-full max-w-200"
-               AnchorOrigin="Origin.BottomCenter">
+    <MudMenu Dense="true" Class="d-none d-sm-flex"
+              AnchorOrigin="Origin.BottomCenter"
+              TransformOrigin="Origin.TopCenter"
+              OffsetY="true">
 
-        @foreach (var culture in cultures)
-        {
-            <MudSelectItem Value="@culture.Key">
-                <div class="d-flex align-center">
-                    <MudImage Src="@GetFlagUrl(culture.Key)"
-                              Alt="@culture.Value"
-                              Class="mr-2"
-                              Style="width:20px; height:15px; object-fit:cover; border-radius:2px;" />
-                    <MudText>@culture.Value</MudText>
-                </div>
-            </MudSelectItem>
-        }
-    </MudSelect>
+        <ActivatorContent>
+            <MudIconButton Size="Size.Small"
+                           Variant="Variant.Text"
+                           Class="lang-btn">
+                <MudImage Src="@GetFlagUrl(selectedCulture)"
+                          Class="lang-flag-mini"
+                          Alt="Language" />
+            </MudIconButton>
+        </ActivatorContent>
+
+        <ChildContent>
+            @foreach (var culture in cultures!)
+            {
+                <MudMenuItem OnClick="@(() => OnCultureChanged(culture.Key))">
+                    <MudStack Row AlignItems="AlignItems.Center" Spacing="1">
+                        <MudImage Src="@GetFlagUrl(culture.Key)"
+                                  Class="lang-flag-mini" />
+                        <MudText Typo="Typo.body2">@culture.Value</MudText>
+                    </MudStack>
+                </MudMenuItem>
+            }
+        </ChildContent>
+
+    </MudMenu>
+
+
+    
 }
 

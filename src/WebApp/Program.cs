@@ -60,6 +60,14 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+app.UseStatusCodePages(context => {
+    if (context.HttpContext.Response.StatusCode == StatusCodes.Status404NotFound)
+    {
+        context.HttpContext.Response.Redirect("/404");
+    }
+    return Task.CompletedTask;
+});
+
 await app.InitialiseDatabaseAsync();
 
 

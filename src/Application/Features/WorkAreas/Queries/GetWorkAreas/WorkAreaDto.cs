@@ -1,4 +1,5 @@
-﻿using Domain.Entities.MasterData;
+﻿using Application.Plants.Queries.GetPlants;
+using Domain.Entities.MasterData;
 
 namespace Application.Features.WorkAreas.Queries.GetWorkAreas
 {
@@ -7,6 +8,7 @@ namespace Application.Features.WorkAreas.Queries.GetWorkAreas
         public WorkAreaDto()
         {
             WorkAreaType = new WorkAreaTypeDto();
+            plant = new PlantDto();
         }
         public int Id { get; set; }
         public string Code { get; set; } = null!;
@@ -14,6 +16,8 @@ namespace Application.Features.WorkAreas.Queries.GetWorkAreas
         public int plantID { get; set; }
         public int workAreaTypeID { get; set; }
         public bool Active { get; set; }
+
+        public PlantDto plant { get; init; }
 
         public WorkAreaTypeDto WorkAreaType { get; init; }
 
@@ -23,6 +27,7 @@ namespace Application.Features.WorkAreas.Queries.GetWorkAreas
             public Mapping()
             {
                 CreateMap<WorkArea, WorkAreaDto>();
+                CreateMap<Plant, PlantDto>();
             }
         }
     }

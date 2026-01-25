@@ -1,0 +1,124 @@
+﻿@page "/plants/edit/{Id:int}"
+
+@using Application.Features.Plants.Commands.UpdatePlants
+@using Application.Plants.Queries.GetPlantEdit
+@using Blazored.FluentValidation
+@using MudBlazor
+@using Microsoft.Extensions.Localization
+@using Domain.Constants
+@using Domain.Enums
+
+
+
+@attribute [Authorize(Roles = $"{Roles.Administrator}")]
+
+<MudPaper Class="pa-4" Elevation="1" Rounded="true">
+
+    <MudText Typo="Typo.h5" Class="mb-4">
+        @_localizer["PLANT_EDIT_TITLE"]
+    </MudText>
+
+    <EditForm Model="_cmd" OnValidSubmit="SaveAsync">
+        <FluentValidationValidator />
+
+        <MudGrid Spacing="3">
+
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_cmd.Code"
+                              Label="@_localizer["PLANT_EDIT_CODE_LABEL"]"
+                              For="@(() => _cmd.Code)"
+                              Immediate="true"
+                              Disabled="true"
+                              MaxLength="4" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_cmd.CommonName"
+                              Label="@_localizer["PLANT_EDIT_COMMONNAME_LABEL"]"
+                              For="@(() => _cmd.CommonName)"
+                              Immediate="true"
+                              MaxLength="50" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudSelect T="string"
+                           @bind-Value="_cmd.Language"
+                           Label="@_localizer["PLANT_EDIT_LANGUAGE_LABEL"]"
+                           For="@(() => _cmd.Language)"
+                           Immediate="true"
+                           Dense="true">
+
+                    <MudSelectItem T="string" Value="_cmd.Language" Disabled="true">
+                        @_localizer["PLANT_EDIT_LANGUAGE_PLACEHOLDER"]
+                    </MudSelectItem>
+
+                    @foreach (var lang in _languages)
+                    {
+                        <MudSelectItem Value="@lang">@lang</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <MudCheckBox T="bool"
+                             @bind-Value="_cmd.Active"
+                             Label="@_localizer["PLANT_EDIT_ACTIVE_LABEL"]"
+                             For="@(() => _cmd.Active)"
+                             Dense="true" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudDivider Class="my-2" />
+                <MudStack Row Justify="Justify.FlexEnd" Spacing="2">
+
+                    <MudButton Variant="Variant.Text"
+                               OnClick="@(() => Nav.NavigateTo("/plants"))">
+                        @_localizer["PLANT_EDIT_BTN_CANCEL"]
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               ButtonType="ButtonType.Submit"
+                               StartIcon="@Icons.Material.Filled.Save">
+                        @_localizer["PLANT_EDIT_BTN_SAVE"]
+                    </MudButton>
+
+                </MudStack>
+            </MudItem>
+
+        </MudGrid>
+    </EditForm>
+
+</MudPaper>
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private UpdatePlantCommand _cmd = new();
+    private PlantEditVm _vm = new();
+
+    // simple: liste depuis enum
+    private readonly List<string> _languages = Enum.GetNames(typeof(PlantLanguage)).ToList();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cmd.PlantID = Id;
+
+        var res = await _Uimediator.Send(new GetPlantEditQuery(Id));
+        if (res.Handled) return;
+
+        _vm = res.Data!;
+
+        // VM -> Command
+        _cmd.Code = _vm.Plant.Code;
+        _cmd.CommonName = _vm.Plant.CommonName ?? "";
+        _cmd.Language = _vm.Plant.Language;     // string "FR"/"EN" dans ton dto actuel
+        _cmd.Active = _vm.Plant.Active;
+    }
+
+    private async Task SaveAsync()
+    {
+        await _Uimediator.Send(_cmd);
+        History.GoBack();
+    }
+}

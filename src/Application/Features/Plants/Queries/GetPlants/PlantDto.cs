@@ -13,8 +13,8 @@ namespace Application.Plants.Queries.GetPlants
         public int Id { get; set; }
         public string Code { get; init; } = null!;
         public string CommonName { get; init; } =null!;
-        public string Language { get; init; }= null!;   
-
+        public string Language { get; init; }= null!;
+        public bool Active { get; set; }
         public  IReadOnlyCollection<PlantWorkAreaDto> WorkAreas { get; init; }
         private class Mapping : Profile
         {

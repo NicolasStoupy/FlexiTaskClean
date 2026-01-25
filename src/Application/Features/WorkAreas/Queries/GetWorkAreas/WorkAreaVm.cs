@@ -11,6 +11,7 @@ namespace Application.WorkAreas.Queries.GetWorkAreas
         
         }
         public IReadOnlyCollection<WorkAreaDto> workAreas { get; init; }
+
       
 
 

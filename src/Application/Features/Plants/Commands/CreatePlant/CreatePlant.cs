@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Plants.Commands.CreatePlant;
 
-public record CreatePlantCommand(string code, string commonName, string language) : IRequest<int>;
+public record CreatePlantCommand(string code, string commonName, string language) : IRequest<int>,ICommand;
 
 public class CreatePlantCommandValidator : AbstractValidator<CreatePlantCommand>
 {

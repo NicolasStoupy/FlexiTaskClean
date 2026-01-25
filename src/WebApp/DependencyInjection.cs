@@ -41,7 +41,8 @@ namespace WebApp
             builder.Services.AddScoped<IIdentityService, IdentityService>();
             builder.Services.AddScoped<ThemeService>();
             builder.Services.AddScoped<UiMediator>();
-            builder.Services.AddScoped<FlagService>();
+            builder.Services.AddScoped<FlagService>();  
+            builder.Services.AddScoped<HistoryService>();
             builder.Services.AddMudServices();
             builder.Services.AddMudBlazorDialog();
             builder.Services.AddMudServices(config =>
@@ -56,7 +57,7 @@ namespace WebApp
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
             builder.Services.AddMudBlazorResizeListener();
-
+          
         }
     }
 }

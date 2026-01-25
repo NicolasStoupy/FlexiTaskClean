@@ -8,6 +8,7 @@ namespace Domain.Entities.MasterData
         public string Code { get; set; } = null!;
         public string? CommonName { get; set; }
         public PlantLanguage Language { get; set; }
+        public bool Active { get; set; } = true;
         public IList<WorkArea> WorkAreas { get; set; } = new List<WorkArea>();
 
         public Plant()

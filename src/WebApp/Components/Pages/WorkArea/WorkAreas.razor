@@ -1,5 +1,5 @@
 ﻿@page "/workareas"
-
+@page "/workareas/plant/{_plantID:int}"
 @using Application.Features.WorkAreas.Queries.GetWorkAreas
 @using Application.WorkAreas.Queries.GetWorkAreas
 @using Domain.Constants
@@ -171,21 +171,12 @@
 
 </MudStack>
 
-<style>
-    .wa-card {
-        transition: transform .12s ease, box-shadow .12s ease;
-        cursor: default;
-    }
-
-        .wa-card:hover {
-            transform: translateY(-2px);
-        }
-</style>
 
 @code {
     private WorkAreaVm? _vm;
     private bool _loading;
-
+    [Parameter]
+    public int? _plantID { get; set; }
     protected override async Task OnInitializedAsync()
         => await LoadWorkAreasAsync();
 
@@ -193,7 +184,7 @@
     {
         _loading = true;
 
-        var res = await _Uimediator.Send(new GetWorkAreasQuery());
+        var res = await _Uimediator.Send(new GetWorkAreasQuery(){PlantID=_plantID});
         if (!res.Handled)
             _vm = res.Data;
 

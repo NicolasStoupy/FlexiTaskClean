@@ -7,48 +7,42 @@
 @rendermode InteractiveServer
 
 <MudNavMenu Class="mud-width-full">
-    <MudText Typo="Typo.h6" Class="px-4 py-2">Menu</MudText>
+    <MudText Typo="Typo.h6" Class="px-4 py-2">@_localizer["NAV_MENU_TITLE"]</MudText>
     <MudDivider Class="my-2" />
 
-    @* Liens Publics *@
-    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <MudNavLink Href="counter" Icon="@Icons.Material.Filled.Add">@_localizer["Nav_Counter"]</MudNavLink>
-    <MudNavLink Href="workareas" Icon="@Icons.Material.Filled.Work" IconColor="Color.Primary">workareas</MudNavLink>
-    <MudNavLink Href="plants" Icon="@Icons.Material.Filled.Factory">plants</MudNavLink>
+    <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">@_localizer["NAV_HOME"]</MudNavLink>
+    <MudNavLink Href="counter" Icon="@Icons.Material.Filled.Add">@_localizer["NAV_COUNTER"]</MudNavLink>
 
-    @* Groupe extensible (Settings) *@
-    <MudNavGroup Title="Settings" Icon="@Icons.Material.Filled.Settings">
-        <MudNavLink Href="/users" Icon="@Icons.Material.Filled.People" IconColor="Color.Success">Users</MudNavLink>
-        <MudNavLink Href="/security" Icon="@Icons.Material.Filled.Security" IconColor="Color.Info">Security</MudNavLink>
+    <MudNavGroup Title="@_localizer["NAV_GROUP_OU"]" Icon="@Icons.Material.Filled.Layers">
+        <MudNavLink Href="plants" Icon="@Icons.Material.Filled.Factory">@_localizer["NAV_PLANTS"]</MudNavLink>
+        <MudNavLink Href="workareas" Icon="@Icons.Material.Filled.Work" IconColor="Color.Primary">@_localizer["NAV_WORKAREAS"]</MudNavLink>
+    </MudNavGroup>
+
+    <MudNavGroup Title="@_localizer["NAV_GROUP_SETTINGS"]" Icon="@Icons.Material.Filled.Settings">
+        <MudNavLink Href="/users" Icon="@Icons.Material.Filled.People" IconColor="Color.Success">@_localizer["NAV_USERS"]</MudNavLink>
+        <MudNavLink Href="/security" Icon="@Icons.Material.Filled.Security" IconColor="Color.Info">@_localizer["NAV_SECURITY"]</MudNavLink>
     </MudNavGroup>
 
     <MudDivider Class="my-2" />
 
-    @* Liens d'Authentification *@
     <AuthorizeView>
         <Authorized>
-            <MudNavLink Href="Account/Manage" Icon="@Icons.Material.Filled.Person">
-                @context.User.Identity?.Name
-            </MudNavLink>
-            @* Logout utilise souvent un formulaire ou une redirection directe vers le endpoint *@
             <MudNavLink Href="Account/Logout" Icon="@Icons.Material.Filled.Logout" IconColor="Color.Error">
-                Logout
+                @_localizer["NAV_LOGOUT"]
             </MudNavLink>
         </Authorized>
         <NotAuthorized>
-            <MudNavLink Href="Account/Register" Icon="@Icons.Material.Filled.AppRegistration">Register</MudNavLink>
-            <MudNavLink Href="Account/Login" Icon="@Icons.Material.Filled.Login">Login</MudNavLink>
+            <MudNavLink Href="Account/Register" Icon="@Icons.Material.Filled.AppRegistration">@_localizer["NAV_REGISTER"]</MudNavLink>
+            <MudNavLink Href="Account/Login" Icon="@Icons.Material.Filled.Login">@_localizer["NAV_LOGIN"]</MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
-    <LocalizationSelector></LocalizationSelector>
+
     <MudSwitch T="bool"
                Value="ThemeService.IsDarkMode"
                ValueChanged="@(_ => ThemeService.ToggleDarkMode())"
                Color="Color.Info"
-               ThumbIcon="@(ThemeService.IsDarkMode ? Icons.Material.Filled.DarkMode : Icons.Material.Filled.WbSunny)"
-               ThumbIconColor="@(ThemeService.IsDarkMode ? Color.Info : Color.Warning)"
                Class="ml-4">
-        @(ThemeService.IsDarkMode ? "Mode Sombre" : "Mode Clair")
+        @(ThemeService.IsDarkMode? _localizer["THEME_DARK"] : _localizer["THEME_LIGHT"])
     </MudSwitch>
 </MudNavMenu>
 

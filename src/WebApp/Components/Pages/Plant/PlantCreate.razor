@@ -108,9 +108,9 @@
         );
 
         var result = await _Uimediator.Send(cmd);
-        if (result.Handled)
+        if (result.success)
         {
-            Nav.NavigateTo("/plants");
+            History.GoBack();
             
 
 

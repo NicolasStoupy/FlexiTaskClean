@@ -61,7 +61,8 @@
             @foreach (var p in _vm.PlantLists.OrderBy(x => x.Code))
             {
                 <MudItem xs="12" sm="6" md="4" lg="3">
-                    <MudCard Elevation="2" Class="plant-card" Style="border-radius:16px;">
+                 
+                    <MudCard Elevation="2" Class="plant-card" Style="@(p.Active == true ? "border: 2px; border-radius:16px;" : "border-radius:16px; overflow:hidden; position:relative; background-color: rgba(200, 16, 46, 0.2) !important; background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent) !important; background-size: 20px 20px;")">
                         <MudCardContent>
 
                             <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
@@ -89,7 +90,8 @@
 
                                 <MudText Typo="Typo.body2" Color="Color.Primary">
                                     <MudIcon Icon="@Icons.Material.Filled.AccountTree"  Size="Size.Small" Class="mr-1" />
-                                    @_localizer["PLANT_WORKAREAS_COUNT"] : @(p.WorkAreas?.Count ?? 0)
+                                  
+                                    <MudLink Href="@($"/workareas/plant/{p.Id}")"  Class="ml-2">  @_localizer["PLANT_WORKAREAS_COUNT"] : @(p.WorkAreas?.Count ?? 0)</MudLink>
                                 </MudText>
 
                             </MudStack>
@@ -149,11 +151,8 @@
         // Nav.NavigateTo($"/plants/{p.Id}");
     }
 
-    private void Edit(PlantDto p)
-    {
-        // TODO: si tu as une page edit
-        // Nav.NavigateTo($"/plants/edit/{p.Id}");
-    }
+    private void Edit(PlantDto p) => Nav.NavigateTo($"/plants/edit/{p.Id}");
+
     private void CreateNewPlant() => Nav.NavigateTo("/plants/new");
 
 }

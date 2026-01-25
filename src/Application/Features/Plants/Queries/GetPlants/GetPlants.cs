@@ -6,9 +6,8 @@ using Application.Features.Plants.Queries.GetPlants;
 namespace Application.Plants.Queries.GetPlants;
 
 [Authorize(Roles = $"{Roles.Administrator},{Roles.Users}")]
-public record GetPlantsQuery (int? plantID = 0) : IRequest<PlantsVm>
-{
-}
+public record GetPlantsQuery (int? plantID = 0) : IRequest<PlantsVm>;
+
 
 public class GetPlantsQueryValidator : AbstractValidator<GetPlantsQuery>
 {
@@ -46,7 +45,7 @@ public class GetPlantsQueryHandler : IRequestHandler<GetPlantsQuery, PlantsVm>
         {
             PlantLists = await _context.Plant
             .AsNoTracking()
-            .ProjectTo<PlantDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<PlantDto>(_mapper.ConfigurationProvider).OrderByDescending(w => w.Active)
             .ToListAsync(cancellationToken)
         };
     }
