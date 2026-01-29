@@ -336,4 +336,64 @@
   <data name="ERR_NAV_BACK" xml:space="preserve">
     <value>Zurück</value>
   </data>
+  <data name="NAV_WORKAREASTYPE" xml:space="preserve">
+    <value>Arbeitsbereichstyp</value>
+  </data>
+  <data name="WRK_TYPE_EDIT_TITLE" xml:space="preserve">
+    <value>Arbeitsbereichstyp bearbeiten</value>
+  </data>
+  <data name="WRK_TYPE_EDIT_SUBTITLE" xml:space="preserve">
+    <value>Aktualisieren Sie die Informationen zum Arbeitsbereichstyp</value>
+  </data>
+  <data name="COMMON_BACK" xml:space="preserve">
+    <value>Zurück</value>
+  </data>
+  <data name="COMMON_SAVE" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="COMMON_LOADING" xml:space="preserve">
+    <value>Laden...</value>
+  </data>
+  <data name="COMMON_SAVING" xml:space="preserve">
+    <value>Sparen...</value>
+  </data>
+  <data name="COMMON_NOT_FOUND" xml:space="preserve">
+    <value>Der angeforderte Artikel wurde nicht gefunden.</value>
+  </data>
+  <data name="COMMON_REQUIRED" xml:space="preserve">
+    <value>Dieses Feld ist erforderlich.</value>
+  </data>
+  <data name="WRK_TYPE_FIELD_CODE" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="WRK_TYPE_FIELD_LABEL" xml:space="preserve">
+    <value>Etikett</value>
+  </data>
+  <data name="COMMON_CANCEL" xml:space="preserve">
+    <value>Stornieren</value>
+  </data>
+  <data name="WRK_TYPE_TITLE" xml:space="preserve">
+    <value>Arbeitsbereichstypen</value>
+  </data>
+  <data name="WRK_TYPE_SUBTITLE" xml:space="preserve">
+    <value>Verwalten und pflegen Sie Arbeitsbereichstypdefinitionen</value>
+  </data>
+  <data name="WRK_TYPE_BTN_REFRESH" xml:space="preserve">
+    <value>Aktualisieren</value>
+  </data>
+  <data name="WRK_TYPE_BTN_NEW" xml:space="preserve">
+    <value>Neuer Arbeitsbereichstyp</value>
+  </data>
+  <data name="WRK_TYPE_LOADING" xml:space="preserve">
+    <value>Arbeitsbereichstypen werden geladen...</value>
+  </data>
+  <data name="WRK_TYPE_EMPTY" xml:space="preserve">
+    <value>Keine Arbeitsbereichstypen gefunden.</value>
+  </data>
+  <data name="WRK_TYPE_BTN_DETAILS" xml:space="preserve">
+    <value>Einzelheiten</value>
+  </data>
+  <data name="WRK_TYPE_BTN_EDIT" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
 </root>

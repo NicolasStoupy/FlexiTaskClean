@@ -1,0 +1,180 @@
+﻿@page "/workareatype/edit/{_workAreaTypeId:int}/{_plantId:int}"
+@using Domain.Constants
+@using Microsoft.Extensions.Localization
+@using Application.WorkAreaTypes.Commands.EditWorkAreaType
+@using Application.WorkAreaTypes.Queries.GetWorkAreaType
+@attribute [Authorize(Roles = $"{Roles.Administrator},{Roles.Users}")]
+
+<MudStack Spacing="3">
+
+    <!-- Header -->
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <div>
+            <MudText Typo="Typo.h4">@_localizer["WRK_TYPE_EDIT_TITLE"]</MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                @_localizer["WRK_TYPE_EDIT_SUBTITLE"]
+            </MudText>
+        </div>
+
+        <MudStack Row="true" Spacing="2">
+            <MudButton Variant="Variant.Text"
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       Disabled="_loading || _saving"
+                       OnClick="Back">
+                @_localizer["COMMON_BACK"]
+            </MudButton>
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Save"
+                       Disabled="_loading || _saving"
+                       OnClick="SaveAsync">
+                @_localizer["COMMON_SAVE"]
+            </MudButton>
+        </MudStack>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudPaper Class="pa-6 d-flex align-center justify-center" Elevation="1" Rounded="true">
+            <MudProgressCircular Indeterminate="true" Size="Size.Large" />
+            <MudText Class="ml-3" Typo="Typo.body2" Color="Color.Secondary">
+                @_localizer["COMMON_LOADING"]
+            </MudText>
+        </MudPaper>
+    }
+    else if (_notFound)
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Outlined">
+            @_localizer["COMMON_NOT_FOUND"]
+        </MudAlert>
+    }
+    else
+    {
+        <MudPaper Elevation="1" Rounded="true" Class="pa-6">
+
+            @if (_saving)
+            {
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="mb-4">
+                    <MudProgressCircular Indeterminate="true" Size="Size.Medium" />
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@_localizer["COMMON_SAVING"]</MudText>
+                </MudStack>
+            }
+
+            <MudForm @ref="_form" Model="_model">
+                <MudGrid Spacing="3">
+                    <MudItem xs="12" md="4">
+                        <MudTextField @bind-Value="_model.Code"
+                                      Label="@_localizer["WRK_TYPE_FIELD_CODE"]"
+                                      Variant="Variant.Outlined"
+                                      Immediate="true"
+                                      Required="true"
+                                      RequiredError="@_localizer["COMMON_REQUIRED"]"
+                                      MaxLength="10"
+                                      Disabled="_saving" />
+                    </MudItem>
+
+                    <MudItem xs="12" md="8">
+                        <MudTextField @bind-Value="_model.Label"
+                                      Label="@_localizer["WRK_TYPE_FIELD_LABEL"]"
+                                      Variant="Variant.Outlined"
+                                      Immediate="true"
+                                      Required="true"
+                                      RequiredError="@_localizer["COMMON_REQUIRED"]"
+                                      MaxLength="50"
+                                      Disabled="_saving" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+
+            <MudDivider Class="my-5" />
+
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Text"
+                           Disabled="_saving"
+                           OnClick="Back">
+                    @_localizer["COMMON_CANCEL"]
+                </MudButton>
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Save"
+                           Disabled="_saving"
+                           OnClick="SaveAsync">
+                    @_localizer["COMMON_SAVE"]
+                </MudButton>
+            </MudStack>
+
+        </MudPaper>
+    }
+
+</MudStack>
+
+@code {
+    [Parameter] public int _workAreaTypeId { get; set; }
+    [Parameter] public int _plantId { get; set; }
+
+    private MudForm? _form;
+    private bool _loading;
+    private bool _saving;
+    private bool _notFound;
+
+    private EditWorkAreaTypeModel _model = new();
+
+    private sealed class EditWorkAreaTypeModel
+    {
+        public string Code { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
+    }
+
+    protected override async Task OnInitializedAsync()
+        => await LoadAsync();
+
+    private async Task LoadAsync()
+    {
+        _loading = true;
+        _notFound = false;
+
+        var res = await _Uimediator.Send(new GetWorkAreaTypeQuery(_workAreaTypeId));
+
+        if (!res.Handled && res.Data is not null)
+        {
+            // selon ton DTO retourné
+            _model.Code = res.Data.Code;
+            _model.Label = res.Data.Label;
+        }
+        else
+        {
+            _notFound = true;
+        }
+
+        _loading = false;
+    }
+
+    private async Task SaveAsync()
+    {
+        if (_saving || _notFound) return;
+
+        await _form!.Validate();
+        if (!_form.IsValid) return;
+
+        _saving = true;
+
+        var cmd = new EditWorkAreaTypeCommand(
+            workAreaTypeId: _workAreaTypeId,
+            code: _model.Code?.Trim() ?? string.Empty,
+            label: _model.Label?.Trim() ?? string.Empty
+        );
+
+        var res = await _Uimediator.Send(cmd);
+
+        _saving = false;
+
+        if (!res.Handled)
+        {
+            Nav.NavigateTo($"/workareas/plant/{_plantId}");
+        }
+    }
+
+    private void Back() => Nav.NavigateTo($"/workareas/plant/{_plantId}");
+}

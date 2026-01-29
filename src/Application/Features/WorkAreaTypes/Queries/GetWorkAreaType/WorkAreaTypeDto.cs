@@ -1,13 +1,19 @@
 ﻿using Domain.Entities.MasterData;
 
-namespace Application.Features.WorkAreas.Queries.GetWorkAreas
+namespace Application.WorkAreaTypes.Queries.GetWorkAreaType
 {
     public class WorkAreaTypeDto
     {
 
+        public WorkAreaTypeDto()
+        {
+            Code = string.Empty;
+            Label = string.Empty;
+        }
+
         public int Id { get; set; }
-        public string? Code { get; set; }                      
-        public string? Label { get; set; }
+        public string Code { get; init; } 
+        public string Label { get; init; }
 
         public class Mapping : AutoMapper.Profile
         {

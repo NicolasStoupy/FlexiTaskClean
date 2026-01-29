@@ -1,6 +1,7 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Interfaces;
 using Ardalis.GuardClauses;
+using Domain.Common.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -96,6 +97,11 @@ namespace WebApp.Services
                 return new UiCallResult<T>(default, Handled: false, msg,false);
             }
             catch (NotFoundException ex)
+            {
+                _snackbar.Add(ex.Message, Severity.Error);
+                return new UiCallResult<T>(default, Handled: false, ex.Message, false);
+            }
+            catch (DomainException ex)
             {
                 _snackbar.Add(ex.Message, Severity.Error);
                 return new UiCallResult<T>(default, Handled: false, ex.Message, false);

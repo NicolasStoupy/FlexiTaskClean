@@ -70,10 +70,7 @@
                                 <MudCard Elevation="2" Class="wa-card" Style="@($"border-radius:16px; overflow:hidden; position:relative; background-color: rgba(200, 16, 46, 0.2) !important; background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent) !important; background-size: 20px 20px;")">
                                     <MudCardContent>
 
-                                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                                            <MudText Typo="Typo.subtitle1" Style="font-weight:600;">
-                                                @wa.CommonName
-                                            </MudText>
+                                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">                                           
 
                                             <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">
                                                 @wa.Code
@@ -81,11 +78,12 @@
                                         </MudStack>
 
                                         <MudDivider Class="my-3" />
-
+                                      
                                         <MudStack Spacing="1">
                                             <MudText Typo="Typo.body2" Color="Color.Secondary">
                                                 <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Small" Class="mr-1" />
-                                                @($"{wa.WorkAreaType?.Code ?? "-"} - {wa.WorkAreaType?.Label ?? "-"}")
+                                                <MudLink Href="@($"/workareatype/edit/{wa.WorkAreaType.Id}")" Class="ml-2"> @($"{wa.WorkAreaType?.Code ?? "-"} - {wa.WorkAreaType?.Label ?? "-"}") </MudLink>
+                                              
                                             </MudText>
                                         </MudStack>
                                     </MudCardContent>
@@ -135,7 +133,8 @@
                                 <MudStack Spacing="1">
                                     <MudText Typo="Typo.body2" Color="Color.Secondary">
                                         <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Small" Class="mr-1" />
-                                        @($"{wa.WorkAreaType?.Code ?? "-"} - {wa.WorkAreaType?.Label ?? "-"}")
+                                        <MudLink Href="@($"/workareatype/edit/{wa.WorkAreaType.Id}/{wa.plantID}")" Class="ml-2"> @($"{wa.WorkAreaType?.Code ?? "-"} - {wa.WorkAreaType?.Label ?? "-"}") </MudLink>
+
                                     </MudText>
                                 </MudStack>
                             </MudCardContent>

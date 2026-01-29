@@ -1,4 +1,5 @@
 ﻿using Application.Plants.Queries.GetPlants;
+using Application.WorkAreaTypes.Queries.GetWorkAreaType;
 using Domain.Entities.MasterData;
 
 namespace Application.Features.WorkAreas.Queries.GetWorkAreas
@@ -14,7 +15,7 @@ namespace Application.Features.WorkAreas.Queries.GetWorkAreas
         public string Code { get; set; } = null!;
         public string CommonName { get; set; } = null!;
         public int plantID { get; set; }
-        public int workAreaTypeID { get; set; }
+        public int WorAreaTypeID { get; set; }
         public bool Active { get; set; }
 
         public PlantDto plant { get; init; }

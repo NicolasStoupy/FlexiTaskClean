@@ -4,7 +4,7 @@ using Domain.Events;
 
 namespace Application.Plants.Commands.DeletePlant;
 
-public record DeletePlantCommand(int plantID) : IRequest;
+public record DeletePlantCommand(int plantID) : IRequest<Unit>;
 
 public class DeletePlantCommandValidator : AbstractValidator<DeletePlantCommand>
 {
@@ -13,7 +13,7 @@ public class DeletePlantCommandValidator : AbstractValidator<DeletePlantCommand>
     }
 }
 
-public class DeletePlantCommandHandler : IRequestHandler<DeletePlantCommand>
+public class DeletePlantCommandHandler : IRequestHandler<DeletePlantCommand,Unit>
 {
     private readonly IApplicationDbContext _context;
 
@@ -22,7 +22,7 @@ public class DeletePlantCommandHandler : IRequestHandler<DeletePlantCommand>
         _context = context;
     }
 
-    public async Task Handle(DeletePlantCommand request, CancellationToken cancellationToken)
+    public async Task<Unit> Handle(DeletePlantCommand request, CancellationToken cancellationToken)
     {
         var entity = await _context.Plant
             .FindAsync(new object[] { request.plantID }, cancellationToken);
@@ -34,5 +34,6 @@ public class DeletePlantCommandHandler : IRequestHandler<DeletePlantCommand>
         entity.AddDomainEvent(new PlantDeletedEvent(entity));
 
         await _context.SaveChangesAsync(cancellationToken);
+        return Unit.Value;
     }
 }

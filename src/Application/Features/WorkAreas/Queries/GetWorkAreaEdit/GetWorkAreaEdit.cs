@@ -1,6 +1,7 @@
 ﻿using Application.Features.WorkAreas.Queries.GetWorkAreaEdit;
 using Application.Features.WorkAreas.Queries.GetWorkAreas;
 using Application.Plants.Queries.GetPlants;
+using Application.WorkAreaTypes.Queries.GetWorkAreaType;
 using Ardalis.GuardClauses;
 
 public record GetWorkAreaEditQuery(int WorkAreaId) : IRequest<WorkAreaEditVm>;

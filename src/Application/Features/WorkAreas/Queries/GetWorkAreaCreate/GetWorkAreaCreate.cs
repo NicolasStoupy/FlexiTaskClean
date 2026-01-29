@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Application.Features.WorkAreas.Queries.GetWorkAreas;
 using Application.Plants.Queries.GetPlants;
+using Application.WorkAreaTypes.Queries.GetWorkAreaType;
 
 namespace Application.WorkAreas.Queries.GetWorkAreaCreate;
 

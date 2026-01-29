@@ -1,0 +1,148 @@
+﻿@page "/workareatypes"
+@using Application.WorkAreaTypes.Queries.GetWorkAreaType
+@using Application.WorkAreaTypes.Queries.GetWorkAreaTypes
+@using Domain.Constants
+@using Microsoft.Extensions.Localization
+
+@attribute [Authorize(Roles = $"{Roles.Administrator},{Roles.Users}")]
+
+<MudStack Spacing="3">
+
+    <!-- Header -->
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <div>
+            <MudText Typo="Typo.h4">@_localizer["WRK_TYPE_TITLE"]</MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                @_localizer["WRK_TYPE_SUBTITLE"]
+            </MudText>
+        </div>
+
+        <MudStack Row="true" Spacing="2">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       Disabled="_loading"
+                       OnClick="RefreshAsync">
+                @_localizer["WRK_TYPE_BTN_REFRESH"]
+            </MudButton>
+
+            <AuthorizeView Roles="@Roles.Administrator">
+                <Authorized>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Secondary"
+                               StartIcon="@Icons.Material.Filled.Add"
+                               Disabled="_loading"
+                               OnClick="CreateNewWorkAreaType">
+                        @_localizer["WRK_TYPE_BTN_NEW"]
+                    </MudButton>
+                </Authorized>
+            </AuthorizeView>
+        </MudStack>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudPaper Class="pa-6 d-flex align-center justify-center" Elevation="1" Rounded="true">
+            <MudProgressCircular Indeterminate="true" Size="Size.Large" />
+            <MudText Class="ml-3" Typo="Typo.body2" Color="Color.Secondary">
+                @_localizer["WRK_TYPE_LOADING"]
+            </MudText>
+        </MudPaper>
+    }
+    else if (_vm?.WorkAreaTypes is null || _vm.WorkAreaTypes.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info" Variant="Variant.Outlined">
+            @_localizer["WRK_TYPE_EMPTY"]
+        </MudAlert>
+    }
+    else
+    {
+        <MudGrid Spacing="3">
+            @foreach (var t in _vm.WorkAreaTypes)
+            {
+                <MudItem xs="12" sm="6" md="4" lg="3">
+                    <MudCard Elevation="2" Class="wa-card" Style="border-radius:16px;">
+                        <MudCardContent>
+
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                                <MudText Typo="Typo.subtitle1" Style="font-weight:600;">
+                                    @t.Label
+                                </MudText>
+
+                                <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">
+                                    @t.Code
+                                </MudChip>
+                            </MudStack>
+
+                            <MudDivider Class="my-3" />
+
+                            <MudStack Spacing="1">
+                                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                    <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Small" Class="mr-1" />
+                                    @($"{t.Code} - {t.Label}")
+                                </MudText>
+                            </MudStack>
+
+                        </MudCardContent>
+
+                        <MudCardActions Class="px-4 pb-4">
+                            <MudButton Variant="Variant.Text"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.Visibility"
+                                       OnClick="@(() => OpenDetails(t))">
+                                @_localizer["WRK_TYPE_BTN_DETAILS"]
+                            </MudButton>
+
+                            <MudSpacer />
+
+                            <AuthorizeView Roles="@Roles.Administrator">
+                                <Authorized>
+                                    <MudIconButton  Icon="@Icons.Material.Filled.Edit"
+                                                   Color="Color.Primary"
+                                                   title="@_localizer["WRK_TYPE_BTN_EDIT"]"
+                                                   OnClick="@(() => Edit(t))" />
+                                </Authorized>
+                            </AuthorizeView>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+
+</MudStack>
+
+@code
+{
+    private WorkAreaTypeVm? _vm;
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync()
+        => await LoadWorkAreaTypesAsync();
+
+    private async Task LoadWorkAreaTypesAsync()
+    {
+        _loading = true;
+
+  
+        var res = await _Uimediator.Send(new GetWorkAreaTypesQuery());
+        if (res.success)
+            _vm = res.Data;
+
+        _loading = false;
+    }
+
+    private Task RefreshAsync() => LoadWorkAreaTypesAsync();
+
+    private void OpenDetails(WorkAreaTypeDto t)
+    {
+        // TODO: navigation/dialog
+        // Nav.NavigateTo($"/workareatypes/{t.Code}");
+    }
+
+    private void CreateNewWorkAreaType()
+        => Nav.NavigateTo("/workareatypes/new");
+
+    private void Edit(WorkAreaTypeDto t)
+        => Nav.NavigateTo($"/workareatype/edit/{t.Id}");
+}

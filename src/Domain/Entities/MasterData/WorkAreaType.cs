@@ -7,6 +7,7 @@ namespace Domain.Entities.MasterData
     public class WorkAreaType : BaseAuditableEntity<int>
     {
     
+                            
         public string? Code { get; set; }                       // varchar(10) null
         public string? Label { get; set; }                      // varchar(50) null
 

@@ -1,6 +1,7 @@
 ﻿@page "/plants"
 
 @using Application.Features.Plants.Queries.GetPlants
+@using Application.Plants.Commands.DeletePlant
 @using Application.Plants.Queries.GetPlants
 @using Domain.Constants
 @using Microsoft.Extensions.Localization
@@ -93,6 +94,11 @@
                                   
                                     <MudLink Href="@($"/workareas/plant/{p.Id}")"  Class="ml-2">  @_localizer["PLANT_WORKAREAS_COUNT"] : @(p.WorkAreas?.Count ?? 0)</MudLink>
                                 </MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Primary">
+                                    <MudIcon Icon="@Icons.Material.Filled.AccountTree" Size="Size.Small" Class="mr-1" />
+
+                                    <MudButton OnClick="@(() => DeletePlant(p.Id))" Class="ml-2"> Supprimer</MudButton>
+                                </MudText>
 
                             </MudStack>
                         </MudCardContent>
@@ -154,5 +160,13 @@
     private void Edit(PlantDto p) => Nav.NavigateTo($"/plants/edit/{p.Id}");
 
     private void CreateNewPlant() => Nav.NavigateTo("/plants/new");
+    private async Task DeletePlant(int plantId)
+    {
+        var cmd = new DeletePlantCommand(plantId);
+        await _Uimediator.Send(cmd);
+        await RefreshAsync();
+
+    }
+    
 
 }

@@ -336,4 +336,64 @@
   <data name="ERR_NAV_BACK" xml:space="preserve">
     <value>Précédent</value>
   </data>
+  <data name="NAV_WORKAREASTYPE" xml:space="preserve">
+    <value>Type de zone de travail</value>
+  </data>
+  <data name="WRK_TYPE_EDIT_TITLE" xml:space="preserve">
+    <value>Modifier le type de zone de travail</value>
+  </data>
+  <data name="WRK_TYPE_EDIT_SUBTITLE" xml:space="preserve">
+    <value>Mettre à jour les informations sur le type de zone de travail</value>
+  </data>
+  <data name="COMMON_BACK" xml:space="preserve">
+    <value>Précédent</value>
+  </data>
+  <data name="COMMON_SAVE" xml:space="preserve">
+    <value>Sauvegarder</value>
+  </data>
+  <data name="COMMON_LOADING" xml:space="preserve">
+    <value>Chargement...</value>
+  </data>
+  <data name="COMMON_SAVING" xml:space="preserve">
+    <value>Économie...</value>
+  </data>
+  <data name="COMMON_NOT_FOUND" xml:space="preserve">
+    <value>L'élément demandé n'a pas été trouvé.</value>
+  </data>
+  <data name="COMMON_REQUIRED" xml:space="preserve">
+    <value>Ce champ est obligatoire.</value>
+  </data>
+  <data name="WRK_TYPE_FIELD_CODE" xml:space="preserve">
+    <value>Code</value>
+  </data>
+  <data name="WRK_TYPE_FIELD_LABEL" xml:space="preserve">
+    <value>Étiquette</value>
+  </data>
+  <data name="COMMON_CANCEL" xml:space="preserve">
+    <value>Annuler</value>
+  </data>
+  <data name="WRK_TYPE_TITLE" xml:space="preserve">
+    <value>Types de zones de travail</value>
+  </data>
+  <data name="WRK_TYPE_SUBTITLE" xml:space="preserve">
+    <value>Gérer et maintenir les définitions de types de zones de travail</value>
+  </data>
+  <data name="WRK_TYPE_BTN_REFRESH" xml:space="preserve">
+    <value>Rafraîchir</value>
+  </data>
+  <data name="WRK_TYPE_BTN_NEW" xml:space="preserve">
+    <value>Nouveau type de zone de travail</value>
+  </data>
+  <data name="WRK_TYPE_LOADING" xml:space="preserve">
+    <value>Chargement des types de zones de travail...</value>
+  </data>
+  <data name="WRK_TYPE_EMPTY" xml:space="preserve">
+    <value>Aucun type de zone de travail trouvé.</value>
+  </data>
+  <data name="WRK_TYPE_BTN_DETAILS" xml:space="preserve">
+    <value>Détails</value>
+  </data>
+  <data name="WRK_TYPE_BTN_EDIT" xml:space="preserve">
+    <value>Modifier</value>
+  </data>
 </root>
