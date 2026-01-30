@@ -41,10 +41,10 @@ namespace Infrastructure.Data.Configurations
                 .IsRequired();
 
             // 👉 1–1 avec TaskItem via la MÊME PK composite
-            builder.HasOne(x => x.TaskItem)
-                .WithOne(t => t.TransportTask)
-                .HasForeignKey<TransportTask>(x => new { x.TaskHeaderId, x.TaskItemId })
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.HasOne(x => x.TaskItem)
+            //    .WithOne(t => t.TransportTask)
+            //    .HasForeignKey<TransportTask>(x => new { x.TaskHeaderId, x.TaskItemId })
+            //    .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasOne(x => x.SourceArea)
                 .WithMany()

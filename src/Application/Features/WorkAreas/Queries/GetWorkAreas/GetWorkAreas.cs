@@ -19,18 +19,19 @@ public class GetWorkAreasQueryValidator : AbstractValidator<GetWorkAreasQuery>
 
 public class GetWorkAreasQueryHandler : IRequestHandler<GetWorkAreasQuery, WorkAreaVm>
 {
-    private readonly IApplicationDbContext _context;
+    IApplicationDbContextFactory _factory;
     private readonly IMapper _mapper;
 
-    public GetWorkAreasQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetWorkAreasQueryHandler(IApplicationDbContextFactory factory, IMapper mapper)
     {
-        _context = context;
+       _factory = factory;
         _mapper = mapper;
     }
 
     public async Task<WorkAreaVm> Handle(GetWorkAreasQuery request, CancellationToken cancellationToken)
     {
-        if(request.PlantID != null) {
+        var _context = await _factory.CreateAsync(cancellationToken);
+        if (request.PlantID != null) {
             return new WorkAreaVm()
             {
                 workAreas = await _context.WorkAreas.Where(w=>w.Plant.Id == request.PlantID).AsNoTracking()

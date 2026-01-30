@@ -15,23 +15,24 @@ public class CreateWorkAreaTypeCommandValidator : AbstractValidator<CreateWorkAr
 
 public class CreateWorkAreaTypeCommandHandler : IRequestHandler<CreateWorkAreaTypeCommand, int>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IApplicationDbContextFactory _factory;
 
-    public CreateWorkAreaTypeCommandHandler(IApplicationDbContext context)
+    public CreateWorkAreaTypeCommandHandler(IApplicationDbContextFactory factory)
     {
-        _context = context;
+        _factory = factory;
     }
 
     public async Task<int> Handle(CreateWorkAreaTypeCommand request, CancellationToken cancellationToken)
     {
+        var context = await _factory.CreateAsync();
 
         var workAreaType = new WorkAreaType()
         {
             Code = request.Code,
             Label = request.label
-        };        
-        _context.WorkAreaTypes.Add(workAreaType);
-        await _context.SaveChangesAsync(cancellationToken);
+        };
+        context.WorkAreaTypes.Add(workAreaType);
+        await context.SaveChangesAsync(cancellationToken);
         return workAreaType.Id;
     }
 }

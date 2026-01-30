@@ -47,10 +47,10 @@ namespace Infrastructure.Data.Configurations
                 .HasColumnType("int");
 
             // ✅ 1–1 avec TaskItem via PK partagé (composite)
-            builder.HasOne(x => x.TaskItem)
-                .WithOne(t => t.LoadingTask) // si tu ajoutes la navigation
-                .HasForeignKey<LoadingTask>(x => new { x.TaskHeaderId, x.TaskItemId })
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.HasOne(x => x.TaskItem)
+            //    .WithOne(t => t.LoadingTask) // si tu ajoutes la navigation
+            //    .HasForeignKey<LoadingTask>(x => new { x.TaskHeaderId, x.TaskItemId })
+            //    .OnDelete(DeleteBehavior.NoAction);
 
             // FK WorkArea
             builder.HasOne(x => x.AreaForLoading)

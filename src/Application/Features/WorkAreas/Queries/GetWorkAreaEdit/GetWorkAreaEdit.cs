@@ -3,6 +3,7 @@ using Application.Features.WorkAreas.Queries.GetWorkAreas;
 using Application.Plants.Queries.GetPlants;
 using Application.WorkAreaTypes.Queries.GetWorkAreaType;
 using Ardalis.GuardClauses;
+using System.Threading;
 
 public record GetWorkAreaEditQuery(int WorkAreaId) : IRequest<WorkAreaEditVm>;
 
@@ -14,14 +15,15 @@ public class GetWorkAreaEditQueryValidator : AbstractValidator<GetWorkAreaEditQu
 
 public class GetWorkAreaEditQueryHandler : IRequestHandler<GetWorkAreaEditQuery, WorkAreaEditVm>
 {
-    private readonly IApplicationDbContext _context;
+    IApplicationDbContextFactory _factory;
     private readonly IMapper _mapper;
 
-    public GetWorkAreaEditQueryHandler(IApplicationDbContext context, IMapper mapper)
-        => (_context, _mapper) = (context, mapper);
+    public GetWorkAreaEditQueryHandler(IApplicationDbContextFactory factory, IMapper mapper)
+        => (_factory, _mapper) = (factory, mapper);
 
     public async Task<WorkAreaEditVm> Handle(GetWorkAreaEditQuery request, CancellationToken ct)
     {
+        var _context = await _factory.CreateAsync(ct);
         var workArea = await _context.WorkAreas
             .AsNoTracking()
             .Where(w => w.Id == request.WorkAreaId)

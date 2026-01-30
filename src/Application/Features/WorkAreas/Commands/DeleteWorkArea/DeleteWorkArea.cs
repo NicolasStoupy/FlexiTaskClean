@@ -15,11 +15,11 @@ public class DeleteWorkAreaCommandValidator : AbstractValidator<DeleteWorkAreaCo
 
 public class DeleteWorkAreaCommandHandler : IRequestHandler<DeleteWorkAreaCommand, int>
 {
-    private readonly IApplicationDbContext _context;
+    IApplicationDbContextFactory _factory;
 
-    public DeleteWorkAreaCommandHandler(IApplicationDbContext context)
+    public DeleteWorkAreaCommandHandler(IApplicationDbContextFactory factory)
     {
-        _context = context;
+        _factory = factory;
     }
 
     public async Task<int> Handle(DeleteWorkAreaCommand request, CancellationToken cancellationToken)

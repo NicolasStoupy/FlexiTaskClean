@@ -20,20 +20,36 @@ namespace Infrastructure
             var connectionString = builder.Configuration.GetConnectionString("DB");
             Guard.Against.Null(connectionString, message: "Connection string 'DB' not found.");
 
-            builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
-            builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+           
+            builder.Services.AddSingleton<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
 
-            builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
+            //        builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
+            //        {
+            //            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
+            //            options.UseSqlServer(connectionString);
+            //            options.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+            //        });
+            //        builder.Services.AddScoped<IApplicationDbContext>(sp =>
+            //sp.GetRequiredService<ApplicationDbContext>());
+            //
+
+
+            builder.Services.AddSingleton<AuditableEntityInterceptor>();
+            builder.Services.AddSingleton<ISaveChangesInterceptor>(sp => sp.GetRequiredService<AuditableEntityInterceptor>());
+            builder.Services.AddSingleton<EntityChangeInterceptor>();
+            builder.Services.AddDbContextFactory<ApplicationDbContext>((sp, options) =>
             {
-                options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
                 options.UseSqlServer(connectionString);
-                options.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
+                options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+
+               
+                options.AddInterceptors(sp.GetRequiredService<AuditableEntityInterceptor>());
+                options.AddInterceptors(sp.GetRequiredService<EntityChangeInterceptor>());
             });
 
 
-            builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-
-           builder.Services.AddScoped<ApplicationDbContextInitialiser>();
+            builder.Services.AddScoped<IApplicationDbContextFactory, ApplicationDbContextFactory>();
+            builder.Services.AddScoped<ApplicationDbContextInitialiser>();
 
 
             // Identity (externalisé)

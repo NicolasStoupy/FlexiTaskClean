@@ -11,13 +11,14 @@
 
     public class UpdatePlantCommandHandler : IRequestHandler<UpdatePlantCommand, int>
     {
-        private readonly IApplicationDbContext _context;
-        public UpdatePlantCommandHandler(IApplicationDbContext context)
+        IApplicationDbContextFactory _factory;
+        public UpdatePlantCommandHandler(IApplicationDbContextFactory factory)
         {
-            _context = context;
+           _factory = factory;
         }
         public async Task<int> Handle(UpdatePlantCommand request, CancellationToken cancellationToken)
         {
+            var _context = await _factory.CreateAsync(cancellationToken);
             var plant = await _context.Plant
                 .FirstOrDefaultAsync(p => p.Id == request.PlantID, cancellationToken);
             if (plant != null)

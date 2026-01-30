@@ -16,15 +16,16 @@ public class EditWorkAreaTypeCommandValidator : AbstractValidator<EditWorkAreaTy
 
 public class EditWorkAreaTypeCommandHandler : IRequestHandler<EditWorkAreaTypeCommand, int>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IApplicationDbContextFactory _factory;
 
-    public EditWorkAreaTypeCommandHandler(IApplicationDbContext context)
+    public EditWorkAreaTypeCommandHandler(IApplicationDbContextFactory factory)
     {
-        _context = context;
+        _factory = factory;
     }
 
     public async Task<int> Handle(EditWorkAreaTypeCommand request, CancellationToken cancellationToken)
     {
+        var _context = await _factory.CreateAsync(cancellationToken);
         var entity = await _context.WorkAreaTypes
             .FirstOrDefaultAsync(w => w.Id == request.workAreaTypeId, cancellationToken);
 

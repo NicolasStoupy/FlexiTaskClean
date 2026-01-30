@@ -7,17 +7,18 @@ public record GetWorkAreaTypeQuery(int workAreaTypeId) : IRequest<WorkAreaTypeDt
 }
 public class GetWorkAreaTypeQueryHandler : IRequestHandler<GetWorkAreaTypeQuery, WorkAreaTypeDto>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IApplicationDbContextFactory _factory;
     private readonly IMapper _mapper;
-    public GetWorkAreaTypeQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetWorkAreaTypeQueryHandler(IApplicationDbContextFactory factory, IMapper mapper)
     {
-        _context = context;
+        _factory = factory;
         _mapper = mapper;
     }
 
     public async Task<WorkAreaTypeDto> Handle(GetWorkAreaTypeQuery request, CancellationToken cancellationToken)
     {
-        var entity = await _context.WorkAreaTypes
+        var context = await _factory.CreateAsync(cancellationToken);
+        var entity = await context.WorkAreaTypes
             .FindAsync(new object[] { request.workAreaTypeId }, cancellationToken);
 
         Guard.Against.NotFound(request.workAreaTypeId, entity);

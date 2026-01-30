@@ -1,5 +1,6 @@
 ﻿using Application.Common.Interfaces;
 using Ardalis.GuardClauses;
+using System.Threading;
 
 namespace Application.WorkAreas.Commands.UpdateWorkArea;
 
@@ -32,15 +33,16 @@ public class UpdateWorkAreaCommandValidator : AbstractValidator<UpdateWorkAreaCo
 
 public class UpdateWorkAreaCommandHandler : IRequestHandler<UpdateWorkAreaCommand, int>
 {
-    private readonly IApplicationDbContext _context;
+    IApplicationDbContextFactory _factory;
 
-    public UpdateWorkAreaCommandHandler(IApplicationDbContext context)
+    public UpdateWorkAreaCommandHandler(IApplicationDbContextFactory factory)
     {
-        _context = context;
+        _factory = factory;
     }
 
     public async Task<int> Handle(UpdateWorkAreaCommand request, CancellationToken ct)
     {
+        var _context = await _factory.CreateAsync(ct);
         var entity = await _context.WorkAreas
             .FirstOrDefaultAsync(w => w.Id == request.WorkAreaId, ct);
         var plant = await _context.Plant

@@ -11,6 +11,7 @@ namespace Domain.Entities.Traceability
         public string FieldType { get; set; } = null!;
         public string OldValue { get; set; } = null!;
         public string NewValue { get; set; } = null!;
+        public string EntityKey { get; set; } = null!;
 
         public DateTimeOffset ChangedAt { get; set; }
 

@@ -39,17 +39,17 @@ namespace Infrastructure.Data.Configurations
                 .HasColumnType("int")
                 .IsRequired();
 
-            // FK -> TaskItems (la tâche)
-            builder.HasOne(x => x.TaskItem)
-                .WithMany(t => t.Dependencies) // à ajouter dans TaskItem
-                .HasForeignKey(x => new { x.TaskHeaderId, x.TaskItemId })
-                .OnDelete(DeleteBehavior.NoAction);
+            //// FK -> TaskItems (la tâche)
+            //builder.HasOne(x => x.TaskItem)
+            //    .WithMany(t => t.Dependencies) // à ajouter dans TaskItem
+            //    .HasForeignKey(x => new { x.TaskHeaderId, x.TaskItemId })
+            //    .OnDelete(DeleteBehavior.NoAction);
 
-            // FK -> TaskItems (le prérequis)
-            builder.HasOne(x => x.DependsOn)
-                .WithMany(t => t.DependentBy) // à ajouter dans TaskItem
-                .HasForeignKey(x => new { x.DependsOnTaskHeaderId, x.DependsOnTaskItemId })
-                .OnDelete(DeleteBehavior.NoAction);
+            //// FK -> TaskItems (le prérequis)
+            //builder.HasOne(x => x.DependsOn)
+            //    .WithMany(t => t.DependentBy) // à ajouter dans TaskItem
+            //    .HasForeignKey(x => new { x.DependsOnTaskHeaderId, x.DependsOnTaskItemId })
+            //    .OnDelete(DeleteBehavior.NoAction);
 
             // Audit (si tu veux mapper explicitement datetimeoffset(7)/varchar(50))
             builder.Property(x => x.Created).HasColumnType("datetimeoffset(7)");

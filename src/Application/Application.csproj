@@ -16,6 +16,7 @@
     <Folder Include="Features\WorkAreas\Commands\CreateWorkArea\" />
     <Folder Include="Features\WorkAreas\Commands\DeleteWorkArea\" />
     <Folder Include="Features\WorkAreas\Commands\UpdateWorkArea\" />
+    <Folder Include="Features\Workflows\" />
   </ItemGroup>
 
   <ItemGroup>

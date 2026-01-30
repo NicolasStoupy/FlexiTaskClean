@@ -16,15 +16,16 @@ public class DeleteWorkAreaTypeCommandValidator : AbstractValidator<DeleteWorkAr
 
 public class DeleteWorkAreaTypeCommandHandler : IRequestHandler<DeleteWorkAreaTypeCommand, bool>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IApplicationDbContextFactory _factory;
 
-    public DeleteWorkAreaTypeCommandHandler(IApplicationDbContext context)
+    public DeleteWorkAreaTypeCommandHandler(IApplicationDbContextFactory factory)
     {
-        _context = context;
+        _factory = factory;
     }
 
     public async Task<bool> Handle(DeleteWorkAreaTypeCommand request, CancellationToken cancellationToken)
     {
+        var _context = await _factory.CreateAsync(cancellationToken);
         var entity = await _context.WorkAreaTypes
             .FindAsync(new object[] { request.workAreaTypeID }, cancellationToken);
         Guard.Against.NotFound(request.workAreaTypeID, entity);

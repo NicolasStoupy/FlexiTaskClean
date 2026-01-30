@@ -20,39 +20,53 @@ namespace Infrastructure.Data.Configurations
                 .HasColumnName("TaskItemsID")
                 .ValueGeneratedOnAdd();
 
-            builder.Property(x => x.LinkedWorkAreaId).HasColumnName("LinkedWorkArea");
+            builder.HasMany(t => t.Prerequisites)
+               .WithOne(d => d.TaskItem)
+               .HasForeignKey(d => new { d.TaskHeaderId, d.TaskItemId })
+               .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.TaskHeader)
-                .WithMany(h => h.Items)
-                .HasForeignKey(x => x.TaskHeaderId)
-                .OnDelete(DeleteBehavior.NoAction);          
+            builder.HasMany(t => t.NextSteps)
+               .WithOne(d => d.DependsOn)
+               .HasForeignKey(d => new { d.DependsOnTaskHeaderId, d.DependsOnTaskItemId })
+               .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(x => x.LinkedWorkArea)
-                .WithMany()
-                .HasForeignKey(x => x.LinkedWorkAreaId)
-                .OnDelete(DeleteBehavior.NoAction);
+            builder.Property(t => t.TaskItemStatus)
+             .HasColumnName("TaskStatus")
+             .HasConversion<int>()
+             .IsRequired();
+            //builder.Property(x => x.LinkedWorkAreaId).HasColumnName("LinkedWorkArea");
 
-            // Dependencies (self ref via join entity)
-            builder.HasMany(x => x.Dependencies)
-                .WithOne(d => d.TaskItem)
-                .HasForeignKey(d => new { d.TaskHeaderId, d.TaskItemId })
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.HasOne(x => x.TaskHeader)
+            //    .WithMany(h => h.Items)
+            //    .HasForeignKey(x => x.TaskHeaderId)
+            //    .OnDelete(DeleteBehavior.NoAction);          
 
-            builder.HasMany(x => x.DependentBy)
-                .WithOne(d => d.DependsOn)
-                .HasForeignKey(d => new { d.DependsOnTaskHeaderId, d.DependsOnTaskItemId })
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.HasOne(x => x.LinkedWorkArea)
+            //    .WithMany()
+            //    .HasForeignKey(x => x.LinkedWorkAreaId)
+            //    .OnDelete(DeleteBehavior.NoAction);
 
-            // Extensions 1-1
-            builder.HasOne(x => x.TransportTask)
-                .WithOne(t => t.TaskItem)
-                .HasForeignKey<TransportTask>(t => new { t.TaskHeaderId, t.TaskItemId })
-                .OnDelete(DeleteBehavior.NoAction);
+            //// Dependencies (self ref via join entity)
+            //builder.HasMany(x => x.Dependencies)
+            //    .WithOne(d => d.TaskItem)
+            //    .HasForeignKey(d => new { d.TaskHeaderId, d.TaskItemId })
+            //    .OnDelete(DeleteBehavior.NoAction);
 
-            builder.HasOne(x => x.LoadingTask)
-                .WithOne(t => t.TaskItem)
-                .HasForeignKey<LoadingTask>(t => new { t.TaskHeaderId, t.TaskItemId })
-                .OnDelete(DeleteBehavior.NoAction);
+            //builder.HasMany(x => x.DependentBy)
+            //    .WithOne(d => d.DependsOn)
+            //    .HasForeignKey(d => new { d.DependsOnTaskHeaderId, d.DependsOnTaskItemId })
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            //// Extensions 1-1
+            //builder.HasOne(x => x.TransportTask)
+            //    .WithOne(t => t.TaskItem)
+            //    .HasForeignKey<TransportTask>(t => new { t.TaskHeaderId, t.TaskItemId })
+            //    .OnDelete(DeleteBehavior.NoAction);
+
+            //builder.HasOne(x => x.LoadingTask)
+            //    .WithOne(t => t.TaskItem)
+            //    .HasForeignKey<LoadingTask>(t => new { t.TaskHeaderId, t.TaskItemId })
+            //    .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

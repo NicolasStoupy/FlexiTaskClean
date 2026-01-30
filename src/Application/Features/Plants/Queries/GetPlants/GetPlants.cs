@@ -18,18 +18,19 @@ public class GetPlantsQueryValidator : AbstractValidator<GetPlantsQuery>
 
 public class GetPlantsQueryHandler : IRequestHandler<GetPlantsQuery, PlantsVm>
 {
-    private readonly IApplicationDbContext _context;
+    IApplicationDbContextFactory _factory;
     private readonly IMapper _mapper;
 
-    public GetPlantsQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetPlantsQueryHandler(IApplicationDbContextFactory factory, IMapper mapper)
     {
-        _context = context;
+       _factory = factory;
         _mapper = mapper;
     }
 
     public async Task<PlantsVm> Handle(GetPlantsQuery request, CancellationToken cancellationToken)
     {
-        if(request.plantID != 0 && request.plantID != null)
+        var _context = await _factory.CreateAsync(cancellationToken);
+        if (request.plantID != 0 && request.plantID != null)
         {
             var plant = await _context.Plant
             .AsNoTracking()

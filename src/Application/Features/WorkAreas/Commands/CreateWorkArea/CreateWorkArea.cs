@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities.MasterData;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Application.WorkAreas.Commands.CreateWorkArea;
 
@@ -35,7 +36,8 @@ public record CreateWorkAreaCommand : IRequest<int>, ICommand
 
 public class CreateWorkAreaCommandValidator : AbstractValidator<CreateWorkAreaCommand>
 {
-    private readonly IApplicationDbContext _context;
+
+    private readonly IApplicationDbContextFactory _factory;
 
     /// <summary>
     /// Initialise une nouvelle instance du validateur pour <see cref="CreateWorkAreaCommand"/>.
@@ -46,13 +48,13 @@ public class CreateWorkAreaCommandValidator : AbstractValidator<CreateWorkAreaCo
     /// - <see cref="CreateWorkAreaCommand.TypeID"/> : > 0.
     /// </summary>
     /// <param name="context">Contexte de la base de données utilisé pour les validations asynchrones (unicité).</param>
-    public CreateWorkAreaCommandValidator(IApplicationDbContext context)
+    public CreateWorkAreaCommandValidator(IApplicationDbContextFactory factory)
     {
-        _context = context;
+        _factory = factory;
 
         RuleFor(x => x.Code)
             .NotEmpty()
-            .Must(BeUniqueCode).WithMessage("Code already exist")
+            .MustAsync(BeUniqueCode).WithMessage("Code already exist")
             .MaximumLength(5);
 
         RuleFor(x => x.CommonName)
@@ -70,8 +72,9 @@ public class CreateWorkAreaCommandValidator : AbstractValidator<CreateWorkAreaCo
     /// <returns>
     /// Vrai si aucun WorkArea n'utilise déjà le code; faux sinon.
     /// </returns>
-    private bool BeUniqueCode(string code)
+    private async Task<bool> BeUniqueCode(string code,CancellationToken cancellationToken)
     {
+        var _context = await _factory.CreateAsync(cancellationToken);
         var exist = _context.WorkAreas
             .AsNoTracking()
             .Any(w => w.Code == code);
@@ -85,15 +88,15 @@ public class CreateWorkAreaCommandValidator : AbstractValidator<CreateWorkAreaCo
 /// </summary>
 public class CreateWorkAreaCommandHandler : IRequestHandler<CreateWorkAreaCommand, int>
 {
-    private readonly IApplicationDbContext _context;
+    private readonly IApplicationDbContextFactory _factory;
 
     /// <summary>
     /// Initialise une nouvelle instance du handler avec le contexte d'application fourni.
     /// </summary>
     /// <param name="context">Contexte de la base de données.</param>
-    public CreateWorkAreaCommandHandler(IApplicationDbContext context)
+    public CreateWorkAreaCommandHandler(IApplicationDbContextFactory factory)
     {
-        _context = context;
+        _factory = factory;
     }
 
     /// <summary>
@@ -107,6 +110,7 @@ public class CreateWorkAreaCommandHandler : IRequestHandler<CreateWorkAreaComman
     /// <returns>L'identifiant de la WorkArea nouvellement créée.</returns>
     public async Task<int> Handle(CreateWorkAreaCommand request, CancellationToken cancellationToken)
     {
+        var _context =  await _factory.CreateAsync(cancellationToken);
         var plant = await _context.Plant.FindAsync(request.PlantID);
         var type = await _context.WorkAreaTypes.FindAsync(request.TypeID);
 

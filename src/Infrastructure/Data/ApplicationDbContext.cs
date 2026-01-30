@@ -1,5 +1,6 @@
 using Application.Common.Interfaces;
 using Domain.Entities.MasterData;
+using Domain.Entities.Tasks;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,10 @@ namespace Infrastructure.Data
         public DbSet<WorkArea> WorkAreas => Set<WorkArea>();
 
         public DbSet<WorkAreaType> WorkAreaTypes => Set<WorkAreaType>();
+
+        public DbSet<TaskItem> TaskItems => Set<TaskItem>();
+
+        public DbSet<TaskHeader> TaskHeader => Set<TaskHeader>();
 
 
 

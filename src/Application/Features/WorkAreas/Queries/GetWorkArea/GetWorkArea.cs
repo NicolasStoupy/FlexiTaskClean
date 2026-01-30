@@ -3,6 +3,7 @@ using Application.Features.WorkAreas.Queries.GetWorkAreas;
 using Ardalis.GuardClauses;
 using AutoMapper.QueryableExtensions;
 using Domain.Entities.MasterData;
+using System.Threading;
 
 namespace Application.WorkAreas.Queries.GetWorkArea;
 
@@ -19,16 +20,17 @@ public class GetWorkAreaQueryValidator : AbstractValidator<GetWorkAreaQuery>
 
 public class GetWorkAreaQueryHandler : IRequestHandler<GetWorkAreaQuery, WorkAreaDto>
 {
-    private readonly IApplicationDbContext _context;
+    IApplicationDbContextFactory _factory;
     private readonly IMapper _mapper;
-    public GetWorkAreaQueryHandler(IApplicationDbContext context, IMapper mapper)
+    public GetWorkAreaQueryHandler(IApplicationDbContextFactory factory, IMapper mapper)
     {
-        _context = context;
+       _factory = factory;
         _mapper = mapper;
 
     }
     public async Task<WorkAreaDto> Handle(GetWorkAreaQuery request, CancellationToken ct)
     {
+        var _context = await _factory.CreateAsync(ct);
         var workArea= await _context.WorkAreas
             .AsNoTracking()
             .Where(w => w.Id == request.workAreaID)

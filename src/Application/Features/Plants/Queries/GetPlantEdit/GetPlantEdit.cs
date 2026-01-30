@@ -19,16 +19,17 @@ public class GetPlantEditQueryValidator : AbstractValidator<GetPlantEditQuery>
 
 public class GetPlantEditQueryHandler : IRequestHandler<GetPlantEditQuery, PlantEditVm>
 {
-    private readonly IApplicationDbContext _context;
+    IApplicationDbContextFactory _factory;
     private readonly IMapper _mapper;
-    public GetPlantEditQueryHandler(IApplicationDbContext context,IMapper mapper)
+    public GetPlantEditQueryHandler(IApplicationDbContextFactory factory,IMapper mapper)
     {
-        _context = context;
+       _factory = factory;
         _mapper = mapper;
     }
 
     public async Task<PlantEditVm> Handle(GetPlantEditQuery request, CancellationToken cancellationToken)
     {
+        var _context = await _factory.CreateAsync(cancellationToken);
         return new PlantEditVm
         {
             Plant = _mapper.Map<PlantDto>(await _context.Plant

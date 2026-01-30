@@ -15,15 +15,16 @@ public class DeletePlantCommandValidator : AbstractValidator<DeletePlantCommand>
 
 public class DeletePlantCommandHandler : IRequestHandler<DeletePlantCommand,Unit>
 {
-    private readonly IApplicationDbContext _context;
+    IApplicationDbContextFactory _factory;
 
-    public DeletePlantCommandHandler(IApplicationDbContext context)
+    public DeletePlantCommandHandler(IApplicationDbContextFactory factory)
     {
-        _context = context;
+       _factory = factory;
     }
 
     public async Task<Unit> Handle(DeletePlantCommand request, CancellationToken cancellationToken)
     {
+        var _context = await _factory.CreateAsync(cancellationToken);
         var entity = await _context.Plant
             .FindAsync(new object[] { request.plantID }, cancellationToken);
 
