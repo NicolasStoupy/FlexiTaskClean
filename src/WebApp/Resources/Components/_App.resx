@@ -396,4 +396,10 @@
   <data name="WRK_TYPE_BTN_EDIT" xml:space="preserve">
     <value>Edit</value>
   </data>
+  <data name="NAV_GROUP_TASKS" xml:space="preserve">
+    <value>Tasks</value>
+  </data>
+  <data name="NAV_TASKLOADINGCREATE" xml:space="preserve">
+    <value>Request Glass</value>
+  </data>
 </root>

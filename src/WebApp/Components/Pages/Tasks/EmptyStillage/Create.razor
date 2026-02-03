@@ -1,0 +1,224 @@
+﻿@page "/tasks/emptystillage/new"
+
+@using System.ComponentModel.DataAnnotations
+
+<h3>Need an empty stillage</h3>
+
+<MudPaper Class="pa-3" Elevation="1">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+        <MudText Typo="Typo.h6">Task creation</MudText>
+
+        <MudChip T="string" Color="@HeaderColor" Variant="Variant.Filled">
+            @HeaderStatus
+        </MudChip>
+    </MudStack>
+
+    <MudText Typo="Typo.caption" Class="mt-1">
+        Work Area: @_workArea
+    </MudText>
+</MudPaper>
+
+<MudPaper Class="pa-3 mt-3" Elevation="1">
+    <MudStepper Linear="true" @bind-ActiveIndex="_step">
+
+        <!-- STEP 1 -->
+        <MudStep Label="Define a type of stillage" Icon="@Icons.Material.Filled.Category">
+            <MudText Typo="Typo.body2" Class="mb-2">
+                Choose the stillage type you need.
+            </MudText>
+
+            <MudSelect T="string"
+                       Label="Stillage type"
+                       Dense="true"
+                       Required="true"
+                       @bind-Value="Model.StillageType">
+                @foreach (var t in StillageTypes)
+                {
+                    <MudSelectItem T="string" Value="@t.Code">@t.Label</MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudDivider Class="my-3" />
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(!IsStep1Valid)"
+                       OnClick="Next">
+                Next
+            </MudButton>
+        </MudStep>
+
+        <!-- STEP 2 -->
+        <MudStep Label="Define the qty" Icon="@Icons.Material.Filled.Numbers">
+            <MudText Typo="Typo.body2">
+                Enter the number of empty stillages needed.
+            </MudText>
+
+            <MudNumericField T="int"
+                             Label="Quantity"
+                             Dense="true"
+                             Min="1"
+                             Max="50"
+                             Immediate="true"
+                             @bind-Value="Model.Quantity"
+                             Class="mt-2" />
+
+            <MudTextField T="string"
+                          Label="Comment (optional)"
+                          Dense="true"
+                          Immediate="true"
+                          @bind-Value="Model.Comment"
+                          Class="mt-2" />
+
+            <MudDivider Class="my-3" />
+
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="Prev">
+                    Back
+                </MudButton>
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Disabled="@(!IsStep2Valid)"
+                           OnClick="Next">
+                    Next
+                </MudButton>
+            </MudStack>
+        </MudStep>
+
+        <!-- STEP 3 -->
+        <MudStep Label="Validate the task creation" Icon="@Icons.Material.Filled.AssignmentTurnedIn">
+            <MudText Typo="Typo.body2" Class="mb-2">
+                Review and validate the request.
+            </MudText>
+
+            <MudPaper Class="pa-3" Elevation="0" Outlined="true">
+                <MudGrid Spacing="2">
+                    <MudItem xs="12" md="4">
+                        <MudText Typo="Typo.caption">Work Area</MudText>
+                        <MudText Typo="Typo.body1">@_workArea</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudText Typo="Typo.caption">Stillage type</MudText>
+                        <MudText Typo="Typo.body1">@SelectedTypeLabel</MudText>
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudText Typo="Typo.caption">Quantity</MudText>
+                        <MudText Typo="Typo.body1">@Model.Quantity</MudText>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption">Comment</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">
+                            @(string.IsNullOrWhiteSpace(Model.Comment) ? "-" : Model.Comment)
+                        </MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            @if (_created)
+            {
+                <MudAlert Severity="Severity.Success" Dense="true" Class="mt-3">
+                    Empty stillage task validated ✅ (created)
+                </MudAlert>
+            }
+
+            <MudDivider Class="my-3" />
+
+            <MudStack Row="true" Spacing="2">
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Secondary"
+                           Disabled="@(_created)"
+                           OnClick="Prev">
+                    Back
+                </MudButton>
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Success"
+                           StartIcon="@Icons.Material.Filled.CheckCircle"
+                           Disabled="@(!CanCreate)"
+                           OnClick="CreateTask">
+                    Validate & create
+                </MudButton>
+            </MudStack>
+        </MudStep>
+
+    </MudStepper>
+</MudPaper>
+
+@code {
+    // ===== Routing / Context =====
+    private string _workArea = "Work Area"; // TODO: from user context OR route param (workAreaId)
+
+    // ===== Step state =====
+    private int _step = 0;
+    private bool _created = false;
+
+    // ===== ViewModel =====
+    public class EmptyStillageRequestVm
+    {
+        [Required] public string StillageType { get; set; } = "";
+        [Range(1, 50)] public int Quantity { get; set; } = 1;
+        public string? Comment { get; set; }
+    }
+
+    private EmptyStillageRequestVm Model = new();
+
+    // ===== Stillage types =====
+    public record StillageTypeItem(string Code, string Label);
+
+    private List<StillageTypeItem> StillageTypes = new()
+    {
+        new("X15", "X15"),
+        new("P10", "P10"),
+        new("P12", "P12"),
+        new("X05", "X05"),
+    };
+
+    private string SelectedTypeLabel =>
+        StillageTypes.FirstOrDefault(x => x.Code == Model.StillageType)?.Label ?? "-";
+
+    // ===== UI helpers =====
+    private bool IsStep1Valid => !string.IsNullOrWhiteSpace(Model.StillageType);
+
+    private bool IsStep2Valid => Model.Quantity >= 1;
+
+    private bool CanCreate => IsStep1Valid && IsStep2Valid && !_created;
+
+    private string HeaderStatus =>
+        _created ? "Validated" :
+        _step == 0 ? "Choose type" :
+        _step == 1 ? "Set qty" :
+        "Review";
+
+    private Color HeaderColor =>
+        _created ? Color.Success :
+        _step == 0 ? Color.Info :
+        _step == 1 ? Color.Warning :
+        Color.Primary;
+
+    private void Next()
+    {
+        if (_step < 2) _step++;
+    }
+
+    private void Prev()
+    {
+        if (_step > 0) _step--;
+    }
+
+    private async Task CreateTask()
+    {
+        if (!CanCreate) return;
+
+        // ✅ TODO: Replace by MediatR command:
+        // await _mediator.Send(new CreateEmptyStillageTaskCommand(
+        //     workArea: _workArea,
+        //     stillageType: Model.StillageType,
+        //     qty: Model.Quantity,
+        //     comment: Model.Comment));
+
+        await Task.Delay(150); // mock
+
+        _created = true;
+    }
+}

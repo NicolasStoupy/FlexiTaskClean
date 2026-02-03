@@ -1,0 +1,320 @@
+﻿@page "/tasks/loadingtask/create"
+
+@using System.Linq
+@using System.Collections.Generic
+
+<h3>Create</h3>
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="6">
+        <MudSelect T="string"
+                   Label="Stillage Type"
+                   @bind-Value="_stillageType"
+                   Dense="true"
+                   Required="true">
+            @foreach (var type in StillageTypes)
+            {
+                <MudSelectItem Value="@type.Code">
+                    @type.Label
+                </MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudTextField T="decimal" Label="Amount space" @bind-Value="_amountSpace" Immediate="true" />
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudPaper Elevation="1" Class="pa-3">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.h6" GutterBottom>Selected articles</MudText>
+
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Error"
+                           StartIcon="@Icons.Material.Filled.DeleteSweep"
+                           Disabled="@(SelectedArticles.Count == 0)"
+                           OnClick="ClearSelectedArticles">
+                    Clear
+                </MudButton>
+
+            </MudStack>
+
+            <MudTable Items="@SelectedArticles" Dense="true" Hover="true">
+                <HeaderContent>
+                    <MudTh>Area</MudTh>
+                    <MudTh>Article</MudTh>
+                    <MudTh>Description</MudTh>
+                    <MudTh Align="Align.Right">Qty</MudTh>
+                    <MudTh Align="Align.Right">Weight (kg)</MudTh>
+                    <MudTh Align="Align.Right"></MudTh>
+                </HeaderContent>
+
+                <RowTemplate>
+                    <MudTh>@context.Area</MudTh>
+                    <MudTd>@context.Material</MudTd>
+                    <MudTd>@context.Description</MudTd>
+                    <MudTd Align="Align.Right">@context.Quantity</MudTd>
+                    <MudTd Align="Align.Right">@context.Weight</MudTd>
+                    <MudTd Align="Align.Right">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Color="Color.Error"
+                                       Size="Size.Small"
+                                       OnClick="@(() => RemoveArticle(context))" />
+                    </MudTd>
+                </RowTemplate>
+
+                <FooterContent>
+                    <MudTd ColSpan="3" Align="Align.Right">
+                        <MudText Typo="Typo.subtitle2">Total</MudText>
+                    </MudTd>
+                    <MudTd Align="Align.Right">
+                        <MudText Typo="Typo.subtitle2">@TotalWeight</MudText>
+                    </MudTd>
+                    <MudTd></MudTd>
+                </FooterContent>
+            </MudTable>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<hr />
+
+<MudGrid>
+    <MudItem xs="12" md="6">
+        <MudTextField T="string" Label="Material" @bind-Value="_searchText" Immediate="true" />
+    </MudItem>
+
+    <MudItem xs="12" md="6" Class="d-flex align-center">
+        <MudButton StartIcon="@Icons.Material.Filled.Search"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Search">
+            Search
+        </MudButton>
+
+        <MudButton Class="ml-2"
+                   Variant="Variant.Outlined"
+                   Color="Color.Secondary"
+                   OnClick="ResetSearch">
+            Reset
+        </MudButton>
+
+        <MudButton Class="ml-2"
+                   Variant="Variant.Outlined"
+                   Color="Color.Success"
+                  >
+            Validate
+        </MudButton>
+    </MudItem>
+</MudGrid>
+
+<hr />
+
+<MudTable Items="@FilteredItems" Dense="true" Hover="true" Bordered="true">
+    <HeaderContent>
+        <MudTh>Area</MudTh>
+        <MudTh>Material</MudTh>
+        <MudTh>Material Description</MudTh>
+        <MudTh Align="Align.Right">Nb Blk</MudTh>
+        <MudTh Align="Align.Right">Available Blk</MudTh>
+        <MudTh Align="Align.Right">FIFO Index</MudTh>
+        <MudTh Align="Align.Right">Qty</MudTh>
+        <MudTh Align="Align.Right"></MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Area">@context.Area</MudTd>
+        <MudTd DataLabel="Material">@context.Material</MudTd>
+        <MudTd DataLabel="Material Description">@context.MaterialDescription</MudTd>
+        <MudTd DataLabel="Nb Blk" Align="Align.Right">@context.NbBlk</MudTd>
+        <MudTd DataLabel="Available Blk" Align="Align.Right">@context.AvailableBlk</MudTd>
+        <MudTd DataLabel="FIFO Index" Align="Align.Right">@context.FifoIndex</MudTd>
+
+        <MudTd Align="Align.Right">
+            <MudTextField T="int"
+                          Dense="true"
+                          Margin="Margin.Dense"
+                          Style="width:110px"
+                          Min="0"
+                          Max="@context.AvailableBlk"
+                          Value="@GetRowQty(context)"
+                          ValueChanged="@(v => SetRowQty(context, v))" />
+        </MudTd>
+
+        <MudTd Align="Align.Right">
+            <MudButton StartIcon="@Icons.Material.Filled.Approval"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Disabled="@(!CanValidate(context))"
+                       OnClick="@(() => ValidateQty(context))">
+                Validate qty
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private string _stillageType = string.Empty;
+    private decimal _amountSpace;
+    private string _searchText = string.Empty;
+
+
+    private List<StillageTypeItem> StillageTypes = new()
+{
+    new("CHEVALET", "Chevalet"),
+    new("RACK", "Rack"),
+    new("PALLET", "Pallet")
+};
+
+    public record StillageTypeItem(string Code, string Label);
+    public class FifoItem
+    {
+        public string Area { get; set; } = string.Empty;
+        public string Material { get; set; } = string.Empty;
+        public string MaterialDescription { get; set; } = string.Empty;
+
+        public int NbBlk { get; set; }
+        public int AvailableBlk { get; set; }
+        public int FifoIndex { get; set; }
+
+        public decimal UnitWeight { get; set; }
+    }
+
+    public class SelectedArticle
+    {
+        public string Area { get; set; } = string.Empty;
+        public string Material { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public int Quantity { get; set; }
+        public decimal Weight { get; set; }
+    }
+
+    private List<FifoItem> Items = new()
+    {
+        new()
+        {
+            Area = "AREA-01",
+            Material = "MAT-1001",
+            MaterialDescription = "Clear glass 6mm",
+            NbBlk = 4,
+            AvailableBlk = 4,
+            FifoIndex = 1,
+            UnitWeight = 12.5m
+        },
+        new()
+        {
+            Area = "AREA-02",
+            Material = "MAT-2001",
+            MaterialDescription = "Laminated glass",
+            NbBlk = 2,
+            AvailableBlk = 10,
+            FifoIndex = 3,
+            UnitWeight = 18.0m
+        }
+    };
+
+    private List<FifoItem> FilteredItems = new();
+
+    private List<SelectedArticle> SelectedArticles = new();
+
+    // Stocke la qty saisie par ligne (clé = "AREA|MATERIAL")
+    private readonly Dictionary<string, int> _rowQty = new();
+
+    protected override void OnInitialized()
+    {
+        FilteredItems = Items.ToList();
+    }
+
+    private static string KeyOf(FifoItem item) => $"{item.Area}|{item.Material}";
+
+    private int GetRowQty(FifoItem item)
+    {
+        var key = KeyOf(item);
+        return _rowQty.TryGetValue(key, out var v) ? v : 0;
+    }
+
+    private void SetRowQty(FifoItem item, int v)
+    {
+        if (v < 0) v = 0;
+        if (v > item.AvailableBlk) v = item.AvailableBlk;
+
+        _rowQty[KeyOf(item)] = v;
+    }
+
+    private bool CanValidate(FifoItem item)
+    {
+        var qty = GetRowQty(item);
+        return qty > 0 && qty <= item.AvailableBlk;
+    }
+
+    private void ValidateQty(FifoItem item)
+    {
+        var qty = GetRowQty(item);
+        if (qty <= 0) return;
+
+        AddSelectedArticle(item, qty);
+
+        // Optionnel : reset qty après validation
+        _rowQty[KeyOf(item)] = 0;
+    }
+
+    private void AddSelectedArticle(FifoItem fifoItem, int qty)
+    {
+        var existing = SelectedArticles.FirstOrDefault(x => x.Material == fifoItem.Material);
+
+        var addedWeight = qty * fifoItem.UnitWeight;
+
+        if (existing is not null)
+        {
+            existing.Quantity += qty;
+            existing.Weight += addedWeight;
+        }
+        else
+        {
+            SelectedArticles.Add(new SelectedArticle
+            {
+                Area= fifoItem.Area,
+                Material = fifoItem.Material,
+                Description = fifoItem.MaterialDescription,
+                Quantity = qty,
+                Weight = addedWeight
+            });
+        }
+    }
+
+    private void Search()
+    {
+        var q = (_searchText ?? string.Empty).Trim();
+
+        if (string.IsNullOrWhiteSpace(q))
+        {
+            FilteredItems = Items.ToList();
+            return;
+        }
+
+        FilteredItems = Items
+            .Where(x =>
+                x.Material.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                x.MaterialDescription.Contains(q, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+    }
+
+    private void ResetSearch()
+    {
+        _searchText = string.Empty;
+        FilteredItems = Items.ToList();
+    }
+
+    private void RemoveArticle(SelectedArticle article)
+    {
+        SelectedArticles.Remove(article);
+    }
+
+    private void ClearSelectedArticles()
+    {
+        SelectedArticles.Clear();
+    }
+
+    private decimal TotalWeight => SelectedArticles.Sum(x => x.Weight);
+}

@@ -1,0 +1,419 @@
+﻿@page "/tasks/loadingtask/picking"
+
+@using System.Linq
+@using System.Collections.Generic
+
+<h3>Execute Picking (Chevalet)</h3>
+
+<MudGrid Spacing="3">
+    <MudItem xs="12" md="6">
+        <MudSelect T="string" Label="Source Area" @bind-Value="_sourceArea" Dense="true" Required="true">
+            @foreach (var a in Areas)
+            {
+                <MudSelectItem T="string" Value="@a">@a</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+
+    <MudItem xs="12" md="6">
+        <MudSelect T="string" Label="Chevalet" @bind-Value="_stillageId" Dense="true" Required="true">
+            @foreach (var s in Stillages.Where(x => x.Area == _sourceArea))
+            {
+                <MudSelectItem T="string" Value="@s.StillageId">@s.StillageId</MudSelectItem>
+            }
+        </MudSelect>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.Refresh"
+                       Disabled="@(!CanLoad)"
+                       OnClick="LoadPickingContext">
+                Load items & stock
+            </MudButton>
+
+            <MudText Typo="Typo.caption">
+                Remaining items: @RemainingItemsCount / @RequiredItems.Count
+            </MudText>
+
+            <MudSpacer />
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Success"
+                       StartIcon="@Icons.Material.Filled.CheckCircle"
+                       Disabled="@(!CanComplete)"
+                       OnClick="CompletePicking">
+                Complete Picking
+            </MudButton>
+        </MudStack>
+    </MudItem>
+</MudGrid>
+
+<hr />
+
+<MudGrid Spacing="3">
+    <!-- Required items -->
+    <MudItem xs="12" md="6">
+        <MudPaper Class="pa-3" Elevation="1">
+            <MudText Typo="Typo.h6" GutterBottom>Chevalet items (required)</MudText>
+
+            <MudTable Items="@RequiredItems" Dense="true" Hover="true" Bordered="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Material</MudTh>
+                    <MudTh>Description</MudTh>
+                    <MudTh Align="Align.Right">Required</MudTh>
+                    <MudTh Align="Align.Right">Picked</MudTh>
+                    <MudTh Align="Align.Right">Remaining</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>
+                        <MudLink Href="javascript:void(0)" OnClick="@(() => SelectMaterial(context.Material))">
+                            @context.Material
+                        </MudLink>
+                    </MudTd>
+                    <MudTd>@context.Description</MudTd>
+                    <MudTd Align="Align.Right">@context.RequiredQty</MudTd>
+                    <MudTd Align="Align.Right">@GetPickedQty(context.Material)</MudTd>
+                    <MudTd Align="Align.Right">@GetRemainingQty(context.Material)</MudTd>
+                </RowTemplate>
+            </MudTable>
+
+            @if (!string.IsNullOrWhiteSpace(_selectedMaterial))
+            {
+                <MudAlert Severity="Severity.Info" Dense="true" Class="mt-2">
+                    Selected material: @_selectedMaterial (Remaining: @GetRemainingQty(_selectedMaterial))
+                </MudAlert>
+            }
+        </MudPaper>
+    </MudItem>
+
+    <!-- Picked lines -->
+    <MudItem xs="12" md="6">
+        <MudPaper Class="pa-3" Elevation="1">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.h6" GutterBottom>Picked lines</MudText>
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Error"
+                           StartIcon="@Icons.Material.Filled.DeleteSweep"
+                           Disabled="@(PickLines.Count == 0)"
+                           OnClick="ClearPicked">
+                    Clear
+                </MudButton>
+            </MudStack>
+
+            <MudTable Items="@PickLines" Dense="true" Hover="true" Bordered="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>Material</MudTh>
+                    <MudTh>From Area</MudTh>
+                    <MudTh>Bin</MudTh>
+                    <MudTh Align="Align.Right">Qty</MudTh>
+                    <MudTh Align="Align.Right"></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd>@context.Material</MudTd>
+                    <MudTd>@context.Area</MudTd>
+                    <MudTd>@context.Bin</MudTd>
+                    <MudTd Align="Align.Right">@context.Qty</MudTd>
+                    <MudTd Align="Align.Right">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Color="Color.Error"
+                                       Size="Size.Small"
+                                       OnClick="@(() => RemovePick(context))" />
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    </MudItem>
+    <!-- Stock proposals -->
+    <MudItem xs="12" md="7">
+        <MudPaper Class="pa-3" Elevation="1">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.h6" GutterBottom>Available stock (FIFO)</MudText>
+
+                <MudTextField T="string"
+                              Label="Filter"
+                              Dense="true"
+                              Style="width:240px"
+                              @bind-Value="_stockFilter"
+                              Immediate="true" />
+            </MudStack>
+
+            <MudTable Items="@FilteredStock" Dense="true" Hover="true" Bordered="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>From Area</MudTh>
+                    <MudTh>Bin</MudTh>
+                    <MudTh>Material</MudTh>
+                    <MudTh Align="Align.Right">Available</MudTh>
+                    <MudTh Align="Align.Right">FIFO</MudTh>
+                    <MudTh Align="Align.Right">Pick Qty</MudTh>
+                    <MudTh Align="Align.Right"></MudTh>
+                </HeaderContent>
+
+                <RowTemplate>
+                    <MudTd>@context.Area</MudTd>
+                    <MudTd>@context.Bin</MudTd>
+                    <MudTd>@context.Material</MudTd>
+                    <MudTd Align="Align.Right">@context.AvailableQty</MudTd>
+                    <MudTd Align="Align.Right">@context.FifoIndex</MudTd>
+
+                    <MudTd Align="Align.Right">
+                        <MudTextField T="int"
+                                      Dense="true"
+                                      Margin="Margin.Dense"
+                                      Style="width:110px"
+                                      Min="0"
+                                      Max="@GetMaxPickable(context)"
+                                      Value="@GetRowPickQty(context)"
+                                      ValueChanged="@(v => SetRowPickQty(context, v))" />
+                    </MudTd>
+
+                    <MudTd Align="Align.Right">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.PlaylistAdd"
+                                   Disabled="@(!CanPick(context))"
+                                   OnClick="@(() => Pick(context))">
+                            Pick
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+    </MudItem>
+
+</MudGrid>
+
+@code {
+    // ====== UI State ======
+    private string _sourceArea = "AREA-01";
+    private string _stillageId = "STILL-001";
+    private string _selectedMaterial = "";
+    private string _stockFilter = "";
+
+    private bool CanLoad => !string.IsNullOrWhiteSpace(_sourceArea) && !string.IsNullOrWhiteSpace(_stillageId);
+
+    // ====== Models ======
+    public record StillageInfo(string Area, string StillageId);
+
+    public class RequiredItem
+    {
+        public string Material { get; set; } = "";
+        public string Description { get; set; } = "";
+        public int RequiredQty { get; set; }
+    }
+
+    public class StockLine
+    {
+        public string Area { get; set; } = "";
+        public string Bin { get; set; } = "";
+        public string Material { get; set; } = "";
+        public int AvailableQty { get; set; }
+        public int FifoIndex { get; set; }
+    }
+
+    public class PickLine
+    {
+        public string Material { get; set; } = "";
+        public string Area { get; set; } = "";
+        public string Bin { get; set; } = "";
+        public int Qty { get; set; }
+    }
+
+    // ====== Data (mock) ======
+    private List<string> Areas = new() { "AREA-01", "AREA-02", "AREA-03" };
+
+    private List<StillageInfo> Stillages = new()
+    {
+        new("AREA-01", "STILL-001"),
+        new("AREA-01", "STILL-002"),
+        new("AREA-02", "STILL-101"),
+    };
+
+    private List<RequiredItem> RequiredItems = new();
+    private List<StockLine> StockLines = new();
+    private List<PickLine> PickLines = new();
+
+    // pick qty per stock line (key Area|Bin|Material)
+    private readonly Dictionary<string, int> _rowPickQty = new();
+
+    protected override void OnInitialized()
+    {
+        LoadPickingContext();
+    }
+
+    // ====== Load context ======
+    private void LoadPickingContext()
+    {
+        // 1) items requis du chevalet
+        RequiredItems = GetRequiredItemsForStillage(_stillageId);
+
+        // 2) stock dispo (par area) => à remplacer par MediatR query
+        StockLines = GetStockForAreas(Areas);
+
+        // 3) reset
+        PickLines.Clear();
+        _rowPickQty.Clear();
+        _selectedMaterial = RequiredItems.FirstOrDefault()?.Material ?? "";
+    }
+
+    // ====== Selection ======
+    private void SelectMaterial(string material) => _selectedMaterial = material;
+
+    // ====== Filtering ======
+    private IEnumerable<StockLine> FilteredStock
+    {
+        get
+        {
+            var q = (_stockFilter ?? "").Trim();
+
+            IEnumerable<StockLine> lines = StockLines;
+
+            // si un material est sélectionné => on filtre dessus
+            if (!string.IsNullOrWhiteSpace(_selectedMaterial))
+                lines = lines.Where(x => x.Material == _selectedMaterial);
+
+            if (!string.IsNullOrWhiteSpace(q))
+                lines = lines.Where(x =>
+                    x.Material.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                    x.Bin.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                    x.Area.Contains(q, StringComparison.OrdinalIgnoreCase));
+
+            // FIFO first
+            return lines.OrderBy(x => x.FifoIndex).ToList();
+        }
+    }
+
+    // ====== Remaining / picked ======
+    private int GetPickedQty(string material) =>
+        PickLines.Where(x => x.Material == material).Sum(x => x.Qty);
+
+    private int GetRemainingQty(string material)
+    {
+        var req = RequiredItems.FirstOrDefault(x => x.Material == material)?.RequiredQty ?? 0;
+        return Math.Max(0, req - GetPickedQty(material));
+    }
+
+    private int RemainingItemsCount =>
+        RequiredItems.Count(x => GetRemainingQty(x.Material) > 0);
+
+    private bool CanComplete =>
+        RequiredItems.Count > 0 && RequiredItems.All(x => GetRemainingQty(x.Material) == 0);
+
+    // ====== Row qty helpers ======
+    private static string KeyOf(StockLine l) => $"{l.Area}|{l.Bin}|{l.Material}";
+
+    private int GetRowPickQty(StockLine l) =>
+        _rowPickQty.TryGetValue(KeyOf(l), out var v) ? v : 0;
+
+    private void SetRowPickQty(StockLine l, int v)
+    {
+        if (v < 0) v = 0;
+        var max = GetMaxPickable(l);
+        if (v > max) v = max;
+
+        _rowPickQty[KeyOf(l)] = v;
+    }
+
+    private int GetMaxPickable(StockLine l)
+    {
+        var remaining = GetRemainingQty(l.Material);
+        return Math.Max(0, Math.Min(l.AvailableQty, remaining));
+    }
+
+    private bool CanPick(StockLine l)
+    {
+        var qty = GetRowPickQty(l);
+        if (qty <= 0) return false;
+        if (qty > l.AvailableQty) return false;
+        if (qty > GetRemainingQty(l.Material)) return false;
+        return true;
+    }
+
+    // ====== Pick actions ======
+    private void Pick(StockLine l)
+    {
+        var qty = GetRowPickQty(l);
+        if (qty <= 0) return;
+
+        // add pick line
+        PickLines.Add(new PickLine
+        {
+            Material = l.Material,
+            Area = l.Area,
+            Bin = l.Bin,
+            Qty = qty
+        });
+
+        // reduce available in UI (simulate stock consumption)
+        l.AvailableQty -= qty;
+
+        // reset input
+        _rowPickQty[KeyOf(l)] = 0;
+
+        // auto-switch to next material needing qty
+        var next = RequiredItems.FirstOrDefault(x => GetRemainingQty(x.Material) > 0);
+        if (next is not null) _selectedMaterial = next.Material;
+    }
+
+    private void RemovePick(PickLine pick)
+    {
+        // restore available (best effort, mock)
+        var stock = StockLines.FirstOrDefault(x =>
+            x.Material == pick.Material && x.Area == pick.Area && x.Bin == pick.Bin);
+
+        if (stock is not null)
+            stock.AvailableQty += pick.Qty;
+
+        PickLines.Remove(pick);
+    }
+
+    private void ClearPicked()
+    {
+        // restore all
+        foreach (var p in PickLines.ToList())
+            RemovePick(p);
+
+        PickLines.Clear();
+    }
+
+    private void CompletePicking()
+    {
+        // Ici tu appelles ton Command MediatR:
+        // CompletePickingCommand(stillageId, pickLines)
+        // puis navigation vers la tâche suivante.
+    }
+
+    // ====== Mock data providers (replace by MediatR) ======
+    private List<RequiredItem> GetRequiredItemsForStillage(string stillageId)
+    {
+        // simulate stillage template: 2 materials
+        return stillageId switch
+        {
+            "STILL-001" => new()
+            {
+                new RequiredItem { Material="MAT-1001", Description="Clear glass 6mm", RequiredQty=4 },
+                new RequiredItem { Material="MAT-2001", Description="Laminated glass", RequiredQty=2 },
+            },
+            _ => new()
+            {
+                new RequiredItem { Material="MAT-1001", Description="Clear glass 6mm", RequiredQty=2 },
+            }
+        };
+    }
+
+    private List<StockLine> GetStockForAreas(List<string> areas)
+    {
+        // FIFO lines across areas
+        return new()
+        {
+            new StockLine { Area="AREA-01", Bin="A01-01", Material="MAT-1001", AvailableQty=3, FifoIndex=1 },
+            new StockLine { Area="AREA-02", Bin="A02-07", Material="MAT-1001", AvailableQty=10, FifoIndex=2 },
+            new StockLine { Area="AREA-03", Bin="A03-02", Material="MAT-1001", AvailableQty=4, FifoIndex=3 },
+
+            new StockLine { Area="AREA-01", Bin="A01-05", Material="MAT-2001", AvailableQty=1, FifoIndex=1 },
+            new StockLine { Area="AREA-02", Bin="A02-11", Material="MAT-2001", AvailableQty=5, FifoIndex=2 },
+        };
+    }
+}

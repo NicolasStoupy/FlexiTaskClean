@@ -18,7 +18,53 @@
         <MudNavLink Href="workareas" Icon="@Icons.Material.Filled.Work" IconColor="Color.Primary">@_localizer["NAV_WORKAREAS"]</MudNavLink>
  
     </MudNavGroup>
+    <MudNavGroup Title="@_localizer["NAV_GROUP_TASKS"]"
+                 Icon="@Icons.Material.Filled.Assignment">
 
+        <!-- Empty stillage -->
+        <MudNavLink Href="/tasks/emptystillage/new"
+                    Icon="@Icons.Material.Filled.Inventory2"
+                    IconColor="Color.Info">
+            @_localizer["NAV_TASK_EMPTY_STILLAGE"]
+        </MudNavLink>
+
+        <!-- Loading tasks -->
+        <MudNavGroup Title="@_localizer["NAV_GROUP_LOADING"]"
+                     Icon="@Icons.Material.Filled.DragHandle">
+
+            <MudNavLink Href="/tasks/loadingtask/create"
+                        Icon="@Icons.Material.Filled.AddBox"
+                        IconColor="Color.Success">
+                @_localizer["NAV_TASK_LOADING_CREATE"]
+            </MudNavLink>
+
+            <MudNavLink Href="/tasks/loadingtask/picking"
+                        Icon="@Icons.Material.Filled.MoveToInbox"
+                        IconColor="Color.Warning">
+                @_localizer["NAV_TASK_LOADING_PICKING"]
+            </MudNavLink>
+
+        </MudNavGroup>
+
+        <!-- Transportation tasks -->
+        <MudNavGroup Title="@_localizer["NAV_GROUP_TRANSPORT"]"
+                     Icon="@Icons.Material.Filled.LocalShipping">
+
+            <MudNavLink Href="/tasks/transportationtask/create"
+                        Icon="@Icons.Material.Filled.AddRoad"
+                        IconColor="Color.Primary">
+                @_localizer["NAV_TASK_TRANSPORT_CREATE"]
+            </MudNavLink>
+
+            <MudNavLink Href="/tasks/transport/executor"
+                        Icon="@Icons.Material.Filled.PlayCircle"
+                        IconColor="Color.Success">
+                @_localizer["NAV_TASK_TRANSPORT_EXECUTE"]
+            </MudNavLink>
+
+        </MudNavGroup>
+
+    </MudNavGroup>
     <MudNavGroup Title="@_localizer["NAV_GROUP_SETTINGS"]" Icon="@Icons.Material.Filled.Settings">
         <MudNavLink Href="/users" Icon="@Icons.Material.Filled.People" IconColor="Color.Success">@_localizer["NAV_USERS"]</MudNavLink>
         <MudNavLink Href="/security" Icon="@Icons.Material.Filled.Security" IconColor="Color.Info">@_localizer["NAV_SECURITY"]</MudNavLink>
