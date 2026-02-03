@@ -37,8 +37,9 @@ public class TaskItem : BaseAuditableEntity
     /// <summary>
     /// Identifiant de la zone de travail liée à cette tâche.
     /// </summary>
-    public int LinkedWorkArea { get; set; }
+    public int LinkedWorkArea { get; set; }  
 
+    public TaskItemType TaskItemType { get; set; } = null!;
     /// <summary>
     /// Liste des dépendances où cet item dépend d'autres tasks (prérequis).
     /// Navigation technique (table de jointure).
@@ -133,15 +134,20 @@ public class TaskItem : BaseAuditableEntity
     /// </summary>
     /// <param name="areaId">Identifiant de la zone de travail liée.</param>
     /// <returns>Nouvelle instance de <see cref="TaskItem"/> marquée comme starting.</returns>
-    public static TaskItem CreateStarting(int areaId)
+    public static TaskItem CreateStarting(int areaId, TaskItem taskItem)
     {
-        return new TaskItem
-        {
-            LinkedWorkArea = areaId,
-            StartingTask = true,
-            EndingTask = false,
-            TaskItemStatus = TaskItemStatus.Ready
-        };
+        taskItem.StartingTask = true;
+        taskItem.EndingTask = false;
+        taskItem.TaskItemStatus = TaskItemStatus.Ready;
+      
+        return taskItem;
+        //return new TaskItem
+        //{
+        //    LinkedWorkArea = areaId,
+        //    StartingTask = true,
+        //    EndingTask = false,
+        //    TaskItemStatus = TaskItemStatus.Ready
+        //};
     }
 
     /// <summary>
@@ -216,6 +222,29 @@ public class TaskItem : BaseAuditableEntity
             EndingTask = false,
             TaskItemStatus = TaskItemStatus.NotStarted
         };
+    }
+
+    public void Execute()
+    {
+        switch (TaskItemStatus)
+        {   
+            case TaskItemStatus.Ready:
+                this.SetInProgress();
+                break;
+            case TaskItemStatus.InProgress:
+                this.Complete();
+                break;
+            case TaskItemStatus.Completed:
+               
+                break;
+            case TaskItemStatus.Waiting:
+                break;
+            case TaskItemStatus.NotStarted:
+
+                break;
+            default:
+                break;
+        }
     }
 
     // PK composite

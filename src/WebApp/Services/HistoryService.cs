@@ -103,5 +103,10 @@ namespace WebApp.Services
                 _navManager.NavigateTo(_history[_currentIndex]);
             }
         }
+
+        public void Refresh()
+        {
+            _navManager.NavigateTo(_navManager.Uri, forceLoad: true);
+        }
     }
 }

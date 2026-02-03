@@ -1,0 +1,113 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+@using Application.Features.Tasks.TransportationTask.CreateTransportationTask
+@using Application.Features.Tasks.TransportationTask.Queries.GetTransportation
+@using System.Threading.Tasks
+@page "/tasks/transportation/create/{workAreaId:int}"
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
+    <MudPaper Elevation="4" Class="pa-8">
+        <MudText Typo="Typo.h5" GutterBottom="true">Nouvelle Tâche de Transport</MudText>
+
+
+        <MudForm @ref="form" Model="@command"  ValidationDelay="0">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField Label="Support / Stillage"
+                                  @bind-Value="command.support"
+                                  For="@(() => command.support)"
+                                  Variant="Variant.Outlined"
+                                  Immediate="true" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="int" Label="Zone Source"
+                               @bind-Value="command.areaSourceId"
+                               For="@(() => command.areaSourceId)"
+                               Variant="Variant.Outlined"
+                               ReadOnly="true"
+                               Disabled="false"
+                               AdornmentIcon="@Icons.Material.Filled.Lock"
+                               AdornmentColor="Color.Default">
+                        @foreach (var area in vm.WorkAreas)
+                        {
+                            <MudSelectItem T="int" Value="@area.Id">@area.CommonName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudSelect T="int" Label="Zone Destination"
+                               @bind-Value="command.areaDestinationId"
+                               For="@(() => command.areaDestinationId)"
+                               Variant="Variant.Outlined">
+                        @foreach (var area in vm.WorkAreas)
+                        {
+                            <MudSelectItem T="int" Value="@area.Id">@area.CommonName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" Class="d-flex justify-end mt-4">
+                    <MudButton OnClick="Cancel" Class="mr-2">Annuler</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">
+                        Créer la tâche
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+
+    [Parameter]
+    public int WorkAreaId { get; set; }
+    MudForm form;
+
+    // Pour que le bind fonctionne avec un record, il faut que les propriétés soient 'init' ou 'set'
+    // Sinon, utilise une classe temporaire identique au record pour le formulaire.
+    private CreateTaskModel command = new();
+
+    private CreateTransportationVm vm = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Ajoute le "await" pour attendre la réponse du Mediator
+        var queryResult = await _Uimediator.Send(new GetCreateTransportationTask(WorkAreaId));
+
+        if (queryResult != null && queryResult.success)
+        {
+            vm = queryResult.Data;
+        }
+        command.areaSourceId = WorkAreaId;
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+
+        if (form.IsValid)
+        {
+            var finalCommand = new CreateTransportationTask(
+                command.areaSourceId,
+                command.areaDestinationId,
+                command.support
+            );
+
+            await _Uimediator.Send(finalCommand);
+            
+        }
+    }
+
+    private void Cancel() => History.GoBack();
+
+    // Classe locale pour le binding (FluentValidation matchera les noms de propriétés)
+    public class CreateTaskModel
+    {
+        public int areaSourceId { get; set; }
+        public int areaDestinationId { get; set; }
+        public string support { get; set; }
+    }
+
+    public record AreaDto(int Id, string CommonName);
+}

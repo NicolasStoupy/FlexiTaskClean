@@ -45,85 +45,94 @@ namespace Infrastructure.Data.Interceptors
 
         private void AddEntityChanges(DbContext? context)
         {
-            if (context is null) return;
-
-            //  ne pas auditer EntityChange (sinon boucle)
-            if (context.ChangeTracker.Entries<EntityChange>().Any(e => e.State != EntityState.Unchanged))
-                return;
-
-            using var scope = _scopeFactory.CreateScope();
-            var user = scope.ServiceProvider.GetService<IUser>();
-            var userId = user?.Id ?? "system";
-            var now = _time.GetUtcNow();
-
-            var changes = new List<EntityChange>();
-
-            foreach (var entry in context.ChangeTracker.Entries())
+            try
             {
-                var entityKey = BuildEntityKeyJson(entry);
+                if (context is null) return;
 
-                if (entry.State is not (EntityState.Modified or EntityState.Added or EntityState.Deleted))
-                    continue;
+                //  ne pas auditer EntityChange (sinon boucle)
+                if (context.ChangeTracker.Entries<EntityChange>().Any(e => e.State != EntityState.Unchanged))
+                    return;
 
-                // Ignore EntityChange entity itself
-                if (entry.Entity is EntityChange)
-                    continue;
+                using var scope = _scopeFactory.CreateScope();
+                var user = scope.ServiceProvider.GetService<IUser>();
+                var userId = user?.Id ?? "system";
+                var now = _time.GetUtcNow();
 
-                // Option: ignore owned types (ou traite-les séparément)
-                if (entry.Metadata.IsOwned())
-                    continue;
+                var changes = new List<EntityChange>();
 
-                var entityName = entry.Metadata.ClrType.Name;
-
-                // MODIFIED : Old/New par propriété modifiée
-                if (entry.State == EntityState.Modified)
+                foreach (var entry in context.ChangeTracker.Entries())
                 {
-                    foreach (var prop in entry.Properties.Where(p => p.IsModified))
+                    var entityKey = BuildEntityKeyJson(entry);
+
+                    if (entry.State is not (EntityState.Modified or EntityState.Added or EntityState.Deleted))
+                        continue;
+
+                    // Ignore EntityChange entity itself
+                    if (entry.Entity is EntityChange)
+                        continue;
+
+                    // Option: ignore owned types (ou traite-les séparément)
+                    if (entry.Metadata.IsOwned())
+                        continue;
+
+                    var entityName = entry.Metadata.ClrType.Name;
+
+                    // MODIFIED : Old/New par propriété modifiée
+                    if (entry.State == EntityState.Modified)
                     {
-                        var field = prop.Metadata.Name;
-                        if (IgnoredFields.Contains(field)) continue;
+                        foreach (var prop in entry.Properties.Where(p => p.IsModified))
+                        {
+                            var field = prop.Metadata.Name;
+                            if (IgnoredFields.Contains(field)) continue;
 
-                        var oldVal = ToStringSafe(prop.OriginalValue);
-                        var newVal = ToStringSafe(prop.CurrentValue);
+                            var oldVal = ToStringSafe(prop.OriginalValue);
+                            var newVal = ToStringSafe(prop.CurrentValue);
 
-                        if (oldVal == newVal) continue;
+                            if (oldVal == newVal) continue;
 
+                            changes.Add(new EntityChange
+                            {
+                                Entity = entityName,
+                                EntityField = field,
+                                FieldType = prop.Metadata.ClrType.Name,
+                                OldValue = oldVal,
+                                NewValue = newVal,
+                                ChangedAt = now,
+                                ChangedByUserId = userId,
+                                EntityKey = entityKey
+
+                            });
+                        }
+                    }
+                    else
+                    {
+                        // ADDED / DELETED 
                         changes.Add(new EntityChange
                         {
                             Entity = entityName,
-                            EntityField = field,
-                            FieldType = prop.Metadata.ClrType.Name,
-                            OldValue = oldVal,
-                            NewValue = newVal,
+                            EntityField = "__STATE__",
+                            FieldType = "string",
+                            OldValue = entry.State == EntityState.Added ? null : "exists",
+                            NewValue = entry.State == EntityState.Deleted ? null : "created",
                             ChangedAt = now,
                             ChangedByUserId = userId,
-                            EntityKey= entityKey
+                            EntityKey = entityKey
 
                         });
                     }
                 }
-                else
-                {
-                    // ADDED / DELETED 
-                    changes.Add(new EntityChange
-                    {
-                        Entity = entityName,
-                        EntityField = "__STATE__",
-                        FieldType = "string",
-                        OldValue = entry.State == EntityState.Added ? null : "exists",
-                        NewValue = entry.State == EntityState.Deleted ? null : "created",
-                        ChangedAt = now,
-                        ChangedByUserId = userId,
-                        EntityKey= entityKey
 
-                    });
+                if (changes.Count > 0)
+                {
+                    context.Set<EntityChange>().AddRange(changes);
                 }
             }
-
-            if (changes.Count > 0)
+            catch (Exception ex )
             {
-                context.Set<EntityChange>().AddRange(changes);
+
+                throw;
             }
+           
         }
 
         private static string? ToStringSafe(object? value)

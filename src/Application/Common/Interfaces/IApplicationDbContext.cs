@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.MasterData;
 using Domain.Entities.Tasks;
+using Domain.Entities.Tasks.TaskSpecializations;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,8 @@ namespace Application.Common.Interfaces
         DbSet<WorkArea> WorkAreas { get; }
         DbSet<WorkAreaType> WorkAreaTypes { get; }
         DbSet<TaskHeader> TaskHeader { get; }
+
+        DbSet<TransportTask> TransportTasks { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
     public interface IApplicationDbContextFactory

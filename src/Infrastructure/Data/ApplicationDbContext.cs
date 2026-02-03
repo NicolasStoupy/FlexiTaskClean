@@ -1,6 +1,7 @@
 using Application.Common.Interfaces;
 using Domain.Entities.MasterData;
 using Domain.Entities.Tasks;
+using Domain.Entities.Tasks.TaskSpecializations;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ namespace Infrastructure.Data
 
         public DbSet<TaskHeader> TaskHeader => Set<TaskHeader>();
 
-
+        public DbSet<TransportTask> TransportTasks => Set<TransportTask>(); 
 
         /// <summary>
         /// Configure le modèle de données pour le contexte de base de données lors de sa création.

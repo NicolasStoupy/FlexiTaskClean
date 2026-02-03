@@ -1,6 +1,7 @@
 ﻿using Application.Common.Interfaces;
 using AutoMapper;
 using Domain.Entities.Tasks;
+using Domain.Entities.Tasks.TaskSpecializations;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -36,38 +37,43 @@ public class GetTaskItemQueryHandler : IRequestHandler<GetTaskItemQuery, bool>, 
         // ✅ On crée un DbContext "frais"
         await using var db = await _dbFactory.CreateAsync(cancellationToken);
 
-        var headers = await db.TaskHeader.Where(t => t.Id == 30)
-            .Include(h => h.TaskItems)
-                .ThenInclude(t => t.Prerequisites)
-                    .ThenInclude(d => d.DependsOn)
-            .Include(h => h.TaskItems)
-                .ThenInclude(t => t.NextSteps)
-                    .ThenInclude(d => d.TaskItem)
-            .ToListAsync(cancellationToken);
-        foreach (var task in headers.FirstOrDefault().GetNextsRunnableTasks())
-        {
-            task.Complete();
-        }
-
-        //var TaskHeaders = TaskHeader.Create();
-
-        //var task1 = TaskHeaders.AddStartingTask(1);
-        //var task2 = TaskHeaders.AddIntermediateTask(1);
-        //var task3 = TaskHeaders.AddIntermediateTask(1);
-        //var task4 = TaskHeaders.AddIntermediateTask(1);
-        //var task5 = TaskHeaders.AddIntermediateTask(1);
-        //var task6 = TaskHeaders.AddEndingTask(1);
-        //db.TaskHeader.Add(TaskHeaders);
+        //var headers = await db.TaskHeader.Where(t => t.Id == 53)
+        //    .Include(h => h.TaskItems)
+        //        .ThenInclude(t => t.Prerequisites)
+        //            .ThenInclude(d => d.DependsOn)
+        //    .Include(h => h.TaskItems)
+        //        .ThenInclude(t => t.NextSteps)
+        //            .ThenInclude(d => d.TaskItem)
+        //    .ToListAsync(cancellationToken);
+        //foreach (var task in headers.FirstOrDefault().GetNextsRunnableTasks())
+        //{
+        //    task.Complete();
+        //}
         //await db.SaveChangesAsync(cancellationToken);
+        var TaskHeaders = TaskHeader.Create();
+        await db.SaveChangesAsync(cancellationToken);
+        var task = new TransportTask() { 
+         SourceAreaId=1,
+         DestinationAreaId=2   
 
-        //task1.AddNextStep(task2);
-        //task1.AddNextStep(task3);
-        //task2.AddNextStep(task4);
-        //task3.AddNextStep(task5);
-        //task4.AddNextStep(task6);
-        //task5.AddNextStep(task6);
+        };
+        var task1 = TaskHeaders.AddStartingTask(1, task);
+        var task2 = TaskHeaders.AddIntermediateTask(1);
+        var task3 = TaskHeaders.AddIntermediateTask(2);
+        var task4 = TaskHeaders.AddIntermediateTask(3);
+        var task5 = TaskHeaders.AddIntermediateTask(9);
+        var task6 = TaskHeaders.AddEndingTask(10);
+        db.TaskHeader.Add(TaskHeaders);
+        await db.SaveChangesAsync(cancellationToken);
 
-        //await db.SaveChangesAsync(cancellationToken);
+        task1.AddNextStep(task2);
+        task1.AddNextStep(task3);
+        task2.AddNextStep(task4);
+        task3.AddNextStep(task5);
+        task4.AddNextStep(task6);
+        task5.AddNextStep(task6);
+
+        await db.SaveChangesAsync(cancellationToken);
 
         //// ✅ IMPORTANT: utiliser db (pas _dbFactory)
         //var headers = await db.TaskHeader
@@ -90,7 +96,7 @@ public class GetTaskItemQueryHandler : IRequestHandler<GetTaskItemQuery, bool>, 
         //}
 
         //// ✅ SaveChanges sur le DbContext créé
-        await db.SaveChangesAsync(cancellationToken);
+
 
         return true;
     }
