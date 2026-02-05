@@ -1,11 +1,12 @@
 ﻿@page "/plants/new"
 
+@using Application.Features.Configurations.Plants.Commands.CreatePlant
 @using MudBlazor
 @using Blazored.FluentValidation
 @using Microsoft.Extensions.Localization
 @using Domain.Constants
 @using Domain.Enums
-@using Application.Plants.Commands.CreatePlant
+
 
 @attribute [Authorize(Roles = $"{Roles.Administrator}")]
 

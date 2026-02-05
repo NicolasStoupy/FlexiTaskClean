@@ -1,16 +1,23 @@
-﻿using Domain.Enums;
+﻿using Domain.Common.Exceptions;
+using Domain.Enums;
 
 namespace Domain.Entities.MasterData
 {
-    public class Plant : BaseAuditableEntity<int>
+    public class Plant : BaseAuditableEntity
     {
-        public DateTimeOffset CreatedAt { get; set; }
-        public string Code { get; set; } = null!;
-        public string? CommonName { get; set; }
-        public PlantLanguage Language { get; set; }
-        public bool Active { get; set; } = true;
-        public IList<WorkArea> WorkAreas { get; set; } = new List<WorkArea>();
+        public int PlantID { get; private set; }
+        public string Code { get; private set; } = null!;
+        public string? CommonName { get; private set; }
 
+        public bool Active { get; private set; } = true;
+        public DateTimeOffset CreatedAt { get; private set; } //to do remove
+        public PlantLanguage Language { get; private set; }
+
+        private readonly List<WorkArea> _workAreas = new();
+        public IReadOnlyCollection<WorkArea> WorkAreas => _workAreas.AsReadOnly();
+
+        //private readonly List<PlantIdentity> _plantIdentities = new();
+        //public IReadOnlyCollection<PlantIdentity> PlantIdentities => _plantIdentities.AsReadOnly();
         public Plant()
         { }
 
@@ -19,6 +26,20 @@ namespace Domain.Entities.MasterData
             Code = code;
             Language = language;
             CommonName = commonName;
+        }
+
+        public void Update(string code, string commonName, string language, bool active)
+        {
+            PlantLanguage plantLanguage;
+            if (!Enum.TryParse(language, out plantLanguage))
+                throw new DomainException("Language is unknow");
+            CommonName = CommonName;
+            if (code == null)
+                throw new DomainException("code must be null");
+            if (active != Active)
+                active = Active;
+            Code = code;
+
         }
     }
 }

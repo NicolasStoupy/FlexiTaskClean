@@ -119,14 +119,7 @@ namespace Infrastructure.Data
             // Seed, if necessary
             if (!_context.Plant.Any())
             {
-                _context.Plant.Add(new Plant()
-                {
-                    Code = "MOU1",
-                    CommonName = "Moustier",
-                    Language = Domain.Enums.PlantLanguage.FR
-                });
-               
-
+                _context.Plant.Add(new Plant("MOU1", Domain.Enums.PlantLanguage.FR, "Moustier"));
                 await _context.SaveChangesAsync();
             }
         }

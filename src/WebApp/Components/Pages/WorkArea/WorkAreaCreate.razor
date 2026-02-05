@@ -68,7 +68,7 @@
 
                         @foreach (var p in _vm.Plants)
                         {
-                            <MudSelectItem Value="@p.Id">@($"{p.Code} - {p.CommonName}")</MudSelectItem>
+                            <MudSelectItem Value="@p.PlantID">@($"{p.Code} - {p.CommonName}")</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>
@@ -84,7 +84,7 @@
 
                         @foreach (var t in _vm.WorkAreaTypes)
                         {
-                            <MudSelectItem Value="@t.Id">@($"{t.Code} - {t.Label}")</MudSelectItem>
+                            <MudSelectItem Value="@t.WorkAreaTypeID">@($"{t.Code} - {t.Label}")</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>

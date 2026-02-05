@@ -1,5 +1,5 @@
 ﻿using System.Linq;
-using Application.Plants.Queries.GetPlants;
+using Application.Features.Configurations.Plants.Queries.GetPlants;
 using Domain.Entities;
 using Domain.Entities.MasterData;
 using Shouldly;

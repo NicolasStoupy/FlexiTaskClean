@@ -1,7 +1,10 @@
-﻿@page "/tasks/transport/executor"
+﻿@page "/tasks/transport/executor/{WorkAreaID:int}"
 
 @using System.Linq
 @using System.Collections.Generic
+@using Application.Features.TaskExecution
+@using Application.Features.TransportationTask
+@using Domain.Enums
 
 <h3>Transport Executor</h3>
 
@@ -35,12 +38,17 @@
                 @foreach (var t in Queue)
                 {
                     var isCurrent = CurrentTask?.TaskId == t.TaskId;
-
+                  
                     <MudListItem OnClick="@(() => SelectTask(t.TaskId))"
                                  Style="cursor:pointer">
                         <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Style="width:100%">
                             <MudStack>
+                               
                                 <MudText Typo="Typo.subtitle2">
+                                    @if (isCurrent)
+                                    {
+                                        <MudIcon Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Primary" />
+                                    }
                                     #@t.TaskId — @t.StillageId
                                 </MudText>
                                 <MudText Typo="Typo.caption" Color="Color.Secondary">
@@ -209,6 +217,8 @@
 @code {
     private string _workerArea = "Transportation Area";
 
+    [Parameter]
+    public int WorkAreaID { get; set; }
     // step index for the current task
     private int _step = 0;
 
@@ -220,18 +230,13 @@
     private List<TransportTaskVm> Queue = new();
     private TransportTaskVm? CurrentTask;
 
-    protected override void OnInitialized()
-    {
-        ReloadQueue();
-        SelectFirstIfAny();
-    }
 
     private int RemainingCount => Queue.Count(x => !x.Completed);
 
-    private void ReloadQueue()
+    private async Task ReloadQueue()
     {
-        // Replace by: GetMyTransportQueueQuery(_workerArea, currentUser)
-        Queue = LoadMockQueue(_workerArea);
+
+        Queue = await LoadQueue(WorkAreaID);
 
         // keep same current if exists
         if (CurrentTask is not null)
@@ -284,13 +289,17 @@
     private void PrevStep() { if (_step > 0) _step--; }
 
     // ===== Actions =====
-    private void StartCurrent()
+    private async Task StartCurrent()
     {
         if (CurrentTask is null) return;
 
-        // MediatR: StartTransportTaskCommand(CurrentTask.TaskId)
-        CurrentTask.Started = true;
-        SyncStepFromState();
+        var resultCmd = await _Uimediator.Send(new TaskHandleTransitionCommand(CurrentTask.TaskId));
+        if (resultCmd.success)
+        {
+            CurrentTask.Started = true;
+            SyncStepFromState();
+        }
+        await ReloadQueue();
     }
 
     private bool CanConfirmMovement =>
@@ -299,16 +308,20 @@
         !CurrentTask.MovementDone &&
         string.Equals((_confirmStillage ?? "").Trim(), CurrentTask.StillageId, StringComparison.OrdinalIgnoreCase);
 
-    private void ConfirmMovement()
+    private async Task ConfirmMovement()
     {
         if (CurrentTask is null) return;
         if (!CanConfirmMovement) return;
+        var resultCmd = await _Uimediator.Send(new TaskHandleTransitionCommand(CurrentTask.TaskId));
+        if (resultCmd.success)
+        {
+            CurrentTask.MovementDone = true;
+            CurrentTask.SapDoc = _sapDoc;
+            SyncStepFromState();
+        }
+        await ReloadQueue();
 
-        // MediatR: ConfirmTransportMovementCommand(CurrentTask.TaskId, _sapDoc)
-        CurrentTask.MovementDone = true;
-        CurrentTask.SapDoc = _sapDoc;
 
-        SyncStepFromState();
     }
 
     private bool CanCompleteCurrent =>
@@ -317,16 +330,20 @@
         CurrentTask.MovementDone &&
         !CurrentTask.Completed;
 
-    private void CompleteCurrent()
+    private async Task CompleteCurrent()
     {
         if (CurrentTask is null) return;
         if (!CanCompleteCurrent) return;
 
-        // MediatR: CompleteTransportTaskCommand(CurrentTask.TaskId)
-        CurrentTask.Completed = true;
-        CurrentTask.Status = "Completed";
+        var resultCmd = await _Uimediator.Send(new TaskHandleTransitionCommand(CurrentTask.TaskId));
+        if (resultCmd.success)
+        {
+            CurrentTask.Completed = true;
+            CurrentTask.Status = "Completed";
 
-        SyncStepFromState();
+            SyncStepFromState();
+        }
+       await  ReloadQueue();
     }
 
     // ===== Next task logic =====
@@ -379,11 +396,29 @@
         public string? SapDoc { get; set; }
     }
 
-    // ===== MOCK QUEUE =====
-    private static List<TransportTaskVm> LoadMockQueue(string workerArea) => new()
+    private async Task<List<TransportTaskVm>> LoadQueue(int workAreaID)
     {
-        new() { TaskId = 101, FromArea="AREA-SUP-01", ToArea="AREA-CLI-01", StillageId="X15-000123", Status="Ready" },
-        new() { TaskId = 102, FromArea="AREA-SUP-02", ToArea="AREA-CLI-03", StillageId="P10-000777", Status="Ready" },
-        new() { TaskId = 103, FromArea="AREA-SUP-01", ToArea="AREA-CLI-02", StillageId="X05-000042", Status="Ready" },
-    };
+        var result = await _Uimediator.Send(new GetTransportQueueQuery(workAreaID));
+
+        if (!result.success || result.Data is null)
+            return new List<TransportTaskVm>();
+
+        return result.Data.Select(q => new TransportTaskVm
+        {
+            TaskId = q.TaskID,
+            FromArea = q.FromArea,
+            ToArea = q.ToArea,
+            StillageId = q.Support,
+
+            Status = q.TaskItemStatus.ToString(),
+
+            Started = q.TaskItemStatus == TaskItemStatus.InProgress
+           || q.TaskItemStatus == TaskItemStatus.Completed,
+
+
+            MovementDone = q.TaskItemStatus == TaskItemStatus.Completed,
+
+            Completed = q.TaskItemStatus == TaskItemStatus.Completed
+        }).ToList();
+    }
 }

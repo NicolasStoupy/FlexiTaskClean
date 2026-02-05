@@ -82,7 +82,7 @@
                                         <MudStack Spacing="1">
                                             <MudText Typo="Typo.body2" Color="Color.Secondary">
                                                 <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Small" Class="mr-1" />
-                                                <MudLink Href="@($"/workareatype/edit/{wa.WorkAreaType.Id}")" Class="ml-2"> @($"{wa.WorkAreaType?.Code ?? "-"} - {wa.WorkAreaType?.Label ?? "-"}") </MudLink>
+                                                <MudLink Href="@($"/workareatype/edit/{wa.WorkAreaType.WorkAreaTypeID}")" Class="ml-2"> @($"{wa.WorkAreaType?.Code ?? "-"} - {wa.WorkAreaType?.Label ?? "-"}") </MudLink>
                                               
                                             </MudText>
                                         </MudStack>
@@ -133,7 +133,7 @@
                                 <MudStack Spacing="1">
                                     <MudText Typo="Typo.body2" Color="Color.Secondary">
                                         <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Small" Class="mr-1" />
-                                        <MudLink Href="@($"/workareatype/edit/{wa.WorkAreaType.Id}/{wa.plantID}")" Class="ml-2"> @($"{wa.WorkAreaType?.Code ?? "-"} - {wa.WorkAreaType?.Label ?? "-"}") </MudLink>
+                                        <MudLink Href="@($"/workareatype/edit/{wa.WorkAreaType.WorkAreaTypeID}/{wa.plantID}")" Class="ml-2"> @($"{wa.WorkAreaType?.Code ?? "-"} - {wa.WorkAreaType?.Label ?? "-"}") </MudLink>
 
                                     </MudText>
                                 </MudStack>
@@ -203,5 +203,5 @@
         Nav.NavigateTo($"/workareas/new");
     }
     private void Edit(WorkAreaDto wa)
-        => Nav.NavigateTo($"/workareas/edit/{wa.Id}");
+        => Nav.NavigateTo($"/workareas/edit/{wa.WorkAreaID}");
 }

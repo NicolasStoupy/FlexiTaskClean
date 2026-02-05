@@ -1,7 +1,8 @@
 ﻿@page "/workareatypes/new"
+@using Application.Features.Configurations.WorkAreaTypes.Commands.CreateWorkAreaType
 @using Domain.Constants
 @using Microsoft.Extensions.Localization
-@using Application.WorkAreaTypes.Commands.CreateWorkAreaType
+
 @attribute [Authorize(Roles = $"{Roles.Administrator},{Roles.Users}")]
 
 <MudStack Spacing="3">

@@ -13,10 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\WorkAreas\Commands\CreateWorkArea\" />
-    <Folder Include="Features\WorkAreas\Commands\DeleteWorkArea\" />
-    <Folder Include="Features\WorkAreas\Commands\UpdateWorkArea\" />
-    <Folder Include="Features\Workflows\" />
+    <Folder Include="Common\Dtos\NewFolder\" />
   </ItemGroup>
 
   <ItemGroup>

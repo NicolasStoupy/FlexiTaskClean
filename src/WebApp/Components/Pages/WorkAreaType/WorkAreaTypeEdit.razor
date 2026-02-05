@@ -1,8 +1,10 @@
 ﻿@page "/workareatype/edit/{_workAreaTypeId:int}/{_plantId:int}"
+@using Application.Features.Configurations.WorkAreaTypes.Commands.EditWorkAreaType
+@using Application.Features.Configurations.WorkAreaTypes.Queries.GetWorkAreaType
 @using Domain.Constants
 @using Microsoft.Extensions.Localization
-@using Application.WorkAreaTypes.Commands.EditWorkAreaType
-@using Application.WorkAreaTypes.Queries.GetWorkAreaType
+
+
 @attribute [Authorize(Roles = $"{Roles.Administrator},{Roles.Users}")]
 
 <MudStack Spacing="3">

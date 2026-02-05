@@ -12,7 +12,7 @@ namespace Application.Common.Interfaces
 {
     public interface IApplicationDbContext : IAsyncDisposable
     {
-        DbSet<TaskItem> TaskItems { get; }
+        DbSet<TaskItem> TaskItem { get; }
         DbSet<Plant> Plant { get; }
         DbSet<WorkArea> WorkAreas { get; }
         DbSet<WorkAreaType> WorkAreaTypes { get; }

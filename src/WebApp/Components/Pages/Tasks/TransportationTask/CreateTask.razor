@@ -1,8 +1,7 @@
 ﻿@using System.ComponentModel.DataAnnotations
-
-@using Application.Features.Tasks.TransportationTask.CreateTransportationTask
-@using Application.Features.Tasks.TransportationTask.Queries.GetTransportation
 @using System.Threading.Tasks
+@using Application.Features.TransportationTask
+
 @page "/tasks/transportation/create/{workAreaId:int}"
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
     <MudPaper Elevation="4" Class="pa-8">
@@ -30,7 +29,7 @@
                                AdornmentColor="Color.Default">
                         @foreach (var area in vm.WorkAreas)
                         {
-                            <MudSelectItem T="int" Value="@area.Id">@area.CommonName</MudSelectItem>
+                            <MudSelectItem T="int" Value="@area.WorkAreaID">@area.CommonName</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>
@@ -42,7 +41,7 @@
                                Variant="Variant.Outlined">
                         @foreach (var area in vm.WorkAreas)
                         {
-                            <MudSelectItem T="int" Value="@area.Id">@area.CommonName</MudSelectItem>
+                            <MudSelectItem T="int" Value="@area.WorkAreaID">@area.CommonName</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>

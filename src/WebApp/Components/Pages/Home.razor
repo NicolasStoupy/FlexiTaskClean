@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using Application.Workflows.Queries.GetTaskItem
 @using WebApp.Components.Dialogs
 @using WebApp.Components.Pages.Components
 @using WebApp.Components.Pages.Components.Flow
@@ -70,8 +69,7 @@ Welcome to your new app.
 
     private void ShowDialog()
     {
-        var query = new GetTaskItemQuery();
-        _Uimediator.Send(query);
+     
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small };
 
         DialogService.Show<SimpleDialog>("Titre du dialogue", options);

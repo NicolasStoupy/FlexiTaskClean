@@ -1,20 +1,30 @@
-﻿using Domain.Entities.MasterData;
+﻿using Domain.Common.Exceptions;
+using Domain.Entities.MasterData;
 using System;
 using System.Collections.Generic;
 
 namespace Domain.Entities.Tasks.TaskSpecializations;
 
-public class LoadingTask : BaseAuditableEntity
+public class LoadingTask : TaskItem
 {
-    public int TaskHeaderId { get; set; }
-    public int TaskItemId { get; set; }
+    private LoadingTask() { } // EF
 
-    public string Product { get; set; } = null!;
-    public double Qty { get; set; }
-    public string? Support { get; set; }
+    public LoadingTask(string material, double qty, int areaForLoadingId, string? support = null)
+    {
+        if (string.IsNullOrWhiteSpace(material)) throw new DomainException("Material is required");
+        if (qty <= 0) throw new DomainException("Qty must be > 0");
+        if (areaForLoadingId <= 0) throw new DomainException("AreaForLoadingID invalid");
 
-    public int? AreaForLoadingId { get; set; }
+        Material = material.Trim();
+        Quantity = qty;
+        AreaForLoadingID = areaForLoadingId;
+        Support = support;
+    }
 
-    public TaskItem TaskItem { get; set; } = null!;
-    public WorkArea? AreaForLoading { get; set; }
+    public string Material { get; private set; } = null!;
+    public double Quantity { get; private set; }
+    public string? Support { get; private set; }
+
+    public int AreaForLoadingID { get; private set; }
+    public WorkArea AreaForLoading { get; private set; } = null!;
 }

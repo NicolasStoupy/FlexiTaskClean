@@ -1,7 +1,8 @@
 ﻿@page "/tasks/list/{AreaId:int}"
-@using Application.Features.Tasks.Commands
-@using Application.Features.Tasks.Queries.TaskList
 @using System.Threading.Tasks
+@using Application.Features.GetTaskList
+@using Application.Features.TaskExecution
+
 
 
 <MudPaper Elevation="2" Class="pa-2 mb-6" Style="position: sticky; top: 70px; z-index: 10;">
@@ -11,93 +12,79 @@
 
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
-                   StartIcon="@Icons.Material.Filled.AddCircle"
-                 >
+                   StartIcon="@Icons.Material.Filled.AddCircle">
             Besoin
         </MudButton>
 
         <MudButton Variant="Variant.Filled"
                    Color="Color.Info"
-                   StartIcon="@Icons.Material.Filled.LocalShipping"
-                   >
+                   StartIcon="@Icons.Material.Filled.LocalShipping">
             Transport
         </MudButton>
 
-       
+
 
         <MudSpacer />
 
-    
+
     </MudStack>
 </MudPaper>
 <h3>En Attente de Transit</h3>
 
-<MudTable Items="_vm.Tasks.Where(t => t.TaskItemStatus == Domain.Enums.TaskItemStatus.InProgress.ToString()).ToList()" Hover="true" Bordered="true" Striped="true">
+<MudTable Items="_vm.Tasks"
+          Hover="true" Bordered="true" Striped="true" Dense="true">
+
     <HeaderContent>
         <MudTh>Task ID</MudTh>
-        <MudTh>Source Area</MudTh>
-        <MudTh>Destination</MudTh>
-        <MudTh>Support</MudTh>
+        <MudTh>TargetDate</MudTh>
+        <MudTh>TaskItemType</MudTh>
+        <MudTh>TaskData</MudTh>
         <MudTh>Status</MudTh>
         <MudTh>Actions</MudTh>
     </HeaderContent>
+
     <RowTemplate>
-        <MudTd DataLabel="Task ID">@context.TaskItemId</MudTd>
-        <MudTd DataLabel="Description">@context.SourceAreaName</MudTd>
-        <MudTd DataLabel="TaskType">@context.DestinationAreaName</MudTd>
-        <MudTd DataLabel="TaskType">@context.Support</MudTd>
+        <MudTd DataLabel="Task ID">@context.TaskItemID</MudTd>
+        <MudTd DataLabel="Task ID">@context.TargetDate</MudTd>
+        <MudTd DataLabel="TaskType">@context.TaskItemType</MudTd>
+        <MudTd>
+            @if (context is TransportationTaskListItemDto tr)
+            {
+                <label>
+                    @tr.SourceAreaName => @tr.DestinationAreaName ( @tr.Support)
+                </label>
+                
+                
+            
+            }
+            @if(context is LoadingTaskListItemDto lo)
+            {
+                <label>@lo.Quantity x  @lo.Material in @lo.AreaForLoadingName </label>
+                
+               
+            }
+
+        </MudTd>
+
+
         <MudTd DataLabel="Status">@context.TaskItemStatus</MudTd>
+
         <MudTd DataLabel="Actions">
-            <MudButton OnClick="@(() => Take(context.TaskItemId))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Prendre</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Details</MudButton>
+            <MudButton OnClick="@(() => Take(context.TaskItemID))"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small">
+                Prendre
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small">
+                Détails
+            </MudButton>
         </MudTd>
     </RowTemplate>
 </MudTable>
 
-<h3>Chargement (Out)</h3>
-<MudTable Items="_vm.Tasks.Where(t => t.TaskItemStatus == Domain.Enums.TaskItemStatus.NotStarted.ToString() || t.TaskItemStatus == Domain.Enums.TaskItemStatus.Ready.ToString()).ToList()" Hover="true" Bordered="true" Striped="true">
-    <HeaderContent>
-        <MudTh>Task ID</MudTh>
-        <MudTh>Source Area</MudTh>
-        <MudTh>Destination</MudTh>
-        <MudTh>Support</MudTh>
-        <MudTh>Status</MudTh>
-        <MudTh>Actions</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Task ID">@context.TaskItemId</MudTd>
-        <MudTd DataLabel="Description">@context.SourceAreaName</MudTd>
-        <MudTd DataLabel="TaskType">@context.DestinationAreaName</MudTd>
-        <MudTd DataLabel="TaskType">@context.Support</MudTd>
-        <MudTd DataLabel="Status">@context.TaskItemStatus</MudTd>
-        <MudTd DataLabel="Actions">
-            <MudButton OnClick="@(()=>Take(context.TaskItemId))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Prendre</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Details</MudButton>
-        </MudTd>
-    </RowTemplate>
-</MudTable>
-<h3>Mise en stock (IN)</h3>
-<MudTable Items="_vm.Tasks.Where(t => t.TaskItemStatus == Domain.Enums.TaskItemStatus.NotStarted.ToString() || t.TaskItemStatus == Domain.Enums.TaskItemStatus.Ready.ToString()).ToList()" Hover="true" Bordered="true" Striped="true">
-    <HeaderContent>
-        <MudTh>Task ID</MudTh>
-        <MudTh>Material</MudTh>
-        <MudTh>Description</MudTh>
-        <MudTh>Support</MudTh>
-        <MudTh>Status</MudTh>
-        <MudTh>Actions</MudTh>
-    </HeaderContent>
-    <RowTemplate>
-        <MudTd DataLabel="Task ID">@context.TaskItemId</MudTd>
-        <MudTd DataLabel="Description">@context.SourceAreaName</MudTd>
-        <MudTd DataLabel="TaskType">@context.DestinationAreaName</MudTd>
-        <MudTd DataLabel="TaskType">@context.Support</MudTd>
-        <MudTd DataLabel="Status">@context.TaskItemStatus</MudTd>
-        <MudTd DataLabel="Actions">
-            <MudButton OnClick="@(() => Take(context.TaskItemId))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Prendre</MudButton>
-            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small">Details</MudButton>
-        </MudTd>
-    </RowTemplate>
-</MudTable>
 @code {
     [Parameter]
     public int AreaId { get; set; }

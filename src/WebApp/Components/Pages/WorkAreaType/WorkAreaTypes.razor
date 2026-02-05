@@ -1,6 +1,6 @@
 ﻿@page "/workareatypes"
-@using Application.WorkAreaTypes.Queries.GetWorkAreaType
-@using Application.WorkAreaTypes.Queries.GetWorkAreaTypes
+@using Application.Features.Configurations.WorkAreaTypes.Queries.GetWorkAreaType
+@using Application.Features.Configurations.WorkAreaTypes.Queries.GetWorkAreaTypes
 @using Domain.Constants
 @using Microsoft.Extensions.Localization
 
@@ -144,5 +144,5 @@
         => Nav.NavigateTo("/workareatypes/new");
 
     private void Edit(WorkAreaTypeDto t)
-        => Nav.NavigateTo($"/workareatype/edit/{t.Id}");
+        => Nav.NavigateTo($"/workareatype/edit/{t.WorkAreaTypeID}");
 }

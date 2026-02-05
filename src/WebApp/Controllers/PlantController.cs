@@ -1,4 +1,4 @@
-﻿using Application.Plants.Queries.GetPlants;
+﻿using Application.Features.Configurations.Plants.Queries.GetPlants;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

@@ -110,9 +110,9 @@ namespace WebApp.Themes
 
             LayoutProperties = new LayoutProperties()
             {
-                DrawerWidthLeft = "280px",
-                DrawerWidthRight = "320px",
-                DefaultBorderRadius = "16px"
+                DrawerWidthLeft = "260px",     // 280 -> 260
+                DrawerWidthRight = "300px",    // 320 -> 300
+                DefaultBorderRadius = "10px"   // 16 -> 10 
             },
 
             Shadows = new Shadow()

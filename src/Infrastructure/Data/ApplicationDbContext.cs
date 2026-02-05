@@ -21,7 +21,7 @@ namespace Infrastructure.Data
 
         public DbSet<WorkAreaType> WorkAreaTypes => Set<WorkAreaType>();
 
-        public DbSet<TaskItem> TaskItems => Set<TaskItem>();
+        public DbSet<TaskItem> TaskItem => Set<TaskItem>();
 
         public DbSet<TaskHeader> TaskHeader => Set<TaskHeader>();
 

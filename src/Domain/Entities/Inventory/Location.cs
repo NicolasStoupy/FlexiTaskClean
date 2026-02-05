@@ -1,16 +1,29 @@
-﻿using Domain.Entities.MasterData;
+﻿using Domain.Common.Exceptions;
+using Domain.Entities.MasterData;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Domain.Entities.Inventory
 {
-    public class Location : BaseAuditableEntity<string>
+    public class Location : BaseEntity
     {
-        public string Label { get; set; } = null!;
-        public int WorkAreaId { get; set; }
+        private Location() { } // EF
 
-        public WorkArea WorkArea { get; set; } = null!;
+        public Location(string locationId, string label, int workAreaId)
+        {
+            if (string.IsNullOrWhiteSpace(locationId)) throw new DomainException("LocationID required");
+            if (string.IsNullOrWhiteSpace(label)) throw new DomainException("Label required");
+            if (workAreaId <= 0) throw new DomainException("WorkAreaId invalid");
 
+            LocationID = locationId.Trim();
+            Label = label.Trim();
+            WorkAreaId = workAreaId;
+        }
+
+        public string LocationID { get; private set; } = null!;
+        public string Label { get; private set; } = null!;
+        public int WorkAreaId { get; private set; }
+        public WorkArea WorkArea { get; private set; } = null!;
     }
 }

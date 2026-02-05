@@ -1,11 +1,9 @@
 ﻿using Application.Common.Interfaces;
 using Domain.Entities.Traceability;
+using Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json;
 
 namespace Infrastructure.Data.Interceptors
@@ -45,94 +43,87 @@ namespace Infrastructure.Data.Interceptors
 
         private void AddEntityChanges(DbContext? context)
         {
-            try
-            {
-                if (context is null) return;
+            //try
+            //{
+            //    if (context is null) return;
 
-                //  ne pas auditer EntityChange (sinon boucle)
-                if (context.ChangeTracker.Entries<EntityChange>().Any(e => e.State != EntityState.Unchanged))
-                    return;
+            //    //  ne pas auditer EntityChange (sinon boucle)
+            //    if (context.ChangeTracker.Entries<EntityChange>().Any(e => e.State != EntityState.Unchanged))
+            //        return;
 
-                using var scope = _scopeFactory.CreateScope();
-                var user = scope.ServiceProvider.GetService<IUser>();
-                var userId = user?.Id ?? "system";
-                var now = _time.GetUtcNow();
+            //    using var scope = _scopeFactory.CreateScope();
+            //    var user = scope.ServiceProvider.GetService<IUser>();
+            //    var userId = user?.Id ?? "system";
+            //    var now = _time.GetUtcNow();
 
-                var changes = new List<EntityChange>();
+            //    var changes = new List<EntityChange>();
 
-                foreach (var entry in context.ChangeTracker.Entries())
-                {
-                    var entityKey = BuildEntityKeyJson(entry);
+            //    foreach (var entry in context.ChangeTracker.Entries())
+            //    {
+            //        var entityKey = BuildEntityKeyJson(entry);
 
-                    if (entry.State is not (EntityState.Modified or EntityState.Added or EntityState.Deleted))
-                        continue;
+            //        if (entry.State is not (EntityState.Modified or EntityState.Added or EntityState.Deleted))
+            //            continue;
 
-                    // Ignore EntityChange entity itself
-                    if (entry.Entity is EntityChange)
-                        continue;
+            //        // Ignore EntityChange entity itself
+            //        if (entry.Entity is EntityChange)
+            //            continue;
 
-                    // Option: ignore owned types (ou traite-les séparément)
-                    if (entry.Metadata.IsOwned())
-                        continue;
+            //        // Option: ignore owned types (ou traite-les séparément)
+            //        if (entry.Metadata.IsOwned())
+            //            continue;
 
-                    var entityName = entry.Metadata.ClrType.Name;
+            //        var entityName = entry.Metadata.ClrType.Name;
 
-                    // MODIFIED : Old/New par propriété modifiée
-                    if (entry.State == EntityState.Modified)
-                    {
-                        foreach (var prop in entry.Properties.Where(p => p.IsModified))
-                        {
-                            var field = prop.Metadata.Name;
-                            if (IgnoredFields.Contains(field)) continue;
+            //        // MODIFIED : Old/New par propriété modifiée
+            //        if (entry.State == EntityState.Modified)
+            //        {
+            //            foreach (var prop in entry.Properties.Where(p => p.IsModified))
+            //            {
+            //                var field = prop.Metadata.Name;
+            //                if (IgnoredFields.Contains(field)) continue;
 
-                            var oldVal = ToStringSafe(prop.OriginalValue);
-                            var newVal = ToStringSafe(prop.CurrentValue);
+            //                var oldVal = ToStringSafe(prop.OriginalValue);
+            //                var newVal = ToStringSafe(prop.CurrentValue);
 
-                            if (oldVal == newVal) continue;
+            //                if (oldVal == newVal) continue;
+            //                var p = new EntityChangeParams(
+            //                    Entity: entityName,
+            //                    EntityField: field,
+            //                    FieldType: prop.Metadata.ClrType.Name,
+            //                    OldValue: oldVal,
+            //                    NewValue: newVal,
+            //                    EntityKey: entityKey,
+            //                    ChangedByUserId: userId);
+            //                changes.Add(new EntityChange(p));
+            //            }
+            //        }
+            //        else
+            //        {
+            //            var p = new EntityChangeParams(
+            //                 Entity: entityName,
+            //                 EntityField: "__STATE__",
+            //                 FieldType: "string",
+            //                 OldValue: entry.State == EntityState.Added ? null : "exists",
+            //                 NewValue: entry.State == EntityState.Deleted ? null : "created",
+            //                 EntityKey: entityKey,
+            //                 ChangedByUserId: userId);
+            //            // ADDED / DELETED 
+            //            changes.Add(new EntityChange(p));
+            //        }
+            //    }
 
-                            changes.Add(new EntityChange
-                            {
-                                Entity = entityName,
-                                EntityField = field,
-                                FieldType = prop.Metadata.ClrType.Name,
-                                OldValue = oldVal,
-                                NewValue = newVal,
-                                ChangedAt = now,
-                                ChangedByUserId = userId,
-                                EntityKey = entityKey
+            //    if (changes.Count > 0)
+            //    {
+            //        context.Set<EntityChange>().AddRange(changes);
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
 
-                            });
-                        }
-                    }
-                    else
-                    {
-                        // ADDED / DELETED 
-                        changes.Add(new EntityChange
-                        {
-                            Entity = entityName,
-                            EntityField = "__STATE__",
-                            FieldType = "string",
-                            OldValue = entry.State == EntityState.Added ? null : "exists",
-                            NewValue = entry.State == EntityState.Deleted ? null : "created",
-                            ChangedAt = now,
-                            ChangedByUserId = userId,
-                            EntityKey = entityKey
+                
+            //}
 
-                        });
-                    }
-                }
-
-                if (changes.Count > 0)
-                {
-                    context.Set<EntityChange>().AddRange(changes);
-                }
-            }
-            catch (Exception ex )
-            {
-
-                throw;
-            }
-           
         }
 
         private static string? ToStringSafe(object? value)

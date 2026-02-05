@@ -6,15 +6,18 @@ namespace Domain.Entities.Tasks.TaskSpecializations;
 
 public class TransportTask : TaskItem
 {
-  
-    public string? Support { get; set; } 
-    public int? DestinationAreaId { get; set; }
-    public int? SourceAreaId { get; set; } 
+    public string? Support { get; private set; }
+    public int DestinationAreaId { get; private set; }
+    public int SourceAreaId { get; private set; }
 
-    public WorkArea DestinationArea { get; set; } = null!;
-    public WorkArea SourceArea { get; set; } = null!;
+    public WorkArea DestinationArea { get; private set; } = null!;
+    public WorkArea SourceArea { get; private set; } = null!;
 
+    public TransportTask(string? support, int destinationAreaId, int sourceAreaId) : base(sourceAreaId, "Transport")
+    {
+        Support = support;
+        DestinationAreaId = destinationAreaId;
+        SourceAreaId = sourceAreaId;
 
-
-
+    }
 }

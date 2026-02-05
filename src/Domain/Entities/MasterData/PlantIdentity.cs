@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Domain.Entities.MasterData
 {
-    public class PlantIdentity:BaseAuditableEntity<int>
+    public class PlantIdentity:BaseAuditableEntity
     {
-       
-        public string Id_AspnetIdentity { get; set; } = null!;  // nvarchar(450)
+        public int PlantID { get; private set; }
+        public string AspNetIdentityID { get; private set; } = null!;  // nvarchar(450)
 
-        public Plant? Plant { get; set; }
+    
     }
 }

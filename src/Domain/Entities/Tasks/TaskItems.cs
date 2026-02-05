@@ -1,5 +1,5 @@
 ﻿using Domain.Constants;
-using Domain.Entities.DynamicForms;
+
 using Domain.Entities.MasterData;
 using Domain.Entities.Tasks.TaskSpecializations;
 using Domain.Enums;
@@ -21,79 +21,46 @@ public class TaskItem : BaseAuditableEntity
     public TaskItem()
     {
     }
+    public TaskItem(int linkedArea, string taskItemType)
+    {
+        LinkedWorkArea = linkedArea;
+        TaskItemType = taskItemType;
+    }
+    public int TaskHeaderID { get; private set; }
 
-    /// <summary>
-    /// Identifiant de l'en-tête de tâches auquel appartient cet item.
-    /// Fait partie de la clé composite (avec <see cref="TaskItemId"/>).
-    /// </summary>
-    public int TaskHeaderId { get; set; }
+    public int TaskItemID { get; private set; }
 
-    /// <summary>
-    /// Identifiant de l'item au sein de l'en-tête de tâches.
-    /// Fait partie de la clé composite.
-    /// </summary>
-    public int TaskItemId { get; set; }
+    public int LinkedWorkArea { get; private set; } 
 
-    /// <summary>
-    /// Identifiant de la zone de travail liée à cette tâche.
-    /// </summary>
-    public int LinkedWorkArea { get; set; }  
+    public string TaskItemType { get; private set; }
 
-    public TaskItemType TaskItemType { get; set; } = null!;
-    /// <summary>
-    /// Liste des dépendances où cet item dépend d'autres tasks (prérequis).
-    /// Navigation technique (table de jointure).
-    /// </summary>
-    public List<TaskItemDependency> Prerequisites { get; set; } = new(); // this depends on
+    public DateOnly TargetDate { get; set; }
 
-    /// <summary>
-    /// Liste des dépendances vers les tâches qui dépendent de cet item.
-    /// Navigation technique (table de jointure).
-    /// </summary>
-    public List<TaskItemDependency> NextSteps { get; set; } = new();    // depend on this
+    private readonly List<TaskItemDependency> _prerequisites =new(); // this depends on
+    public IReadOnlyCollection<TaskItemDependency> Prerequisites => _prerequisites.AsReadOnly();
 
-    /// <summary>
-    /// État courant de la tâche. Le setter est privé : utiliser les méthodes
-    /// de modification d'état exposées (SetReady, SetInProgress, Complete, ...).
-    /// Valeur par défaut : <see cref="TaskItemStatus.NotStarted"/>.
-    /// </summary>
+
+    private readonly List<TaskItemDependency> _nextSteps = new();    // depend on this
+    public IReadOnlyCollection<TaskItemDependency> NextSteps => _nextSteps.AsReadOnly();
+
+
+   
+    
+    
     public TaskItemStatus TaskItemStatus { get; private set; } = TaskItemStatus.NotStarted;
 
-    /// <summary>
-    /// Indique si cette tâche est une tâche de démarrage du workflow.
-    /// </summary>
     public bool StartingTask { get; set; }
 
-    /// <summary>
-    /// Indique si cette tâche est une tâche de fin du workflow.
-    /// </summary>
     public bool EndingTask { get; set; }
 
-    /// <summary>
-    /// Définit l'état à <see cref="TaskItemStatus.NotStarted"/>.
-    /// </summary>
     public void SetNotStarted() => TaskItemStatus = TaskItemStatus.NotStarted;
 
-    /// <summary>
-    /// Définit l'état à <see cref="TaskItemStatus.Ready"/>.
-    /// </summary>
     public void SetReady() => TaskItemStatus = TaskItemStatus.Ready;
 
-    /// <summary>
-    /// Définit l'état à <see cref="TaskItemStatus.InProgress"/>.
-    /// </summary>
     public void SetInProgress() => TaskItemStatus = TaskItemStatus.InProgress;
 
-    /// <summary>
-    /// Définit l'état à <see cref="TaskItemStatus.Completed"/>.
-    /// </summary>
     public void SetCompleted() => TaskItemStatus = TaskItemStatus.Completed;
 
-    /// <summary>
-    /// Marque cette tâche comme complétée puis tente de basculer les tâches
-    /// suivantes (<see cref="NextSteps"/>) en état <see cref="TaskItemStatus.Ready"/>
-    /// si leurs prérequis sont remplis.
-    /// </summary>
     public void Complete()
     {
         TaskItemStatus = TaskItemStatus.Completed;
@@ -106,13 +73,6 @@ public class TaskItem : BaseAuditableEntity
         }
     }
 
-    /// <summary>
-    /// Indique si cette tâche peut passer en état "Ready".
-    /// Conditions :
-    /// - Elle n'est ni déjà complétée ni en cours.
-    /// - Tous ses prérequis ont le statut <see cref="TaskItemStatus.Completed"/>.
-    /// </summary>
-    /// <returns>True si la tâche peut être prête, false sinon.</returns>
     public bool CanBeReady()
     {
         if (TaskItemStatus == TaskItemStatus.Completed ||
@@ -120,42 +80,21 @@ public class TaskItem : BaseAuditableEntity
         return Prerequisites.All(f => f.DependsOn.TaskItemStatus == TaskItemStatus.Completed);
     }
 
-    /// <summary>
-    /// Indique si la tâche est actuellement en état <see cref="TaskItemStatus.Ready"/>.
-    /// </summary>
     public bool HasReady()
     {
         return TaskItemStatus == TaskItemStatus.Ready;
     }
 
-    /// <summary>
-    /// Usine : crée une tâche de démarrage liée à la zone indiquée.
-    /// La tâche de démarrage est directement en état <see cref="TaskItemStatus.Ready"/>.
-    /// </summary>
-    /// <param name="areaId">Identifiant de la zone de travail liée.</param>
-    /// <returns>Nouvelle instance de <see cref="TaskItem"/> marquée comme starting.</returns>
-    public static TaskItem CreateStarting(int areaId, TaskItem taskItem)
+    public static TaskItem CreateStarting(TaskItem taskItem)
     {
         taskItem.StartingTask = true;
         taskItem.EndingTask = false;
         taskItem.TaskItemStatus = TaskItemStatus.Ready;
       
         return taskItem;
-        //return new TaskItem
-        //{
-        //    LinkedWorkArea = areaId,
-        //    StartingTask = true,
-        //    EndingTask = false,
-        //    TaskItemStatus = TaskItemStatus.Ready
-        //};
+     
     }
 
-    /// <summary>
-    /// Usine : crée une tâche de fin liée à la zone indiquée.
-    /// La tâche de fin démarre par défaut en <see cref="TaskItemStatus.NotStarted"/>.
-    /// </summary>
-    /// <param name="areaId">Identifiant de la zone de travail liée.</param>
-    /// <returns>Nouvelle instance de <see cref="TaskItem"/> marquée comme ending.</returns>
     public static TaskItem CreateEnding(int areaId)
     {
         return new TaskItem
@@ -167,18 +106,9 @@ public class TaskItem : BaseAuditableEntity
         };
     }
 
-    /// <summary>
-    /// Ajoute une dépendance vers la tâche suivante (<paramref name="nextTask"/>).
-    /// - Vérifie que <paramref name="nextTask"/> n'est pas null.
-    /// - Évite les doublons.
-    /// - Construit la relation <see cref="TaskItemDependency"/> en renseignant
-    ///   les FK explicites et en synchronisant les collections de navigation.
-    /// </summary>
-    /// <param name="nextTask">La tâche qui dépendra de cette tâche.</param>
-    /// <exception cref="ArgumentNullException">Si <paramref name="nextTask"/> est null.</exception>
     public void AddNextStep(TaskItem nextTask)
     {
-        if (nextTask.TaskItemId == 0)
+        if (nextTask.TaskItemID == 0)
         {
             throw new ArgumentException("nextTask must have a valid TaskItemId (saved in DB).");
         }
@@ -196,23 +126,17 @@ public class TaskItem : BaseAuditableEntity
             DependsOn = this,
 
             //  Set explicite des FK (après 1er SaveChanges elles sont connues)
-            TaskHeaderId = nextTask.TaskHeaderId,
-            TaskItemId = nextTask.TaskItemId,
-            DependsOnTaskHeaderId = this.TaskHeaderId,
-            DependsOnTaskItemId = this.TaskItemId
+            TaskHeaderID = nextTask.TaskHeaderID,
+            TaskItemID = nextTask.TaskItemID,
+            DependsOnTaskHeaderID = this.TaskHeaderID,
+            DependsOnTaskItemID = this.TaskItemID
         };
 
         // Cohérence des navigations
-        this.NextSteps.Add(dependency);          // "depend on this"
-        nextTask.Prerequisites.Add(dependency);  // "this depends on"
+        this._nextSteps.Add(dependency);          // "depend on this"
+        nextTask._prerequisites.Add(dependency);  // "this depends on"
     }
 
-    /// <summary>
-    /// Usine : crée une tâche intermédiaire liée à la zone indiquée.
-    /// Par défaut elle est ni starting ni ending et à l'état NotStarted.
-    /// </summary>
-    /// <param name="areaId">Identifiant de la zone de travail liée.</param>
-    /// <returns>Nouvelle instance de <see cref="TaskItem"/> intermédiaire.</returns>
     public static TaskItem CreateIntermediteTask(int areaId)
     {
         return new TaskItem
@@ -227,21 +151,26 @@ public class TaskItem : BaseAuditableEntity
     public void Execute()
     {
         switch (TaskItemStatus)
-        {   
+        {
             case TaskItemStatus.Ready:
                 this.SetInProgress();
                 break;
+
             case TaskItemStatus.InProgress:
                 this.Complete();
                 break;
+
             case TaskItemStatus.Completed:
-               
+
                 break;
+
             case TaskItemStatus.Waiting:
                 break;
+
             case TaskItemStatus.NotStarted:
 
                 break;
+
             default:
                 break;
         }
