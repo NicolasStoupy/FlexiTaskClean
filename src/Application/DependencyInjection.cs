@@ -1,6 +1,10 @@
 ﻿using Application.Common.Behaviours;
 using Application.Common.Interfaces;
 using Application.Common.Models;
+using Domain.Common.Interfaces.Tasks;
+using Domain.Entities.Tasks;
+using Domain.Factories;
+using Domain.Factories.Requests;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -85,6 +89,11 @@ namespace Application
                 //cfg.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             });
             builder.Services.Configure<TaskLockOptions>(builder.Configuration.GetSection("TaskLock"));
+
+            builder.Services.AddScoped<ITaskCreationFacade, TaskCreationFacade>();
+
+            builder.Services.AddScoped<ITaskCreator<CreateOneWayTransportTask>, TransportTaskCreator>();
+            builder.Services.AddScoped<ITaskCreator<CreateMultiStageTransportTask>, MultiStageTransportTaskCreator>();
 
         }
     }

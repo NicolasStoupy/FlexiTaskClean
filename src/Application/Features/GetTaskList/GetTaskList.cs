@@ -22,8 +22,7 @@ namespace Application.Features.GetTaskList
         public async Task<TaskListVm> Handle(GetTaskListQuery request, CancellationToken cancellationToken)
         {
             var _context = await _factory.CreateAsync(cancellationToken);
-
-         
+          
             var entities = await _context.TaskItem.
                 Where(Ti => Ti.LinkedWorkArea == request.areaId 
                 && Ti.TaskItemStatus== TaskItemStatus.Ready

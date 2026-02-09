@@ -20,8 +20,7 @@ namespace Application.Features.GetTaskList
                     .ForMember(d => d.DestinationAreaName, opt => opt.MapFrom(s => s.DestinationArea.Code))
                     .ForMember(d => d.Support, opt => opt.MapFrom(s => s.Support));
 
-                CreateMap<LoadingTask, LoadingTaskListItemDto>()
-                    .ForMember(d => d.Material, opt => opt.MapFrom(s => s.Material))
+                CreateMap<LoadingTask, LoadingTaskListItemDto>()                   
                     .ForMember(d => d.AreaForLoadingName, opt => opt.MapFrom(s => s.AreaForLoading.Code))
                     .ForMember(d => d.Support, opt => opt.MapFrom(s => s.Support));
 

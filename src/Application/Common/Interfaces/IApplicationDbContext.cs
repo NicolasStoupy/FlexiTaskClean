@@ -20,7 +20,7 @@ namespace Application.Common.Interfaces
         DbSet<SupportType> SupportTypes { get; }
         DbSet<TransportTask> TransportTasks { get; }
         DbSet<WorkAreaTransport> WorkAreaTransports { get; }
-
+        DbSet<LoadingTask> LoadingTasks { get; }
         DbSet<TaskLog> TaskLogs { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

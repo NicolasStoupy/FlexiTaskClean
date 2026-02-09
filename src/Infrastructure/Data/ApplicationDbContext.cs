@@ -33,6 +33,8 @@ namespace Infrastructure.Data
 
         public DbSet<TaskLog> TaskLogs => Set<TaskLog>();
 
+        public DbSet<LoadingTask> LoadingTasks => Set<LoadingTask>();
+
         /// <summary>
         /// Configure le modèle de données pour le contexte de base de données lors de sa création.
         /// </summary>

@@ -42,7 +42,7 @@ public class TransportTask : TaskItem
     /// <param name="sourceAreaId">Id de la zone source.</param>
     /// <param name="assignedAreaId">Id de la zone assignée (transmis au type de base).</param>
     /// <param name="targetDate">Date cible (optionnelle).</param>
-    public TransportTask(
+    internal TransportTask(
         string? support,
         int destinationAreaId,
         int sourceAreaId,
@@ -61,4 +61,9 @@ public class TransportTask : TaskItem
     public TransportTask()
     {
     }
+
+
+   
+      
+    
 }

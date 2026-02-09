@@ -1,5 +1,5 @@
-﻿using Domain.Entities.Tasks;
-using Domain.Entities.Tasks.TaskSpecializations;
+﻿using Domain.Common.Interfaces.Tasks;
+using Domain.Factories.Requests;
 
 namespace Application.Features.TransportationTask
 {
@@ -17,39 +17,42 @@ namespace Application.Features.TransportationTask
         {
             RuleFor(x => x.AreaSourceId).GreaterThan(0);
             RuleFor(x => x.AreaDestinationId).GreaterThan(0);
-            //RuleFor(x => x.Support).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.Support).NotEmpty().MaximumLength(100);
         }
     }
 
     public class CreateTransportationTaskHandler : IRequestHandler<CreateTransportationTask, Unit>
     {
         private readonly IApplicationDbContextFactory _factory;
+        private readonly ITaskCreationFacade _taskFacade;
 
-        public CreateTransportationTaskHandler(IApplicationDbContextFactory factory)
+        public CreateTransportationTaskHandler(IApplicationDbContextFactory factory, ITaskCreationFacade taskFacade)
         {
             _factory = factory;
+            _taskFacade = taskFacade;
         }
 
         public async Task<Unit> Handle(CreateTransportationTask request, CancellationToken cancellationToken)
         {
             var context = await _factory.CreateAsync(cancellationToken).ConfigureAwait(false);
 
-            foreach (var item in request.Support.Split(';'))
-            {
-                var taskHeader = new TaskHeader();
-                var transportTask = new TransportTask(
-                    item,
+            var taskHeaders = _taskFacade.Create(
+                new CreateMultiStageTransportTask(
+                    request.Support,
+                    new List<int>() { 25, 27, 25, 27 },
+                    request.AreaAssigned,
+                    request.TargetDate));
+
+            var taskHeader = _taskFacade.Create(
+                new CreateOneWayTransportTask(
+                    request.Support,
                     request.AreaDestinationId,
                     request.AreaSourceId,
                     request.AreaAssigned,
-                    request.TargetDate
+                    request.TargetDate)
                 );
 
-                taskHeader.AddStartingTask(transportTask);
-                context.TaskHeader.Add(taskHeader);
-
-            }
-          
+            context.TaskHeader.Add(taskHeaders);
 
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

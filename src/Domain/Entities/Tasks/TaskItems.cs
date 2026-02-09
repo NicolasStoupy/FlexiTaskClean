@@ -40,30 +40,30 @@ public class TaskItem : BaseAuditableEntity
     /// <summary>
     /// Identifiant de l'en-tête de tâche (FK).
     /// </summary>
-    public int TaskHeaderID { get; private set; }
+    public int TaskHeaderID { get; protected set; }
 
     /// <summary>
     /// Identifiant de la tâche (PK).
     /// </summary>
-    public int TaskItemID { get; private set; }
+    public int TaskItemID { get; protected set; }
 
     /// <summary>
     /// Identifiant de la zone de travail liée.
     /// </summary>
-    public int LinkedWorkArea { get; private set; }
+    public int LinkedWorkArea { get; protected set; }
 
     /// <summary>
     /// Type métier de la tâche.
     /// </summary>
-    public string TaskItemType { get; private set; } = null!;
+    public string TaskItemType { get; protected set; } = null!;
 
     /// <summary>
     /// Date cible de la tâche.
     /// </summary>
-    public DateOnly TargetDate { get; private set; }
-    public string? TakenByUserId { get; private set; }
-    public DateTime? TakenAt { get; private set; }
-    public DateTime? LockExpiresAt { get; private set; }
+    public DateOnly TargetDate { get; protected set; }
+    public string? TakenByUserId { get; protected set; }
+    public DateTime? TakenAt { get; protected set; }
+    public DateTime? LockExpiresAt { get; protected set; }
 
 
     private readonly List<TaskItemDependency> _prerequisites = new();
@@ -83,17 +83,17 @@ public class TaskItem : BaseAuditableEntity
     /// <summary>
     /// État courant de la tâche.
     /// </summary>
-    public TaskItemStatus TaskItemStatus { get; private set; } = TaskItemStatus.NotStarted;
+    public TaskItemStatus TaskItemStatus { get; protected set; } = TaskItemStatus.NotStarted;
 
     /// <summary>
     /// Indique si la tâche est une tâche de démarrage dans le workflow.
     /// </summary>
-    public bool StartingTask { get; private set; }
+    public bool StartingTask { get; protected set; }
 
     /// <summary>
     /// Indique si la tâche est une tâche de fin dans le workflow.
     /// </summary>
-    public bool EndingTask { get; private set; }
+    public bool EndingTask { get; protected set; }
 
     /// <summary>
     /// Définit l'état à <see cref="TaskItemStatus.NotStarted"/>.
@@ -163,32 +163,17 @@ public class TaskItem : BaseAuditableEntity
     /// <param name="taskItem">La tâche à configurer comme démarrage.</param>
     /// <returns>La même instance fournie en paramètre.</returns>
     /// <exception cref="ArgumentNullException">Si <paramref name="taskItem"/> est null.</exception>
-    public static TaskItem CreateStarting(TaskItem taskItem)
-    {
-        if (taskItem is null) throw new ArgumentNullException(nameof(taskItem));
+    public  TaskItem SetStarting()
+    {       
 
-        taskItem.StartingTask = true;
-        taskItem.EndingTask = false;
-        taskItem.TaskItemStatus = TaskItemStatus.Ready;
+        StartingTask = true;
+        EndingTask = false;
+        TaskItemStatus = TaskItemStatus.Ready;
 
-        return taskItem;
+        return this;
     }
 
-    /// <summary>
-    /// Crée une nouvelle tâche de fin liée à la zone indiquée.
-    /// </summary>
-    /// <param name="areaId">Identifiant de la zone de travail liée.</param>
-    /// <returns>Nouvelle instance de <see cref="TaskItem"/> configurée en tâche de fin.</returns>
-    public static TaskItem CreateEnding(int areaId)
-    {
-        return new TaskItem
-        {
-            LinkedWorkArea = areaId,
-            StartingTask = false,
-            EndingTask = true,
-            TaskItemStatus = TaskItemStatus.NotStarted
-        };
-    }
+    
 
     /// <summary>
     /// Ajoute une dépendance "this -> nextTask" (c'est-à-dire que <paramref name="nextTask"/> dépend de cette tâche).
@@ -291,17 +276,24 @@ public class TaskItem : BaseAuditableEntity
     /// </summary>
     /// <param name="areaId">Identifiant de la zone de travail.</param>
     /// <returns>Nouvelle instance de <see cref="TaskItem"/>.</returns>
-    public static TaskItem CreateIntermediteTask(int areaId)
+    public  TaskItem SetIntermediteTask()
     {
-        return new TaskItem
-        {
-            LinkedWorkArea = areaId,
-            StartingTask = false,
-            EndingTask = false,
-            TaskItemStatus = TaskItemStatus.NotStarted
-        };
-    }
 
+        StartingTask = false;
+        EndingTask = false;
+        TaskItemStatus = TaskItemStatus.NotStarted;
+        return this;
+        
+    }
+    public TaskItem SetEndingTask()
+    {
+
+        StartingTask = false;
+        EndingTask = true;
+        TaskItemStatus = TaskItemStatus.NotStarted;
+        return this;
+
+    }
     /// <summary>
     /// Effectue la transition d'état appropriée et publie les événements de domaine correspondants.
     /// - Si l'état est <see cref="TaskItemStatus.Ready"/>, passe à <see cref="TaskItemStatus.InProgress"/> et publie <see cref="TaskInProgressEvent"/>.

@@ -7,24 +7,15 @@ namespace Domain.Entities.Tasks.TaskSpecializations;
 
 public class LoadingTask : TaskItem
 {
-    private LoadingTask() { } // EF
+    private LoadingTask() { } // EF    
 
-    public LoadingTask(string material, double qty, int areaForLoadingId, string? support = null)
-    {
-        if (string.IsNullOrWhiteSpace(material)) throw new DomainException("Material is required");
-        if (qty <= 0) throw new DomainException("Qty must be > 0");
-        if (areaForLoadingId <= 0) throw new DomainException("AreaForLoadingID invalid");
-
-        Material = material.Trim();
-        Quantity = qty;
-        AreaForLoadingID = areaForLoadingId;
-        Support = support;
-    }
-
-    public string Material { get; private set; } = null!;
-    public double Quantity { get; private set; }
+    public string SupportTypeID { get; private set; }
     public string? Support { get; private set; }
-
     public int AreaForLoadingID { get; private set; }
+
+    public SupportType SupportType { get; private set; } = null!;
+
+    private readonly List<LoadingTaskLine> _lines = new();
+    public IReadOnlyCollection<LoadingTaskLine> Lines => _lines;
     public WorkArea AreaForLoading { get; private set; } = null!;
 }
