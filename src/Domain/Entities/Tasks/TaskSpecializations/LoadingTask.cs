@@ -18,4 +18,13 @@ public class LoadingTask : TaskItem
     private readonly List<LoadingTaskLine> _lines = new();
     public IReadOnlyCollection<LoadingTaskLine> Lines => _lines;
     public WorkArea AreaForLoading { get; private set; } = null!;
+
+    internal LoadingTask(string supportTypeID, string? support, int areaForLoadingID)
+        :base(taskItemType:"Loading",linkedArea: areaForLoadingID, target:DateOnly.FromDateTime(DateTime.Now))
+    {
+        SupportTypeID = supportTypeID;
+        Support = support;
+        AreaForLoadingID = areaForLoadingID;      
+      
+    }
 }

@@ -35,13 +35,38 @@ namespace Application.Features.TransportationTask
         public async Task<Unit> Handle(CreateTransportationTask request, CancellationToken cancellationToken)
         {
             var context = await _factory.CreateAsync(cancellationToken).ConfigureAwait(false);
-
-            var taskHeaders = _taskFacade.Create(
-                new CreateMultiStageTransportTask(
-                    request.Support,
-                    new List<int>() { 25, 27, 25, 27 },
-                    request.AreaAssigned,
-                    request.TargetDate));
+            //var loadingItems = new List<LoadingItems> { };
+            //loadingItems.Add(new LoadingItems()
+            //{
+            //    Material = "3050505",
+            //    Description = "FCLL 5.0",
+            //    Quantity = 10,
+            //    SupportTypeID = "X12",
+            //    WorkAreaID = 25,
+            //    AssignedWorkAreaID = 26,
+            //    Support = "PF0520"
+            //});
+            //loadingItems.Add(new LoadingItems()
+            //{
+            //    Material = "3050505",
+            //    Description = "FCLL 5.0",
+            //    Quantity = 2,
+            //    SupportTypeID = "X12",
+            //    WorkAreaID = 27,
+            //    AssignedWorkAreaID = 26,
+            //    Support = "PF0520"
+            //});
+            //loadingItems.Add(new LoadingItems()
+            //{
+            //    Material = "3050505",
+            //    Description = "FCLL 3.0",
+            //    Quantity = 10,
+            //    SupportTypeID = "X12",
+            //    WorkAreaID = 25,
+            //    AssignedWorkAreaID = 26,
+            //    Support = "PF0520"
+            //});
+            //var taskLoading = _taskFacade.Create(new CreateLoadingTaskRequests(loadingItems));
 
             var taskHeader = _taskFacade.Create(
                 new CreateOneWayTransportTask(
@@ -52,7 +77,7 @@ namespace Application.Features.TransportationTask
                     request.TargetDate)
                 );
 
-            context.TaskHeader.Add(taskHeaders);
+            context.TaskHeader.Add(taskHeader);
 
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

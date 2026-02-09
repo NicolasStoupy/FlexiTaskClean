@@ -94,6 +94,8 @@ namespace Application
 
             builder.Services.AddScoped<ITaskCreator<CreateOneWayTransportTask>, TransportTaskCreator>();
             builder.Services.AddScoped<ITaskCreator<CreateMultiStageTransportTask>, MultiStageTransportTaskCreator>();
+            builder.Services.AddScoped<ITaskCreator<CreateLoadingTaskRequests>, LoadingTaskCreation>();
+
 
         }
     }
