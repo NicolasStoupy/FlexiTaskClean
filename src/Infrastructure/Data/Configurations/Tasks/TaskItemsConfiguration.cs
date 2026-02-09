@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Tasks;
+﻿using Domain.Entities.MasterData;
+using Domain.Entities.Tasks;
 using Domain.Entities.Tasks.TaskSpecializations;
 using System;
 using System.Collections.Generic;
@@ -19,8 +20,7 @@ namespace Infrastructure.Data.Configurations.Tasks
             builder.Property(x => x.TaskItemStatus).HasConversion<int>();
             builder.Property(x => x.LinkedWorkArea).IsRequired();
 
-         
-
+      
 
             builder.HasOne<TaskHeader>()
                 .WithMany(th => th.TaskItems)

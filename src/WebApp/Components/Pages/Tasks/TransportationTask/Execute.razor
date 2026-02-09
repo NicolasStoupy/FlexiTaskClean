@@ -100,13 +100,7 @@
                             Skip
                         </MudButton>
 
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.NavigateNext"
-                                   Disabled="@(!CanGoNextTask)"
-                                   OnClick="GoNextTask">
-                            Next task
-                        </MudButton>
+                      
                     </MudStack>
                 </MudStack>
 
@@ -235,19 +229,9 @@
 
     private async Task ReloadQueue()
     {
-
         Queue = await LoadQueue(WorkAreaID);
 
-        // keep same current if exists
-        if (CurrentTask is not null)
-        {
-            var same = Queue.FirstOrDefault(x => x.TaskId == CurrentTask.TaskId);
-            CurrentTask = same ?? Queue.FirstOrDefault(x => !x.Completed);
-        }
-        else
-        {
-            CurrentTask = Queue.FirstOrDefault(x => !x.Completed);
-        }
+        CurrentTask = PickCurrentTaskAfterReload();
 
         SyncStepFromState();
         ResetInputsForCurrent();
@@ -269,7 +253,23 @@
         SyncStepFromState();
         ResetInputsForCurrent();
     }
+    private TransportTaskVm? PickCurrentTaskAfterReload()
+    {
+        if (Queue.Count == 0) return null;
 
+        // 1) Si on avait une current task, on essaye de la garder si elle est encore "active"
+        if (CurrentTask is not null)
+        {
+            var same = Queue.FirstOrDefault(x => x.TaskId == CurrentTask.TaskId);
+
+            // Si elle existe encore et n'est pas terminée / skipped => on la garde
+            if (same is not null && !same.Completed && same.Status != "Skipped")
+                return same;
+        }
+
+        // 2) Sinon, on prend la prochaine non terminée (et pas skipped)
+        return Queue.FirstOrDefault(x => !x.Completed && x.Status != "Skipped");
+    }
     private void SyncStepFromState()
     {
         if (CurrentTask is null) { _step = 0; return; }
@@ -338,12 +338,13 @@
         var resultCmd = await _Uimediator.Send(new TaskHandleTransitionCommand(CurrentTask.TaskId));
         if (resultCmd.success)
         {
+            // Optionnel : feedback local immédiat
             CurrentTask.Completed = true;
             CurrentTask.Status = "Completed";
-
-            SyncStepFromState();
         }
-       await  ReloadQueue();
+
+        // Recharge + sélection automatique de la prochaine tâche
+        await ReloadQueue();
     }
 
     // ===== Next task logic =====

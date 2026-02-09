@@ -1,6 +1,7 @@
 ﻿using Domain.Common;
 using MediatR;
 using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Data.Interceptors
 {
@@ -10,15 +11,15 @@ namespace Infrastructure.Data.Interceptors
     /// </summary>
     public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
     {
-        private readonly IMediator _mediator;
-
+        //private readonly IMediator _mediator;
+        private readonly IServiceScopeFactory _scopeFactory;
         /// <summary>
         /// Crée une instance de <see cref="DispatchDomainEventsInterceptor"/>.
         /// </summary>
         /// <param name="mediator">Instance de MediatR utilisée pour publier les événements de domaine.</param>
-        public DispatchDomainEventsInterceptor(IMediator mediator)
+        public DispatchDomainEventsInterceptor(IServiceScopeFactory scopeFactory)
         {
-            _mediator = mediator;
+            _scopeFactory = scopeFactory;
         }
 
         /// <summary>
@@ -57,7 +58,7 @@ namespace Infrastructure.Data.Interceptors
         /// </summary>
         /// <param name="context">Le <see cref="DbContext"/> courant ; si null la méthode retourne immédiatement.</param>
         /// <returns>Une tâche représentant l'opération de publication des événements.</returns>
-        public async Task DispatchDomainEvents(DbContext? context)
+        public async Task DispatchDomainEvents(DbContext? context, CancellationToken ct = default)
         {
             if (context == null) return;
 
@@ -72,8 +73,11 @@ namespace Infrastructure.Data.Interceptors
 
             entities.ToList().ForEach(e => e.ClearDomainEvents());
 
+            using var scope = _scopeFactory.CreateScope();
+            var publisher = scope.ServiceProvider.GetRequiredService<IPublisher>();
+
             foreach (var domainEvent in domainEvents)
-                await _mediator.Publish(domainEvent);
+                await publisher.Publish(domainEvent, ct);
         }
     }
 }

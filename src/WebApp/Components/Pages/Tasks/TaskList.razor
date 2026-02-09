@@ -2,6 +2,7 @@
 @using System.Threading.Tasks
 @using Application.Features.GetTaskList
 @using Application.Features.TaskExecution
+@using Domain.Enums
 
 
 
@@ -12,29 +13,36 @@
 
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
+                   Href="@($"/tasks/emptystillage/new")"
                    StartIcon="@Icons.Material.Filled.AddCircle">
-            Besoin
+            Besoin chevalet vide
         </MudButton>
 
         <MudButton Variant="Variant.Filled"
                    Color="Color.Info"
+                   Href="@($"/tasks/transportation/create/{AreaId}")"
                    StartIcon="@Icons.Material.Filled.LocalShipping">
-            Transport
+            Créer un transport
         </MudButton>
 
-
-
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Info"
+                   Href="@($"/tasks/transport/executor/{AreaId}")"
+                   StartIcon="@Icons.Material.Filled.PlaylistPlay">
+            Execute transport queue
+        </MudButton>
         <MudSpacer />
 
 
     </MudStack>
 </MudPaper>
-<h3>En Attente de Transit</h3>
+<h3>Tâches dans Area : @AreaId</h3>
 
 <MudTable Items="_vm.Tasks"
           Hover="true" Bordered="true" Striped="true" Dense="true">
 
     <HeaderContent>
+        <MudTh>Task Type</MudTh>
         <MudTh>Task ID</MudTh>
         <MudTh>TargetDate</MudTh>
         <MudTh>TaskItemType</MudTh>
@@ -44,43 +52,98 @@
     </HeaderContent>
 
     <RowTemplate>
+        <MudTd>
+            @if (context is TransportationTaskListItemDto tr)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.LocalShipping" Color="Color.Info" />
+
+            }
+            else if (context is LoadingTaskListItemDto lo)
+            {
+                <MudIcon Icon="@Icons.Material.Filled.MoveToInbox" Color="Color.Warning" />
+            }
+        </MudTd>
         <MudTd DataLabel="Task ID">@context.TaskItemID</MudTd>
         <MudTd DataLabel="Task ID">@context.TargetDate</MudTd>
         <MudTd DataLabel="TaskType">@context.TaskItemType</MudTd>
         <MudTd>
             @if (context is TransportationTaskListItemDto tr)
             {
-                <label>
-                    @tr.SourceAreaName => @tr.DestinationAreaName ( @tr.Support)
-                </label>
-                
-                
-            
-            }
-            @if(context is LoadingTaskListItemDto lo)
-            {
-                <label>@lo.Quantity x  @lo.Material in @lo.AreaForLoadingName </label>
-                
-               
-            }
+                <MudStack Spacing="0">
+                    <!-- Ligne principale -->
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
 
+                        <MudText Typo="Typo.body1" Class="fw-600">
+                            @tr.SourceAreaName → @tr.DestinationAreaName
+                        </MudText>
+
+                        <MudSpacer />
+
+                        @if (!string.IsNullOrWhiteSpace(tr.Support))
+                        {
+                            <MudChip T="string"
+                                     Size="Size.Small"
+                                     Variant="Variant.Filled"
+                                     Color="Color.Info">
+                                @tr.Support
+                            </MudChip>
+                        }
+                    </MudStack>
+
+                </MudStack>
+            }
+            else if (context is LoadingTaskListItemDto lo)
+            {
+                <MudStack Spacing="0">
+                    <!-- Ligne principale -->
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudText Typo="Typo.body1" Class="fw-600">
+                            @lo.Quantity x @lo.Material
+                        </MudText>
+
+                        <MudSpacer />
+
+                        <MudChip T="string"
+                                 Size="Size.Small"
+                                 Variant="Variant.Filled"
+                                 Color="Color.Primary">
+                            @lo.AreaForLoadingName
+                        </MudChip>
+                    </MudStack>
+
+                </MudStack>
+            }
         </MudTd>
 
 
-        <MudTd DataLabel="Status">@context.TaskItemStatus</MudTd>
+        <MudTd DataLabel="Status">
+            <MudChip T="string" Size="Size.Small"
+                     Variant="Variant.Filled"
+                     Color="@GetStatusColor(context.TaskItemStatus)">
+                @context.TaskItemStatus
+            </MudChip>
+        </MudTd>
 
         <MudTd DataLabel="Actions">
-            <MudButton OnClick="@(() => Take(context.TaskItemID))"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small">
-                Prendre
-            </MudButton>
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small">
-                Détails
-            </MudButton>
+            <MudStack Row="true" Spacing="1">
+
+                <MudButton OnClick="@(() => Take(context.TaskItemID))"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.PlayArrow">
+                    Prendre
+                </MudButton>
+
+                <MudButton OnClick="@(() => Take(context.TaskItemID))"
+                           Variant="Variant.Outlined"
+                           Color="Color.Default"
+                           Size="Size.Small"
+                           StartIcon="@Icons.Material.Filled.Info">
+                    Détails
+                </MudButton>
+
+            </MudStack>
         </MudTd>
     </RowTemplate>
 </MudTable>
@@ -107,4 +170,12 @@
         }
     }
     public async Task Take(int taskId) { await _Uimediator.Send(new TaskHandleTransitionCommand(taskId)); await Update(); }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "InProgress" => Color.Warning,
+        "Ready" => Color.Info,
+        "Completed" => Color.Success,
+        "" => Color.Default
+    };
 }

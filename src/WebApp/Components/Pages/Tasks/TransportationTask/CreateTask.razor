@@ -1,112 +1,191 @@
-﻿@using System.ComponentModel.DataAnnotations
-@using System.Threading.Tasks
+﻿@page "/tasks/transportation/create/{workAreaId:int}"
+
+@using System.ComponentModel.DataAnnotations
+@using Application.Common.Dtos.Lookups
 @using Application.Features.TransportationTask
 
-@page "/tasks/transportation/create/{workAreaId:int}"
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
     <MudPaper Elevation="4" Class="pa-8">
-        <MudText Typo="Typo.h5" GutterBottom="true">Nouvelle Tâche de Transport</MudText>
+        <MudText Typo="Typo.h5" Class="mb-6">Nouvelle Tâche de Transport</MudText>
 
+        <MudForm @ref="_form" Model="@_command" ValidationDelay="0">
+            <MudGrid Spacing="3">
 
-        <MudForm @ref="form" Model="@command"  ValidationDelay="0">
-            <MudGrid>
+                @* Support Type Selection *@
                 <MudItem xs="12">
-                    <MudTextField Label="Support / Stillage"
-                                  @bind-Value="command.support"
-                                  For="@(() => command.support)"
-                                  Variant="Variant.Outlined"
-                                  Immediate="true" />
-                </MudItem>
-
-                <MudItem xs="12" sm="6">
-                    <MudSelect T="int" Label="Zone Source"
-                               @bind-Value="command.areaSourceId"
-                               For="@(() => command.areaSourceId)"
+                    <MudSelect T="string" Label="Support Type"
                                Variant="Variant.Outlined"
-                               ReadOnly="true"
-                               Disabled="false"
-                               AdornmentIcon="@Icons.Material.Filled.Lock"
-                               AdornmentColor="Color.Default">
-                        @foreach (var area in vm.WorkAreas)
+                               Value="@_command.SupportTypeID"
+                               ValueChanged="OnSupportTypeChanged"
+                               For="@(() => _command.SupportTypeID)"
+                               AdornmentIcon="@Icons.Material.Filled.Inventory"
+                               AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var type in _vm.supportTypeLookups)
                         {
-                            <MudSelectItem T="int" Value="@area.WorkAreaID">@area.CommonName</MudSelectItem>
+                            <MudSelectItem Value="@type.SupportTypeID">
+                                @($"{type.SupportTypeID} | {type.Description}")
+                            </MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>
 
-                <MudItem xs="12" sm="6">
-                    <MudSelect T="int" Label="Zone Destination"
-                               @bind-Value="command.areaDestinationId"
-                               For="@(() => command.areaDestinationId)"
-                               Variant="Variant.Outlined">
-                        @foreach (var area in vm.WorkAreas)
-                        {
-                            <MudSelectItem T="int" Value="@area.WorkAreaID">@area.CommonName</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
+                @if (_supportTypeSelected)
+                {
+                    @* Assigned Work Area *@
+                    <MudItem xs="12" sm="6">
+                        <MudSelect T="int" Label="Assigned to"
+                                   @bind-Value="_command.WorkAreaAssigned"
+                                   For="@(() => _command.WorkAreaAssigned)"
+                                   Variant="Variant.Outlined"
+                                   AnchorOrigin="Origin.BottomCenter">
+                            @foreach (var area in _workAreaLookup)
+                            {
+                                <MudSelectItem Value="@area.workAreaID">
+                                    @($"{area.code} | {area.commonName}")
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
 
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker 
+                                       Label="Date prévue"
+                                       @bind-Date="_command.TargetDateUi"
+                                       Variant="Variant.Outlined"
+                                       Editable="true"
+                                       For="@(() => _command.TargetDateUi)" />
+                    </MudItem>
+
+                    @* Support / Stillage Name *@
+                    <MudItem xs="12">
+                        <MudTextField Label="Support / Stillage"
+                                      @bind-Value="_command.Support"
+                                      For="@(() => _command.Support)"
+                                      Variant="Variant.Outlined"
+                                      Immediate="true" />
+                    </MudItem>
+
+                    @* Source Zone *@
+                    <MudItem xs="12" sm="6">
+                        <MudSelect T="int" Label="Zone Source"
+                                   @bind-Value="_command.AreaSourceId"
+                                   For="@(() => _command.AreaSourceId)"
+                                   Variant="Variant.Outlined"
+                                   AnchorOrigin="Origin.BottomCenter">
+                            @foreach (var area in _vm.workAreaLookups)
+                            {
+                                <MudSelectItem Value="@area.workAreaID">
+                                    @($"{area.code} | {area.commonName}")
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+
+                    @* Destination Zone *@
+                    <MudItem xs="12" sm="6">
+                        <MudSelect T="int" Label="Zone Destination"
+                                   @bind-Value="_command.AreaDestinationId"
+                                   For="@(() => _command.AreaDestinationId)"
+                                   Variant="Variant.Outlined"
+                                   AnchorOrigin="Origin.BottomCenter">
+                            @foreach (var area in _vm.workAreaLookups)
+                            {
+                                <MudSelectItem Value="@area.workAreaID">
+                                    @($"{area.code} | {area.commonName}")
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                }
+
+                @* Actions *@
                 <MudItem xs="12" Class="d-flex justify-end mt-4">
-                    <MudButton OnClick="Cancel" Class="mr-2">Annuler</MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="Submit">
+                    <MudButton OnClick="Cancel" Variant="Variant.Text" Class="mr-2">Annuler</MudButton>
+                    <MudButton OnClick="Submit"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Size="Size.Large">
                         Créer la tâche
                     </MudButton>
                 </MudItem>
+
             </MudGrid>
         </MudForm>
     </MudPaper>
 </MudContainer>
 
 @code {
+    [Parameter] public int WorkAreaId { get; set; }
 
-    [Parameter]
-    public int WorkAreaId { get; set; }
-    MudForm form;
-
-    // Pour que le bind fonctionne avec un record, il faut que les propriétés soient 'init' ou 'set'
-    // Sinon, utilise une classe temporaire identique au record pour le formulaire.
-    private CreateTaskModel command = new();
-
-    private CreateTransportationVm vm = new();
+    private MudForm _form;
+    private bool _supportTypeSelected;
+    private CreateTaskModel _command = new();
+    private CreateTransportationVm _vm = new();
+    private List<WorkAreaLookupDto> _workAreaLookup = new();
 
     protected override async Task OnInitializedAsync()
     {
-        // Ajoute le "await" pour attendre la réponse du Mediator
-        var queryResult = await _Uimediator.Send(new GetCreateTransportationTask(WorkAreaId));
+        var result = await _Uimediator.Send(new GetCreateTransportationTask(WorkAreaId));
 
-        if (queryResult != null && queryResult.success)
+        if (result.success && result.Data!=null)
         {
-            vm = queryResult.Data;
+            _vm = result.Data;
         }
-        command.areaSourceId = WorkAreaId;
+
+        _command.AreaSourceId = WorkAreaId;
+    }
+
+    private async Task OnSupportTypeChanged(string supportTypeId)
+    {
+        _command.SupportTypeID = supportTypeId;
+        if (string.IsNullOrEmpty(supportTypeId)) return;
+
+        var result = await _Uimediator.Send(new GetTransportationAreaForSupport(supportTypeId));
+
+        if (result is { success: true, Data: not null })
+        {
+            _workAreaLookup = result.Data;
+            _supportTypeSelected = true;
+        }
     }
 
     private async Task Submit()
     {
-        await form.Validate();
+        await _form.Validate();
 
-        if (form.IsValid)
+        if (_form.IsValid)
         {
             var finalCommand = new CreateTransportationTask(
-                command.areaSourceId,
-                command.areaDestinationId,
-                command.support
+                _command.AreaSourceId,
+                _command.AreaDestinationId,
+                _command.Support,
+                _command.WorkAreaAssigned,
+                _command.TargetDate
             );
 
             await _Uimediator.Send(finalCommand);
-            
+            // Ajouter ici une notification de succès ou redirection
         }
     }
 
     private void Cancel() => History.GoBack();
 
-    // Classe locale pour le binding (FluentValidation matchera les noms de propriétés)
     public class CreateTaskModel
     {
-        public int areaSourceId { get; set; }
-        public int areaDestinationId { get; set; }
-        public string support { get; set; }
-    }
+        [Required] public string SupportTypeID { get; set; }
+        [Required] public int WorkAreaAssigned { get; set; }
+        [Required] public int AreaSourceId { get; set; }
+        [Required] public int AreaDestinationId { get; set; }
+        [Required] public string Support { get; set; }
+        public DateOnly? TargetDate { get; set; }
 
-    public record AreaDto(int Id, string CommonName);
+      
+        public DateTime? TargetDateUi
+        {
+            get => TargetDate?.ToDateTime(TimeOnly.MinValue);
+            set => TargetDate = value.HasValue
+                ? DateOnly.FromDateTime(value.Value)
+                : null;
+        }
+    }
 }

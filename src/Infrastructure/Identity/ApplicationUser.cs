@@ -6,9 +6,9 @@ namespace Infrastructure.Identity
     // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
-        private List<Plant> _plants = new List<Plant>();
+        //private List<Plant> _plants = new List<Plant>();
 
-        public IReadOnlyCollection<Plant> Plants => _plants.AsReadOnly();
+        //public IReadOnlyCollection<Plant> Plants => _plants.AsReadOnly();
     }
 
 }

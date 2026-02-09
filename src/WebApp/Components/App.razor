@@ -31,7 +31,7 @@
     else
     {
         @* Interactif pour tout le reste *@
-        <Routes @rendermode="InteractiveServer" />
+        <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
     }
 
     <ReconnectModal />

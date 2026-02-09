@@ -1,20 +1,23 @@
 ﻿using Domain.Entities.Tasks;
 using Domain.Entities.Tasks.TaskSpecializations;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Application.Features.TransportationTask
 {
-    public record CreateTransportationTask(int areaSourceId, int areaDestinationId, string support) : IRequest<Unit>;
+    public record CreateTransportationTask(
+            int AreaSourceId,
+            int AreaDestinationId,
+            string Support,
+            int AreaAssigned,
+            DateOnly? TargetDate
+        ) : IRequest<Unit>;
 
     public class CreateTransportationTaskValidator : AbstractValidator<CreateTransportationTask>
     {
         public CreateTransportationTaskValidator()
         {
-            RuleFor(x => x.areaSourceId).GreaterThan(0);
-            RuleFor(x => x.areaDestinationId).GreaterThan(0);
-            RuleFor(x => x.support).NotEmpty().MaximumLength(100);
+            RuleFor(x => x.AreaSourceId).GreaterThan(0);
+            RuleFor(x => x.AreaDestinationId).GreaterThan(0);
+            //RuleFor(x => x.Support).NotEmpty().MaximumLength(100);
         }
     }
 
@@ -28,14 +31,28 @@ namespace Application.Features.TransportationTask
         }
 
         public async Task<Unit> Handle(CreateTransportationTask request, CancellationToken cancellationToken)
-            {
-            var _context = await _factory.CreateAsync(cancellationToken);
-            var taskHeader = new TaskHeader();
-            var transportTask = new TransportTask(request.support, request.areaSourceId, request.areaDestinationId);
+        {
+            var context = await _factory.CreateAsync(cancellationToken).ConfigureAwait(false);
 
-            taskHeader.AddStartingTask(transportTask);
-            _context.TaskHeader.Add(taskHeader);
-            await _context.SaveChangesAsync(cancellationToken);
+            foreach (var item in request.Support.Split(';'))
+            {
+                var taskHeader = new TaskHeader();
+                var transportTask = new TransportTask(
+                    item,
+                    request.AreaDestinationId,
+                    request.AreaSourceId,
+                    request.AreaAssigned,
+                    request.TargetDate
+                );
+
+                taskHeader.AddStartingTask(transportTask);
+                context.TaskHeader.Add(taskHeader);
+
+            }
+          
+
+            await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
+
             return Unit.Value;
         }
     }

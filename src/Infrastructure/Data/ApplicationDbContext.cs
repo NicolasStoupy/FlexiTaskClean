@@ -27,6 +27,12 @@ namespace Infrastructure.Data
 
         public DbSet<TransportTask> TransportTasks => Set<TransportTask>(); 
 
+        public DbSet<WorkAreaTransport> WorkAreaTransports=> Set<WorkAreaTransport>();
+
+        public DbSet<SupportType> SupportTypes => Set<SupportType>();
+
+        public DbSet<TaskLog> TaskLogs => Set<TaskLog>();
+
         /// <summary>
         /// Configure le modèle de données pour le contexte de base de données lors de sa création.
         /// </summary>

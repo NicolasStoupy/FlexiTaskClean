@@ -9,7 +9,7 @@ namespace Infrastructure.Data.Configurations.MasterData
     {
         public void Configure(EntityTypeBuilder<ApplicationUser> builder)
         {
-            builder.Navigation(e => e.Plants).HasField("_plants");
+            //builder.Navigation(e => e.Plants).HasField("_plants");
                
         }
     }

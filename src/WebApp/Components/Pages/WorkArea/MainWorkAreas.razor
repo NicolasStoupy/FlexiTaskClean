@@ -1,0 +1,166 @@
+﻿@page "/workareas/main"
+@using Application.Common.Dtos.WorkAreas
+@using Application.Features.WorkAreas
+
+<style>
+    .wa-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .wa-card {
+        min-height: 190px;
+        display: flex;
+        flex-direction: column;
+        cursor: pointer;
+        transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    }
+
+        .wa-card:hover {
+            transform: translateY(-2px);
+            filter: brightness(0.99);
+        }
+
+    .wa-chip {
+        border-radius: 999px;
+        width: 42px;
+        height: 42px;
+        justify-content: center;
+        font-weight: 800;
+    }
+</style>
+
+@if(vm.WorkAreas == null)
+{
+
+}
+else
+{
+    <MudGrid Spacing="3">
+        @foreach (var area in vm.WorkAreas)
+        {
+            var total = area.LoadingReadyOrInProgress + area.UnloadingReadyOrInProgress + area.TransportInProgressIncoming;
+
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudLink Class="wa-link"
+                         Href="@($"/tasks/list/{area.WorkAreaID}")"
+                         Underline="Underline.None">
+
+                    <MudCard Class="wa-card" Outlined="true" Elevation="1">
+
+                        <MudCardHeader>
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Style="width:100%">
+                                <MudStack Spacing="0">
+                                    <MudText Typo="Typo.h6" Class="ma-0">@area.CommonName</MudText>
+                                    <MudText Typo="Typo.caption" Color="Color.Secondary">@total tasks</MudText>
+                                </MudStack>
+
+                                <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Color="Color.Transparent" />
+                            </MudStack>
+                        </MudCardHeader>
+
+                        <MudDivider Style="opacity:1; width:100%;" />
+
+                        <MudCardContent Style="flex:1 1 auto; background-color: var(--mud-palette-surface);">
+                            <MudList T="WorkAreaTaskOverview" Dense="true" DisablePadding="true">
+
+                                <MudListItem DisableGutters="true">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Style="width:100%">
+
+                                        <!-- Icône entrant -->
+                                        <MudIcon Icon="@Icons.Material.Filled.MoveToInbox" Color="Color.Success" Size="Size.Medium" />
+
+                                        <!-- Label -->
+                                        <MudText Typo="Typo.body2">Incoming</MudText>
+
+                                        <MudSpacer />
+
+                                        <!-- Compteur à droite -->
+                                        <MudChip Class="wa-chip" Color="Color.Success" Variant="Variant.Filled">
+                                            @area.TransportInProgressIncoming
+                                        </MudChip>
+                                    </MudStack>
+                                </MudListItem>
+                                <MudDivider Style="opacity:1; width:100%;" />
+                                <MudListItem DisableGutters="true">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Style="width:100%">
+
+                                        <!-- Icône sortant -->
+                                        <MudIcon Icon="@Icons.Material.Filled.Outbox" Color="Color.Error" />
+
+                                        <!-- Label -->
+                                        <MudText Typo="Typo.body2">Loading Tasks :</MudText>
+
+                                        <MudSpacer />
+
+                                        <!-- Compteur à droite -->
+                                        <MudChip Class="wa-chip" Color="Color.Error" Variant="Variant.Filled">
+                                            @area.LoadingReadyOrInProgress
+                                        </MudChip>
+                                    </MudStack>
+                                </MudListItem>
+                                <MudDivider Style="opacity:1; width:100%;" />
+                                <MudListItem DisableGutters="true">
+                                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Style="width:100%">
+
+                                        <!-- Icône -->
+                                        <MudIcon Icon="@Icons.Material.Filled.LocalShipping" Color="Color.Info" />
+
+                                        <!-- Label -->
+                                        <MudText Typo="Typo.body2">In transit</MudText>
+
+                                        <MudSpacer />
+
+                                        <!-- Compteur à droite -->
+                                        <MudChip Class="wa-chip" Color="Color.Info" Variant="Variant.Filled">
+                                            @area.TransportInProgressIncoming
+                                        </MudChip>
+
+                                    </MudStack>
+                                </MudListItem>
+
+                            </MudList>
+                        </MudCardContent>
+
+                    </MudCard>
+                </MudLink>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+
+@code {
+
+    List<WorkAreaTaskOverview> WorkAreas = new()
+    {
+        new() { WorkAreaId = 22, Name = "T28", ReadyCount = 3, InProgressCount = 2, CompletedCount = 5 },
+        new() { WorkAreaId = 22, Name = "T27", ReadyCount = 1, InProgressCount = 4, CompletedCount = 2 },
+        new() { WorkAreaId = 22, Name = "T30", ReadyCount = 0, InProgressCount = 1, CompletedCount = 9 }
+    };
+    WorkAreaMainVm vm = new WorkAreaMainVm();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var queryResult = await _Uimediator.Send(new GetWorkAreaMain(19));
+
+        if (queryResult.success && queryResult.Data !=null)
+        {
+            vm = queryResult.Data;
+        }
+
+    }
+
+
+
+
+    public class WorkAreaTaskOverview
+    {
+        public int WorkAreaId { get; set; }
+        public string Name { get; set; } = "";
+        public int ReadyCount { get; set; }
+        public int InProgressCount { get; set; }
+        public int CompletedCount { get; set; }
+    }
+}

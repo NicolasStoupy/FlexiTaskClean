@@ -1,4 +1,6 @@
-﻿using Application.Features.WorkAreas.Queries.GetWorkAreas;
+﻿using Application.Common.Dtos.Lookups;
+using Application.Features.WorkAreas.Queries.GetWorkAreas;
+using Domain.Entities.MasterData;
 
 namespace Application.Features.TransportationTask
 {
@@ -20,14 +22,38 @@ namespace Application.Features.TransportationTask
             var dbContext = await _factory.CreateAsync();
 
             var areas = await dbContext.WorkAreas
+                .Where(w => !(w is WorkAreaTransport))   // exclut les WorkAreaTransport
                 .AsNoTracking()
-                .ProjectTo<WorkAreaDto>(_mapper.ConfigurationProvider)
+                .ProjectTo<WorkAreaLookupDto>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
+            var supportLookup = await dbContext.SupportTypes
+                .ProjectTo<SupportTypeLookupDto>(_mapper.ConfigurationProvider)
                 .ToListAsync(cancellationToken);
 
             return new CreateTransportationVm
             {
-                WorkAreas = areas
+                workAreaLookups = areas,
+                supportTypeLookups = supportLookup
             };
+        }
+    }
+
+    public record GetTransportationAreaForSupport(string supportTypeID) : IRequest<List<WorkAreaLookupDto>>;
+    public class GetTransportationAreaForSupportTaskHandler(IMapper mapper, IApplicationDbContextFactory factory) : IRequestHandler<GetTransportationAreaForSupport, List<WorkAreaLookupDto>>
+    {
+        private readonly IMapper _mapper = mapper;
+        private readonly IApplicationDbContextFactory _factory = factory;
+
+        public async Task<List<WorkAreaLookupDto>> Handle(GetTransportationAreaForSupport request, CancellationToken cancellationToken)
+        {
+            var context = await _factory.CreateAsync();
+
+            return await context.WorkAreas
+                .OfType<WorkAreaTransport>()
+                .Where(w => w.SupportedTypes.Any(st => st.SupportTypeID == request.supportTypeID))
+                .AsNoTracking()
+                .ProjectTo<WorkAreaLookupDto>(_mapper.ConfigurationProvider)
+                .ToListAsync(cancellationToken);
         }
     }
 }

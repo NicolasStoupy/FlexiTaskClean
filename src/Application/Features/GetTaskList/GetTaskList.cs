@@ -1,4 +1,6 @@
-﻿using Domain.Entities.Tasks;
+﻿using Ardalis.GuardClauses;
+using Domain.Entities.MasterData;
+using Domain.Entities.Tasks;
 using Domain.Entities.Tasks.TaskSpecializations;
 using System;
 using System.Collections.Generic;
@@ -20,7 +22,13 @@ namespace Application.Features.GetTaskList
         public async Task<TaskListVm> Handle(GetTaskListQuery request, CancellationToken cancellationToken)
         {
             var _context = await _factory.CreateAsync(cancellationToken);
-            var entities = await _context.TaskItem.Where(Ti=>Ti.LinkedWorkArea == request.areaId).ToListAsync(cancellationToken);
+
+         
+            var entities = await _context.TaskItem.
+                Where(Ti => Ti.LinkedWorkArea == request.areaId 
+                && Ti.TaskItemStatus== TaskItemStatus.Ready
+                || Ti.TaskItemStatus == TaskItemStatus.InProgress)
+                .ToListAsync(cancellationToken);
                
 
 

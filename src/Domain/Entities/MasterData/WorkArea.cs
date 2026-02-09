@@ -8,6 +8,7 @@ namespace Domain.Entities.MasterData
 {
     public class WorkArea : BaseAuditableEntity
     {
+        public WorkArea() { }
 
         public WorkArea(int plantID, int workAreaTypeID, string code, string commonName,  bool active)
         {          
@@ -29,6 +30,7 @@ namespace Domain.Entities.MasterData
         private readonly List<Location> _locations = new();
         public IReadOnlyCollection<Location> Locations => _locations.AsReadOnly();
         public WorkAreaType WorkAreaType { get; private set; } = null!;
+       
         public void Update(string code, string commonName, int plantId, bool active)
         {
             Code = code;

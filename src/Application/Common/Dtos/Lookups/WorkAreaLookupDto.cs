@@ -4,6 +4,6 @@ using System.Text;
 
 namespace Application.Common.Dtos.Lookups
 {
-    public record WorkAreaLookupDto(int Id, string Code ,string Label);
+    public record WorkAreaLookupDto(int workAreaID, string commonName,string code);
    
 }

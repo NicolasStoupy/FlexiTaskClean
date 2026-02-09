@@ -26,7 +26,7 @@ namespace Infrastructure.Data.Configurations.MasterData
                 .HasForeignKey(w => w.WorkAreaTypeID)
                 .OnDelete(DeleteBehavior.Restrict);
             
-
+            
             builder.Navigation(x => x.Locations).HasField("_locations");
 
 

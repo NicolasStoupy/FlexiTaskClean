@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Common\Dtos\Tasks\" />
     <Folder Include="Common\Dtos\NewFolder\" />
   </ItemGroup>
 

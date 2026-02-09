@@ -1,5 +1,6 @@
 ﻿using Application.Common.Behaviours;
 using Application.Common.Interfaces;
+using Application.Common.Models;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -83,6 +84,8 @@ namespace Application
                 cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
                 //cfg.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             });
+            builder.Services.Configure<TaskLockOptions>(builder.Configuration.GetSection("TaskLock"));
+
         }
     }
 }

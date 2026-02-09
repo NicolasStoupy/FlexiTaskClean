@@ -33,7 +33,7 @@ namespace Infrastructure
             //sp.GetRequiredService<ApplicationDbContext>());
             //
 
-
+            builder.Services.AddSingleton<DispatchDomainEventsInterceptor>();
             builder.Services.AddSingleton<AuditableEntityInterceptor>();
             builder.Services.AddSingleton<ISaveChangesInterceptor>(sp => sp.GetRequiredService<AuditableEntityInterceptor>());
             builder.Services.AddSingleton<EntityChangeInterceptor>();
@@ -44,6 +44,7 @@ namespace Infrastructure
 
                
                 options.AddInterceptors(sp.GetRequiredService<AuditableEntityInterceptor>());
+                options.AddInterceptors(sp.GetRequiredService<DispatchDomainEventsInterceptor>());
                 options.AddInterceptors(sp.GetRequiredService<EntityChangeInterceptor>());
             });
 
