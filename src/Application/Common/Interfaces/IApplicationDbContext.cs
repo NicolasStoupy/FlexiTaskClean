@@ -22,6 +22,7 @@ namespace Application.Common.Interfaces
         DbSet<WorkAreaTransport> WorkAreaTransports { get; }
         DbSet<LoadingTask> LoadingTasks { get; }
         DbSet<TaskLog> TaskLogs { get; }
+        DbSet<WorkAreaTransportSupport> workAreaTransportSupports { get; }
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
     public interface IApplicationDbContextFactory

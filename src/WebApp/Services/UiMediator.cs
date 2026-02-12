@@ -106,6 +106,11 @@ namespace WebApp.Services
                 _snackbar.Add(ex.Message, Severity.Error);
                 return new UiCallResult<T>(default, Handled: false, ex.Message, false);
             }
+            catch (ApplicationException ex)
+            {
+                _snackbar.Add(ex.Message, Severity.Error);
+                return new UiCallResult<T>(default, Handled: false, ex.Message, false);
+            }
             catch (Exception ex)
             {
                 _snackbar.Add("Une erreur inattendue est survenue.", Severity.Error);

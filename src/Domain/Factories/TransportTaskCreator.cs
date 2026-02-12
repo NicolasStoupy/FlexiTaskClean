@@ -77,10 +77,10 @@ namespace Domain.Factories
             for (var i = 0; i < request.quantity; i++)
             {
 
-                previousTask = new TransportTask(supportName, request.destinationWorkAreaID, request.destinationWorkAreaID, request.destinationWorkAreaID, DateOnly.FromDateTime(DateTime.Now));
+                previousTask = new TransportTask(supportName, request.destinationWorkAreaID, request.destinationWorkAreaID, request.assignedWorkAreaID, DateOnly.FromDateTime(DateTime.Now));
 
-                header.AddIntermediateTask(previousTask);
-
+                var addedTask = header.AddIntermediateTask(previousTask);
+                addedTask.SetReady();
             }
 
             return header;

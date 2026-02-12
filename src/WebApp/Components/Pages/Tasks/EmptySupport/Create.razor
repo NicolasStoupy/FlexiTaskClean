@@ -3,7 +3,7 @@
 @using System.ComponentModel.DataAnnotations
 @using Application.Common.Dtos.Lookups
 @using Application.Features.Tasks.EmptySupport
-
+@inject ISnackbar _snackbar
 <h3>Need an empty stillage</h3>
 
 <MudPaper Class="pa-3" Elevation="1">
@@ -14,21 +14,15 @@
             @HeaderStatus
         </MudChip>
     </MudStack>
-
-    <MudText Typo="Typo.caption" Class="mt-1">
-        Work Area: @_workArea
-    </MudText>
 </MudPaper>
 
 <MudPaper Class="pa-3 mt-3" Elevation="1">
-    <MudStepper Linear="true" @bind-ActiveIndex="_step">
-
+    <MudStepper Linear="true" OnPreviewInteraction="ControlStepNavigation" ShowSkip="false" ShowResetButton="false" @bind-ActiveIndex="_step">
         <!-- STEP 1 -->
         <MudStep Label="Define a type of stillage" Icon="@Icons.Material.Filled.Category">
             <MudText Typo="Typo.body2" Class="mb-2">
                 Choose the stillage type you need.
             </MudText>
-
             <MudSelect T="string"
                        @bind-Value="@RequestModel.StillageType"
                        Label="Stillage type"
@@ -39,15 +33,7 @@
                     <MudSelectItem T="string" Value="@t.SupportTypeID"> @t.SupportTypeID || @t.Description</MudSelectItem>
                 }
             </MudSelect>
-
             <MudDivider Class="my-3" />
-
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Disabled="@(!IsStep1Valid)"
-                       OnClick="Next">
-                Next
-            </MudButton>
         </MudStep>
 
         <!-- STEP 2 -->
@@ -73,19 +59,6 @@
                           Class="mt-2" />
 
             <MudDivider Class="my-3" />
-
-            <MudStack Row="true" Spacing="2">
-                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="Prev">
-                    Back
-                </MudButton>
-
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Disabled="@(!IsStep2Valid)"
-                           OnClick="Next">
-                    Next
-                </MudButton>
-            </MudStack>
         </MudStep>
 
         <!-- STEP 3 -->
@@ -96,10 +69,7 @@
 
             <MudPaper Class="pa-3" Elevation="0" Outlined="true">
                 <MudGrid Spacing="2">
-                    <MudItem xs="12" md="4">
-                        <MudText Typo="Typo.caption">Work Area</MudText>
-                        <MudText Typo="Typo.body1">@_workArea</MudText>
-                    </MudItem>
+                   
                     <MudItem xs="12" md="4">
                         <MudText Typo="Typo.caption">Stillage type</MudText>
                         <MudText Typo="Typo.body1">@RequestModel.StillageType</MudText>
@@ -123,33 +93,12 @@
                     Empty stillage task validated ✅ (created)
                 </MudAlert>
             }
-
-            <MudDivider Class="my-3" />
-
-            <MudStack Row="true" Spacing="2">
-                <MudButton Variant="Variant.Outlined"
-                           Color="Color.Secondary"
-                           Disabled="@(_created)"
-                           OnClick="Prev">
-                    Back
-                </MudButton>
-
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Success"
-                           StartIcon="@Icons.Material.Filled.CheckCircle"
-                           Disabled="@(!CanCreate)"
-                           OnClick="CreateTask">
-                    Validate & create
-                </MudButton>
-            </MudStack>
         </MudStep>
-
     </MudStepper>
 </MudPaper>
 
 @code {
-    // ===== Routing / Context =====
-    private string _workArea = "Work Area";
+
 
     [Parameter]
     public int DestinationWorkAreaID { get; set; }
@@ -177,11 +126,6 @@
         }
     }
 
-
-
-
-
-
     // ===== UI helpers =====
     private bool IsStep1Valid => !string.IsNullOrWhiteSpace(RequestModel.StillageType);
 
@@ -205,7 +149,26 @@
     {
         if (_step < 2) _step++;
     }
+    private async Task ControlStepNavigation(StepperInteractionEventArgs arg)
+    {
+        var stepIndex = arg.StepIndex;
+        if (stepIndex == 0 && !IsStep1Valid)
+        {
+            _snackbar.Add("Choississez une type de chevalet", Severity.Error);
+            arg.Cancel = true;
+        }
+        if (stepIndex == 1 && !IsStep2Valid)
+        {
+            _snackbar.Add("Une quantité a 0 doit être entrée", Severity.Error);
+            arg.Cancel = true;
+        }
+        if (stepIndex == 2)
+        {
+            await CreateTask();
+        }
 
+
+    }
     private void Prev()
     {
         if (_step > 0) _step--;
@@ -218,8 +181,12 @@
         var request = new RequestEmptySupportCommand(RequestModel.StillageType, RequestModel.Quantity, RequestModel.Comment, DestinationWorkAreaID);
 
         var requestResult = await _Uimediator.Send(request);
-        await Task.Delay(150); // mock
-
-        _created = true;
+        if (requestResult.success)
+        {
+            _created = true;
+            History.GoBack();
+        }
+      
+             
     }
 }

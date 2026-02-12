@@ -35,6 +35,8 @@ namespace Infrastructure.Data
 
         public DbSet<LoadingTask> LoadingTasks => Set<LoadingTask>();
 
+        public DbSet<WorkAreaTransportSupport> workAreaTransportSupports => Set<WorkAreaTransportSupport>();
+
         /// <summary>
         /// Configure le modèle de données pour le contexte de base de données lors de sa création.
         /// </summary>

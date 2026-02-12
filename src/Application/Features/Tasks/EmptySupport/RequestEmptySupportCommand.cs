@@ -1,4 +1,5 @@
-﻿using Domain.Common.Interfaces.Tasks;
+﻿using Ardalis.GuardClauses;
+using Domain.Common.Interfaces.Tasks;
 using Domain.Factories.Requests;
 using Mapster;
 using System;
@@ -8,7 +9,7 @@ using System.Text;
 
 namespace Application.Features.Tasks.EmptySupport
 {
-    public record RequestEmptySupportCommand(string supportTypeID, int quantity, string? comment, int destinationAreaID) : IRequest<Unit>
+    public record RequestEmptySupportCommand(string supportTypeID, int quantity, string? comment, int destinationAreaID) : IRequest<Unit>,ICommand
     {
     }
 
@@ -20,7 +21,22 @@ namespace Application.Features.Tasks.EmptySupport
         public async Task<Unit> Handle(RequestEmptySupportCommand request, CancellationToken cancellationToken)
         {
             var context = await _dbContextFactory.CreateAsync(cancellationToken);
-            var emptySupportRequest = new EmptySupportTaskRequest(request.supportTypeID, request.quantity, request.comment, request.destinationAreaID);
+
+            var compatibleArea = context
+                .workAreaTransportSupports
+                .FirstOrDefault(st => st.SupportTypeID == request.supportTypeID);
+
+            if (compatibleArea == null)
+                throw new ApplicationException("Pas de ZOne de transport compatible");
+          
+            var emptySupportRequest = 
+                new EmptySupportTaskRequest(
+                    request.supportTypeID,
+                    request.quantity,
+                    request.comment,
+                    request.destinationAreaID,
+                    compatibleArea.WorkAreaID
+                    );
             var taskHeader = _taskCreationFacade.Create(emptySupportRequest);
 
             context.TaskHeader.Add(taskHeader);

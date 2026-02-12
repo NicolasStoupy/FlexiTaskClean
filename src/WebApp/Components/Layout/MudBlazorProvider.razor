@@ -1,4 +1,5 @@
-﻿@using WebApp.Services
+﻿@using System.Globalization
+@using WebApp.Services
 @using WebApp.Themes
 @inject ThemeService ThemeService
 
@@ -15,9 +16,20 @@
 <MudSnackbarProvider  />
 
 @code{
-   
+
     private MudTheme _themeDefinition = CustomMudTheme.AgcThemeOfficial;
-    protected override void OnInitialized() => ThemeService.OnChange += StateHasChanged;
+    protected override void OnInitialized()
+    {
+        ThemeService.OnChange += StateHasChanged;
+        SetCulture();
+    } 
     public void Dispose() => ThemeService.OnChange -= StateHasChanged;
+
+    private void SetCulture()
+    {
+        var cultureInfo = Thread.CurrentThread.CurrentCulture;
+        CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+        CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+    }
 
 }

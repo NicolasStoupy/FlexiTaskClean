@@ -3,6 +3,7 @@ using Infrastructure.Identity;
 using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor;
 using MudBlazor.Services;
+using MudBlazor.Translations;
 using WebApp.Services;
 
 namespace WebApp
@@ -57,6 +58,7 @@ namespace WebApp
                 config.SnackbarConfiguration.SnackbarVariant = Variant.Outlined;
             });
             builder.Services.AddMudBlazorResizeListener();
+            builder.Services.AddMudTranslations();
           
         }
     }
