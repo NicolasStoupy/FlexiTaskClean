@@ -1,10 +1,9 @@
-﻿
-using Application.Common.Dtos.Lookups;
+﻿using Application.Common.Dtos.Lookups;
 using Application.Features.WorkAreas.Queries.GetWorkAreas;
 using Domain.Entities.MasterData;
 using Domain.Entities.Tasks.TaskSpecializations;
 
-namespace Application.Features.TransportationTask
+namespace Application.Features.Tasks.TransportationTask
 {
     public class CreateTransportationVm
     {

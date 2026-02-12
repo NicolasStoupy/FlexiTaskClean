@@ -2,7 +2,7 @@
 using Application.Features.WorkAreas.Queries.GetWorkAreas;
 using Domain.Entities.MasterData;
 
-namespace Application.Features.TransportationTask
+namespace Application.Features.Tasks.TransportationTask
 {
     public record GetCreateTransportationTask(int workAreaId) : IRequest<CreateTransportationVm>;
 

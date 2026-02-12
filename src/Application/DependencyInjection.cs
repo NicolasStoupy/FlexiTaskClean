@@ -96,7 +96,7 @@ namespace Application
             builder.Services.AddScoped<ITaskCreator<CreateMultiStageTransportTask>, MultiStageTransportTaskCreator>();
             builder.Services.AddScoped<ITaskCreator<CreateLoadingTaskRequests>, LoadingTaskCreation>();
 
-
+            builder.Services.AddScoped<ITaskCreator<EmptySupportTaskRequest>, EmptySupportTaskCreator>();
         }
     }
 }

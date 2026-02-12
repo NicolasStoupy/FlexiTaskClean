@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Features.GetTaskList
+namespace Application.Features.Tasks.TaskList
 {
     public record GetTaskListQuery( int areaId, TaskItemStatus taskItemStatus) : IRequest<TaskListVm>;
     

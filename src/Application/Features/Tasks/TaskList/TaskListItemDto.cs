@@ -1,7 +1,7 @@
 ﻿using Domain.Entities.Tasks;
 using Domain.Entities.Tasks.TaskSpecializations;
 
-namespace Application.Features.GetTaskList
+namespace Application.Features.Tasks.TaskList
 {
     public class TaskListItemDto
     {

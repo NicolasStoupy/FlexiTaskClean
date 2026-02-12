@@ -66,4 +66,27 @@ namespace Domain.Factories
         }
 
     }
+
+    public sealed class EmptySupportTaskCreator() : ITaskCreator<EmptySupportTaskRequest>
+    {
+        public TaskHeader Create(EmptySupportTaskRequest request)
+        {
+            var header = new TaskHeader();
+            var supportName = $"Empty {request.supportTypeID}";
+            TaskItem previousTask;
+            for (var i = 0; i < request.quantity; i++)
+            {
+
+                previousTask = new TransportTask(supportName, request.destinationWorkAreaID, request.destinationWorkAreaID, request.destinationWorkAreaID, DateOnly.FromDateTime(DateTime.Now));
+
+                header.AddIntermediateTask(previousTask);
+
+            }
+
+            return header;
+
+
+
+        }
+    }
 }

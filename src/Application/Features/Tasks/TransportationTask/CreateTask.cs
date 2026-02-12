@@ -1,9 +1,9 @@
 ﻿using Domain.Common.Interfaces.Tasks;
 using Domain.Factories.Requests;
 
-namespace Application.Features.TransportationTask
+namespace Application.Features.Tasks.TransportationTask
 {
-    public record CreateTransportationTask(
+    public record CreateTask(
             int AreaSourceId,
             int AreaDestinationId,
             string Support,
@@ -11,7 +11,7 @@ namespace Application.Features.TransportationTask
             DateOnly? TargetDate
         ) : IRequest<Unit>;
 
-    public class CreateTransportationTaskValidator : AbstractValidator<CreateTransportationTask>
+    public class CreateTransportationTaskValidator : AbstractValidator<CreateTask>
     {
         public CreateTransportationTaskValidator()
         {
@@ -21,7 +21,7 @@ namespace Application.Features.TransportationTask
         }
     }
 
-    public class CreateTransportationTaskHandler : IRequestHandler<CreateTransportationTask, Unit>
+    public class CreateTransportationTaskHandler : IRequestHandler<CreateTask, Unit>
     {
         private readonly IApplicationDbContextFactory _factory;
         private readonly ITaskCreationFacade _taskFacade;
@@ -32,7 +32,7 @@ namespace Application.Features.TransportationTask
             _taskFacade = taskFacade;
         }
 
-        public async Task<Unit> Handle(CreateTransportationTask request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(CreateTask request, CancellationToken cancellationToken)
         {
             var context = await _factory.CreateAsync(cancellationToken).ConfigureAwait(false);
             //var loadingItems = new List<LoadingItems> { };

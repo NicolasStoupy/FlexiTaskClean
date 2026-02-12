@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Features.TransportationTask
+namespace Application.Features.Tasks.TransportationTask
 {
     public record GetTransportQueueQuery(int areaID) : IRequest<List<TransportQueue>>;
 

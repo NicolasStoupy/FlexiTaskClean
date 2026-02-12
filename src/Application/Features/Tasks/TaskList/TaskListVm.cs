@@ -1,4 +1,4 @@
-﻿namespace Application.Features.GetTaskList
+﻿namespace Application.Features.Tasks.TaskList
 {
     public class TaskListVm
     {

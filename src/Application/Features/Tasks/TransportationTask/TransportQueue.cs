@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Application.Features.TransportationTask
+namespace Application.Features.Tasks.TransportationTask
 {
     public class TransportQueue
     {

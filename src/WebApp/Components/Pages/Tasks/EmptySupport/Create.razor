@@ -1,6 +1,8 @@
-﻿@page "/tasks/emptystillage/new"
+﻿@page "/tasks/emptystillage/new/{DestinationWorkAreaID:int}"
 
 @using System.ComponentModel.DataAnnotations
+@using Application.Common.Dtos.Lookups
+@using Application.Features.Tasks.EmptySupport
 
 <h3>Need an empty stillage</h3>
 
@@ -28,13 +30,13 @@
             </MudText>
 
             <MudSelect T="string"
+                       @bind-Value="@RequestModel.StillageType"
                        Label="Stillage type"
                        Dense="true"
-                       Required="true"
-                       @bind-Value="Model.StillageType">
-                @foreach (var t in StillageTypes)
+                       Required="true">
+                @foreach (var t in Model.supportTypes)
                 {
-                    <MudSelectItem T="string" Value="@t.Code">@t.Label</MudSelectItem>
+                    <MudSelectItem T="string" Value="@t.SupportTypeID"> @t.SupportTypeID || @t.Description</MudSelectItem>
                 }
             </MudSelect>
 
@@ -60,14 +62,14 @@
                              Min="1"
                              Max="50"
                              Immediate="true"
-                             @bind-Value="Model.Quantity"
+                             @bind-Value="RequestModel.Quantity"
                              Class="mt-2" />
 
             <MudTextField T="string"
                           Label="Comment (optional)"
                           Dense="true"
                           Immediate="true"
-                          @bind-Value="Model.Comment"
+                          @bind-Value="RequestModel.Comment"
                           Class="mt-2" />
 
             <MudDivider Class="my-3" />
@@ -100,16 +102,16 @@
                     </MudItem>
                     <MudItem xs="12" md="4">
                         <MudText Typo="Typo.caption">Stillage type</MudText>
-                        <MudText Typo="Typo.body1">@SelectedTypeLabel</MudText>
+                        <MudText Typo="Typo.body1">@RequestModel.StillageType</MudText>
                     </MudItem>
                     <MudItem xs="12" md="4">
                         <MudText Typo="Typo.caption">Quantity</MudText>
-                        <MudText Typo="Typo.body1">@Model.Quantity</MudText>
+                        <MudText Typo="Typo.body1">@RequestModel.Quantity</MudText>
                     </MudItem>
                     <MudItem xs="12">
                         <MudText Typo="Typo.caption">Comment</MudText>
                         <MudText Typo="Typo.body2" Color="Color.Secondary">
-                            @(string.IsNullOrWhiteSpace(Model.Comment) ? "-" : Model.Comment)
+                            @(string.IsNullOrWhiteSpace(RequestModel.Comment) ? "-" : RequestModel.Comment)
                         </MudText>
                     </MudItem>
                 </MudGrid>
@@ -147,8 +149,10 @@
 
 @code {
     // ===== Routing / Context =====
-    private string _workArea = "Work Area"; // TODO: from user context OR route param (workAreaId)
+    private string _workArea = "Work Area";
 
+    [Parameter]
+    public int DestinationWorkAreaID { get; set; }
     // ===== Step state =====
     private int _step = 0;
     private bool _created = false;
@@ -160,27 +164,28 @@
         [Range(1, 50)] public int Quantity { get; set; } = 1;
         public string? Comment { get; set; }
     }
+    private EmptySupportVm Model = new();
 
-    private EmptyStillageRequestVm Model = new();
+    private EmptyStillageRequestVm RequestModel = new();
 
-    // ===== Stillage types =====
-    public record StillageTypeItem(string Code, string Label);
-
-    private List<StillageTypeItem> StillageTypes = new()
+    protected override async Task OnInitializedAsync()
     {
-        new("X15", "X15"),
-        new("P10", "P10"),
-        new("P12", "P12"),
-        new("X05", "X05"),
-    };
+        var requestResult = await _Uimediator.Send(new GetEmptySupportQuery(DestinationWorkAreaID));
+        if (requestResult.success && requestResult.Data != null)
+        {
+            Model = requestResult.Data;
+        }
+    }
 
-    private string SelectedTypeLabel =>
-        StillageTypes.FirstOrDefault(x => x.Code == Model.StillageType)?.Label ?? "-";
+
+
+
+
 
     // ===== UI helpers =====
-    private bool IsStep1Valid => !string.IsNullOrWhiteSpace(Model.StillageType);
+    private bool IsStep1Valid => !string.IsNullOrWhiteSpace(RequestModel.StillageType);
 
-    private bool IsStep2Valid => Model.Quantity >= 1;
+    private bool IsStep2Valid => RequestModel.Quantity >= 1;
 
     private bool CanCreate => IsStep1Valid && IsStep2Valid && !_created;
 
@@ -210,13 +215,9 @@
     {
         if (!CanCreate) return;
 
-        // ✅ TODO: Replace by MediatR command:
-        // await _mediator.Send(new CreateEmptyStillageTaskCommand(
-        //     workArea: _workArea,
-        //     stillageType: Model.StillageType,
-        //     qty: Model.Quantity,
-        //     comment: Model.Comment));
+        var request = new RequestEmptySupportCommand(RequestModel.StillageType, RequestModel.Quantity, RequestModel.Comment, DestinationWorkAreaID);
 
+        var requestResult = await _Uimediator.Send(request);
         await Task.Delay(150); // mock
 
         _created = true;
