@@ -1,0 +1,51 @@
+﻿.transport-executor-page {
+    height: calc(100vh - 90px); /* ajuste si ton header global prend plus/moins */
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.transport-top {
+    flex: 1 1 auto; /* prend tout l'espace restant */
+    min-height: 0; /* IMPORTANT pour que le scroll interne marche */
+    display: flex;
+    flex-direction: column;
+}
+
+.transport-stepper {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto; /* scroll si contenu trop grand */
+}
+
+.transport-bottom {
+    flex: 0 0 auto; /* reste en bas */
+}
+/* Réduit la hauteur globale du stepper */
+.mud-stepper {
+    padding: 4px 8px !important;
+}
+
+/* Réduit l'espace entre les steps */
+.mud-stepper-horizontal .mud-step {
+    margin-right: 8px;
+}
+
+/* Labels plus petits */
+.mud-step-label {
+    font-size: 0.8rem;
+    line-height: 1.1;
+}
+
+/* Contenu interne plus compact */
+.mud-step-content {
+    padding: 8px !important;
+}
+
+/* Icônes de step plus petites */
+.mud-step-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 16px;
+}

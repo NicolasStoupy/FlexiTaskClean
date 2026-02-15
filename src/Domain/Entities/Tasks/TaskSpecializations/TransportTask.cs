@@ -62,6 +62,12 @@ public class TransportTask : TaskItem
     {
     }
 
+    public override string ToHumanString()
+    {
+        if (SourceArea.Code == DestinationArea.Code)
+            return $"=> {DestinationArea.Code}";
+        return $"{SourceArea.Code} => {DestinationArea.Code}";
+    }
 
    
       

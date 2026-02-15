@@ -35,38 +35,38 @@ namespace Application.Features.Tasks.TransportationTask
         public async Task<Unit> Handle(CreateTask request, CancellationToken cancellationToken)
         {
             var context = await _factory.CreateAsync(cancellationToken).ConfigureAwait(false);
-            //var loadingItems = new List<LoadingItems> { };
-            //loadingItems.Add(new LoadingItems()
-            //{
-            //    Material = "3050505",
-            //    Description = "FCLL 5.0",
-            //    Quantity = 10,
-            //    SupportTypeID = "X12",
-            //    WorkAreaID = 25,
-            //    AssignedWorkAreaID = 26,
-            //    Support = "PF0520"
-            //});
-            //loadingItems.Add(new LoadingItems()
-            //{
-            //    Material = "3050505",
-            //    Description = "FCLL 5.0",
-            //    Quantity = 2,
-            //    SupportTypeID = "X12",
-            //    WorkAreaID = 27,
-            //    AssignedWorkAreaID = 26,
-            //    Support = "PF0520"
-            //});
-            //loadingItems.Add(new LoadingItems()
-            //{
-            //    Material = "3050505",
-            //    Description = "FCLL 3.0",
-            //    Quantity = 10,
-            //    SupportTypeID = "X12",
-            //    WorkAreaID = 25,
-            //    AssignedWorkAreaID = 26,
-            //    Support = "PF0520"
-            //});
-            //var taskLoading = _taskFacade.Create(new CreateLoadingTaskRequests(loadingItems));
+            var loadingItems = new List<LoadingItems> { };
+            loadingItems.Add(new LoadingItems()
+            {
+                Material = "3050505",
+                Description = "FCLL 5.0",
+                Quantity = 10,
+                SupportTypeID = "X12",
+                WorkAreaID = 25,
+                AssignedWorkAreaID = 26,
+                Support = "PF0520"
+            });
+            loadingItems.Add(new LoadingItems()
+            {
+                Material = "3050505",
+                Description = "FCLL 5.0",
+                Quantity = 2,
+                SupportTypeID = "X12",
+                WorkAreaID = 27,
+                AssignedWorkAreaID = 26,
+                Support = "PF0520"
+            });
+            loadingItems.Add(new LoadingItems()
+            {
+                Material = "3050505",
+                Description = "FCLL 3.0",
+                Quantity = 10,
+                SupportTypeID = "X12",
+                WorkAreaID = 25,
+                AssignedWorkAreaID = 26,
+                Support = "PF0520"
+            });
+            var taskLoading = _taskFacade.Create(new CreateLoadingTaskRequests(loadingItems));
 
             var taskHeader = _taskFacade.Create(
                 new CreateOneWayTransportTask(
@@ -78,7 +78,7 @@ namespace Application.Features.Tasks.TransportationTask
                 );
 
             context.TaskHeader.Add(taskHeader);
-
+            context.TaskHeader.Add(taskLoading);
             await context.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 
             return Unit.Value;

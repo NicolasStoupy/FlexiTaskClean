@@ -12,8 +12,8 @@ namespace Application.Features.Tasks.TransportationTask
         public string FromArea { get; private set; } = "";
         public string ToArea { get; private set; } = "";
         public string Support { get; private set; } = "";
-        public TaskItemStatus TaskItemStatus { get; private set; } 
-        
+        public TaskItemStatus TaskItemStatus { get; private set; }
+        public string HumanInstruction { get; private set; } = "";
         private class Mapping : Profile
         {
             public Mapping()
@@ -23,7 +23,8 @@ namespace Application.Features.Tasks.TransportationTask
                     .ForMember(t => t.FromArea, opt => opt.MapFrom(ti => ti.SourceArea.CommonName))
                     .ForMember(t => t.ToArea, opt => opt.MapFrom(ti => ti.DestinationArea.CommonName))
                     .ForMember(t => t.Support, opt => opt.MapFrom(ti => ti.Support))
-                    .ForMember(t => t.TaskItemStatus, opt => opt.MapFrom(ti => ti.TaskItemStatus)
+                    .ForMember(t => t.TaskItemStatus, opt => opt.MapFrom(ti => ti.TaskItemStatus))
+                    .ForMember(t => t.HumanInstruction, opt => opt.MapFrom(ti => ti.ToHumanString())
                     );
 
 

@@ -22,10 +22,10 @@ namespace Application.Features.Tasks.EmptySupport
         {
             var context = await _dbContextFactory.CreateAsync(cancellationToken);
 
-            var compatibleArea = context
-                .workAreaTransportSupports
+            var compatibleArea = context.workAreaTransportSupports
                 .FirstOrDefault(st => st.SupportTypeID == request.supportTypeID);
 
+            Guard.Against.NotFound(request.supportTypeID, compatibleArea);
             if (compatibleArea == null)
                 throw new ApplicationException("Pas de ZOne de transport compatible");
           

@@ -386,4 +386,9 @@ public class TaskItem : BaseAuditableEntity
     {
         return LockExpiresAt.HasValue && LockExpiresAt <= DateTime.UtcNow;
     }
+
+    public virtual  string ToHumanString()
+    {
+        return $"Task #{TaskItemID} ({TaskItemStatus})";
+    }
 }

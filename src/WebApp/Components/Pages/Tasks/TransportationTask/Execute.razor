@@ -5,8 +5,8 @@
 @using Application.Features.TaskExecution
 @using Application.Features.Tasks.TransportationTask
 @using Domain.Enums
-
-<h3>Transport Executor</h3>
+@using System.Threading.Tasks
+@using MudBlazor
 
 <MudPaper Class="pa-3" Elevation="1">
     <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
@@ -27,210 +27,245 @@
     </MudStack>
 </MudPaper>
 
-<MudGrid Spacing="3" Class="mt-3">
+<div class="transport-executor-page">
 
-    <!-- Queue -->
-    <MudItem xs="12" md="4">
-        <MudPaper Class="pa-3" Elevation="1">
-            <MudText Typo="Typo.h6" GutterBottom>Queue</MudText>
-
-            <MudList T="TransportTaskVm" Dense="true">
-                @foreach (var t in Queue)
-                {
-                    var isCurrent = CurrentTask?.TaskId == t.TaskId;
+    <MudPaper Class="pa-3 transport-top" Elevation="1">
+        @if (CurrentTask is null)
+        {
+            <MudAlert Severity="Severity.Info" Dense="true">
+                No task in queue.
+            </MudAlert>
+        }
+        else
+        {
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                <MudStack>
+                    <MudText Typo="Typo.h6">
+                       @CurrentTask.HumanString — @CurrentTask.StillageId
+                    </MudText>
                   
-                    <MudListItem OnClick="@(() => SelectTask(t.TaskId))"
-                                 Style="cursor:pointer">
-                        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Style="width:100%">
-                            <MudStack>
-                               
-                                <MudText Typo="Typo.subtitle2">
-                                    @if (isCurrent)
-                                    {
-                                        <MudIcon Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Primary" />
-                                    }
-                                    #@t.TaskId — @t.StillageId
-                                </MudText>
-                                <MudText Typo="Typo.caption" Color="Color.Secondary">
-                                    @t.FromArea → @t.ToArea
-                                </MudText>
-                            </MudStack>
-
-                            <MudChip Size="Size.Small" Color="@GetTaskChipColor(t)" Variant="Variant.Filled">
-                                @t.Status
-                            </MudChip>
-                        </MudStack>
-                    </MudListItem>
-
-                    @if (isCurrent)
-                    {
-                        <MudDivider Class="my-1" />
-                    }
-                }
-            </MudList>
-        </MudPaper>
-    </MudItem>
-
-    <!-- Current task + stepper -->
-    <MudItem xs="12" md="8">
-        <MudPaper Class="pa-3" Elevation="1">
-            @if (CurrentTask is null)
-            {
-                <MudAlert Severity="Severity.Info" Dense="true">
-                    No task in queue.
-                </MudAlert>
-            }
-            else
-            {
-                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
-                    <MudStack>
-                        <MudText Typo="Typo.h6">
-                            Current task #@CurrentTask.TaskId — @CurrentTask.StillageId
-                        </MudText>
-                        <MudText Typo="Typo.caption" Color="Color.Secondary">
-                            @CurrentTask.FromArea → @CurrentTask.ToArea
-                        </MudText>
-                    </MudStack>
-
-                    <MudStack Row="true" Spacing="2">
-                        <MudButton Variant="Variant.Outlined"
-                                   Color="Color.Error"
-                                   StartIcon="@Icons.Material.Filled.SkipNext"
-                                   OnClick="SkipCurrent">
-                            Skip
-                        </MudButton>
-
-                      
-                    </MudStack>
                 </MudStack>
 
-                <MudDivider Class="my-3" />
+               @*  <MudButton Variant="Variant.Outlined"
+                           Color="Color.Error"
+                           StartIcon="@Icons.Material.Filled.SkipNext"
+                           OnClick="SkipCurrent">
+                    Skip
+                </MudButton> *@
+            </MudStack>
 
-                <MudStepper Linear="true" @bind-ActiveIndex="_step">
+            <MudDivider Class="my-3" />
 
-                    <!-- Step 1 -->
-                    <MudStep Label="Démarrer" Icon="@Icons.Material.Filled.PlayArrow">
-                        <MudText Typo="Typo.body2" Class="mb-2">
-                            Prendre en charge cette tâche.
-                        </MudText>
+            <div class="transport-stepper">
 
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   Disabled="@CurrentTask.Started"
-                                   OnClick="StartCurrent">
-                            Démarrer
-                        </MudButton>
+                <MudStepper @ref="_mudStepper"
+                            Linear="true"
+                            @bind-ActiveIndex="_step"
+                            OnPreviewInteraction="BlockHeaderClick">
 
-                        @if (CurrentTask.Started)
-                        {
-                            <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">
-                                Started
-                            </MudAlert>
-                        }
+                    <ActionContent Context="stepper">
+                        <MudStack Row="true" Spacing="2" Justify="Justify.SpaceBetween" Class="mt-4">
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Secondary"
+                                       Disabled="@(!stepper.PreviousStepEnabled)"
+                                       OnClick="stepper.PreviousStepAsync">
+                                Retour
+                            </MudButton>
 
-                        <MudDivider Class="my-3" />
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   Disabled="@(!CurrentTask.Started)"
-                                   OnClick="NextStep">
-                            Suivant
-                        </MudButton>
-                    </MudStep>
-
-                    <!-- Step 2 -->
-                    <MudStep Label="Mouvement" Icon="@Icons.Material.Filled.SyncAlt">
-                        <MudText Typo="Typo.body2">
-                            Confirmer le mouvement / localisation SAP.
-                        </MudText>
-
-                        <MudGrid Spacing="2" Class="mt-2">
-                            <MudItem xs="12" md="6">
-                                <MudTextField T="string"
-                                              Label="Scan Stillage"
-                                              @bind-Value="_confirmStillage"
-                                              Immediate="true" />
-                            </MudItem>
-                            <MudItem xs="12" md="6">
-                                <MudTextField T="string"
-                                              Label="SAP Doc (optionnel)"
-                                              @bind-Value="_sapDoc"
-                                              Immediate="true" />
-                            </MudItem>
-                        </MudGrid>
-
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   Disabled="@(!CanConfirmMovement)"
-                                   OnClick="ConfirmMovement">
-                            Confirmer mouvement
-                        </MudButton>
-
-                        @if (CurrentTask.MovementDone)
-                        {
-                            <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">
-                                Movement done
-                            </MudAlert>
-                        }
-
-                        <MudDivider Class="my-3" />
-                        <MudStack Row="true" Spacing="2">
-                            <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="PrevStep">Retour</MudButton>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!CurrentTask.MovementDone)" OnClick="NextStep">Suivant</MudButton>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="@PrimaryButtonColor(stepper.ActiveIndex)"
+                                       Disabled="@(!CanPrimaryAction(stepper.ActiveIndex))"
+                                       OnClick="@(() => PrimaryAction(stepper.ActiveIndex))">
+                                @PrimaryButtonText(stepper.ActiveIndex)
+                            </MudButton>
                         </MudStack>
-                    </MudStep>
+                    </ActionContent>
 
-                    <!-- Step 3 -->
-                    <MudStep Label="Completed" Icon="@Icons.Material.Filled.CheckCircle">
-                        <MudText Typo="Typo.body2">Terminer la tâche.</MudText>
+                    <ChildContent>
+                        <MudStep Label="Démarrer" Icon="@Icons.Material.Filled.PlayArrow">
+                            <MudText Typo="Typo.body2" Class="mb-2">
+                                Prendre en charge cette tâche.
+                            </MudText>
 
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Success"
-                                   Disabled="@(!CanCompleteCurrent)"
-                                   OnClick="CompleteCurrent">
-                            Completed
-                        </MudButton>
+                            @if (CurrentTask?.Started == true)
+                            {
+                                <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">
+                                    Started
+                                </MudAlert>
+                            }
+                        </MudStep>
 
-                        @if (CurrentTask.Completed)
-                        {
-                            <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">
-                                Task completed ✅
-                            </MudAlert>
-                        }
+                        <MudStep Label="Mouvement" Icon="@Icons.Material.Filled.SyncAlt">
+                            <MudText Typo="Typo.body2">
+                                Confirmer le mouvement / localisation SAP.
+                            </MudText>
 
-                        <MudDivider Class="my-3" />
-                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" OnClick="PrevStep">Retour</MudButton>
-                    </MudStep>
+                            <MudGrid Spacing="2" Class="mt-2">
+                                <MudItem xs="12" md="6">
+                                    <MudTextField T="string"
+                                                  Label="Scan Stillage"
+                                                  @bind-Value="_confirmStillage"
+                                                  Immediate="true" />
+                                </MudItem>
+                                <MudItem xs="12" md="6">
+                                    <MudTextField T="string"
+                                                  Label="Storage Bin"
+                                                  @bind-Value="_sapDoc"
+                                                  Immediate="true" />
+                                </MudItem>
+                            </MudGrid>
+
+                            @if (CurrentTask?.MovementDone == true)
+                            {
+                                <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">
+                                    Movement done
+                                </MudAlert>
+                            }
+                        </MudStep>
+
+                        <MudStep Label="Completed" Icon="@Icons.Material.Filled.CheckCircle">
+                            <MudText Typo="Typo.body2">Terminer la tâche.</MudText>
+
+                            @if (CurrentTask?.Completed == true)
+                            {
+                                <MudAlert Severity="Severity.Success" Dense="true" Class="mt-2">
+                                    Task completed ✅
+                                </MudAlert>
+                            }
+                        </MudStep>
+                    </ChildContent>
 
                 </MudStepper>
-            }
-        </MudPaper>
-    </MudItem>
+            </div>
+        }
+    </MudPaper>
 
-</MudGrid>
+    <MudPaper Class="pa-2 transport-bottom" Elevation="1">
+        <MudTable Items="Queue" Dense="true" Hover="true" Bordered="true" FixedHeader="true" >
+            <HeaderContent>
+                <MudTh style="width:80px;">#</MudTh>
+                <MudTh>Stillage</MudTh>
+                <MudTh>Instruction</MudTh>
+                <MudTh style="width:140px;">Status</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                @{
+                    var t = context;
+                    var isCurrent = CurrentTask?.TaskId == t.TaskId;
+                }
+                <MudTd DataLabel="#">
+                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                        @if (isCurrent)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.PlayArrow" Color="Color.Primary" />
+                        }
+                        <MudLink Underline="Underline.None"
+                                 Style="cursor:pointer"
+                                 OnClick="@(() => SelectTask(t.TaskId))">
+                            @t.TaskId
+                        </MudLink>
+                    </MudStack>
+                </MudTd>
+
+                <MudTd DataLabel="Stillage">@t.StillageId</MudTd>
+                <MudTd DataLabel="Instruction">@t.HumanString</MudTd>
+
+                <MudTd DataLabel="Status">
+                    <MudChip T="Color" Size="Size.Small" Color="@GetTaskChipColor(t)" Variant="Variant.Filled">
+                        @t.Status
+                    </MudChip>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudPaper>
+
+</div>
 
 @code {
     private string _workerArea = "Transportation Area";
 
     [Parameter]
     public int WorkAreaID { get; set; }
-    // step index for the current task
+
+    private MudStepper? _mudStepper;
     private int _step = 0;
 
-    // inputs for step 2
     private string _confirmStillage = "";
     private string _sapDoc = "";
 
-    // Queue + current
     private List<TransportTaskVm> Queue = new();
     private TransportTaskVm? CurrentTask;
 
-
     private int RemainingCount => Queue.Count(x => !x.Completed);
 
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadQueue();
+        SelectFirstIfAny();
+    }
+
+    // =========================
+    // Stepper buttons (ONLY)
+    // =========================
+    private string PrimaryButtonText(int stepIndex) => stepIndex switch
+    {
+        0 => "Démarrer",
+        1 => "Confirmer mouvement",
+        2 => "Terminer",
+        _ => "OK"
+    };
+
+    private Color PrimaryButtonColor(int stepIndex) => stepIndex switch
+    {
+        2 => Color.Success,
+        _ => Color.Primary
+    };
+
+    private bool CanPrimaryAction(int stepIndex) => stepIndex switch
+    {
+        0 => CurrentTask is not null && !CurrentTask.Started,
+        1 => CanConfirmMovement,
+        2 => CanCompleteCurrent,
+        _ => false
+    };
+
+    private async Task PrimaryAction(int stepIndex)
+    {
+        if (CurrentTask is null) return;
+
+        switch (stepIndex)
+        {
+            case 0:
+                await StartCurrent();
+                break;
+            case 1:
+                await ConfirmMovement();
+                break;
+            case 2:
+                await CompleteCurrent();
+                break;
+        }
+
+        // ReloadQueue() -> SyncStepFromState() -> _step aligné
+        StateHasChanged();
+    }
+
+    // Bloque le clic sur les headers/steps (évite de sauter des étapes)
+    private Task BlockHeaderClick(StepperInteractionEventArgs args)
+    {
+        // on annule toute interaction venant du header (click step label)
+        // On laisse les boutons ActionContent piloter le flow
+        args.Cancel = true;
+        return Task.CompletedTask;
+    }
+
+    // =========================
+    // Queue / Selection
+    // =========================
     private async Task ReloadQueue()
     {
         Queue = await LoadQueue(WorkAreaID);
-
         CurrentTask = PickCurrentTaskAfterReload();
 
         SyncStepFromState();
@@ -253,23 +288,21 @@
         SyncStepFromState();
         ResetInputsForCurrent();
     }
+
     private TransportTaskVm? PickCurrentTaskAfterReload()
     {
         if (Queue.Count == 0) return null;
 
-        // 1) Si on avait une current task, on essaye de la garder si elle est encore "active"
         if (CurrentTask is not null)
         {
             var same = Queue.FirstOrDefault(x => x.TaskId == CurrentTask.TaskId);
-
-            // Si elle existe encore et n'est pas terminée / skipped => on la garde
             if (same is not null && !same.Completed && same.Status != "Skipped")
                 return same;
         }
 
-        // 2) Sinon, on prend la prochaine non terminée (et pas skipped)
         return Queue.FirstOrDefault(x => !x.Completed && x.Status != "Skipped");
     }
+
     private void SyncStepFromState()
     {
         if (CurrentTask is null) { _step = 0; return; }
@@ -285,10 +318,9 @@
         _sapDoc = CurrentTask.SapDoc ?? "";
     }
 
-    private void NextStep() { if (_step < 2) _step++; }
-    private void PrevStep() { if (_step > 0) _step--; }
-
-    // ===== Actions =====
+    // =========================
+    // Actions métier
+    // =========================
     private async Task StartCurrent()
     {
         if (CurrentTask is null) return;
@@ -299,6 +331,7 @@
             CurrentTask.Started = true;
             SyncStepFromState();
         }
+
         await ReloadQueue();
     }
 
@@ -312,6 +345,7 @@
     {
         if (CurrentTask is null) return;
         if (!CanConfirmMovement) return;
+
         var resultCmd = await _Uimediator.Send(new TaskHandleTransitionCommand(CurrentTask.TaskId));
         if (resultCmd.success)
         {
@@ -319,9 +353,8 @@
             CurrentTask.SapDoc = _sapDoc;
             SyncStepFromState();
         }
+
         await ReloadQueue();
-
-
     }
 
     private bool CanCompleteCurrent =>
@@ -338,35 +371,18 @@
         var resultCmd = await _Uimediator.Send(new TaskHandleTransitionCommand(CurrentTask.TaskId));
         if (resultCmd.success)
         {
-            // Optionnel : feedback local immédiat
             CurrentTask.Completed = true;
             CurrentTask.Status = "Completed";
         }
 
-        // Recharge + sélection automatique de la prochaine tâche
         await ReloadQueue();
-    }
-
-    // ===== Next task logic =====
-    private bool CanGoNextTask => CurrentTask is not null && CurrentTask.Completed;
-
-    private void GoNextTask()
-    {
-        if (!CanGoNextTask) return;
-
-        // Select next not completed
-        CurrentTask = Queue.FirstOrDefault(x => !x.Completed);
-        SyncStepFromState();
-        ResetInputsForCurrent();
     }
 
     private void SkipCurrent()
     {
         if (CurrentTask is null) return;
 
-        // Option: mark as skipped or just jump
         CurrentTask.Status = "Skipped";
-
         CurrentTask = Queue.FirstOrDefault(x => !x.Completed && x.Status != "Skipped");
         SyncStepFromState();
         ResetInputsForCurrent();
@@ -381,7 +397,9 @@
         return Color.Default;
     }
 
-    // ===== VM =====
+    // =========================
+    // VM + Load
+    // =========================
     public class TransportTaskVm
     {
         public int TaskId { get; set; }
@@ -395,6 +413,7 @@
 
         public string Status { get; set; } = "Ready";
         public string? SapDoc { get; set; }
+        public string HumanString { get; set; } = "";
     }
 
     private async Task<List<TransportTaskVm>> LoadQueue(int workAreaID)
@@ -410,16 +429,15 @@
             FromArea = q.FromArea,
             ToArea = q.ToArea,
             StillageId = q.Support,
-
+            HumanString = q.HumanInstruction,
             Status = q.TaskItemStatus.ToString(),
 
             Started = q.TaskItemStatus == TaskItemStatus.InProgress
-           || q.TaskItemStatus == TaskItemStatus.Completed,
-
+                   || q.TaskItemStatus == TaskItemStatus.Completed,
 
             MovementDone = q.TaskItemStatus == TaskItemStatus.Completed,
-
             Completed = q.TaskItemStatus == TaskItemStatus.Completed
         }).ToList();
     }
+   
 }
